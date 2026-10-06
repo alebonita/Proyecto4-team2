@@ -23,6 +23,9 @@
 *.pt
 *.pth
 *.ckpt
+# Excepción (MOD-1): pesos originales del P3 en el paquete de evidencias, para que el
+# evaluador pueda cargar el modelo solo con esa carpeta. Mismo archivo que en S3/MLflow.
+!evidencias/mod-01/model/best.pt
 # Tracking local de MLflow (runs y artefactos) cuando no hay servidor remoto.
 mlruns/
 mlartifacts/
