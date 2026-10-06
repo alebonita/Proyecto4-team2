@@ -47,6 +47,14 @@ Para contrastar que este es el modelo propio del equipo:
 
 El SHA-256 coincide con el registrado en `reports/models/registry.json` y `reports/models/s3_publications.json` del Proyecto 3. Para comprobarlo: `shasum -a 256 model/best.pt`.
 
+**Verificado contra S3 el 2026-10-05** (rol de solo lectura `MLOpsDataAccess`, cuenta `280764207006`): el objeto existe (45 043 841 bytes, subido 2026-10-02T20:15:44Z), su checksum SHA-256 guardado por S3 es `84d6c88b…5fa90d52`, y la copia descargada es idéntica byte a byte (`cmp`) a `model/best.pt`. `model-card.md` de S3 también coincide (`b3dd3e51…7a8703`). Para repetirlo:
+
+```bash
+aws s3api head-object --bucket mlops-p2-dvc-cache-280764207006 \
+  --key models/dog-cat-resnet18/1.0.0/checkpoint/best.pt --checksum-mode ENABLED \
+  --query ChecksumSHA256 --output text | base64 -d | xxd -p -c 64
+```
+
 El `.pt` es un diccionario de PyTorch (`torch.load(..., weights_only=True)`) con `state_dict`, `config`, `class_map` y `preprocessing`; no es un modelo completo serializado, así que hay que construir la arquitectura antes de cargar los pesos (ver `predict.py`).
 
 ## Clases (orden de salida del modelo)
