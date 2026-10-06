@@ -1,0 +1,4728 @@
+{
+  "counts": {
+    "test": {
+      "cat": 28,
+      "dog": 43
+    },
+    "train": {
+      "cat": 248,
+      "dog": 221
+    },
+    "validation": {
+      "cat": 67,
+      "dog": 61
+    }
+  },
+  "dataset_version": "v0.1.1",
+  "manifest_hash": "sha256:178b28bddb1bef5c05975fc7150710658627e31af08a1a12d94b98f9e99cb2b2",
+  "manifest_version": "p3-v1",
+  "provenance": {
+    "annotations_dvc_hash": "c7cb86ae7ece94ef7b853620e464a4d7.dir",
+    "crops_sha256": "sha256:11cea337fd46877cdddbdc6281b21bd0d7de694ed66fb8cc582d5cab31216f86",
+    "images_dvc_hash": "951150dd4fb053f4665089fcb37a1c87.dir",
+    "quality_report": "reports/releases/v0.1.1/quality.json",
+    "release_version": "v0.1.1"
+  },
+  "records": [
+    {
+      "class": "cat",
+      "crop_id": "img10-ann8",
+      "duplicate_group": "group-10",
+      "source_image_id": 10,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img100-ann115",
+      "duplicate_group": "group-100",
+      "source_image_id": 100,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img101-ann116",
+      "duplicate_group": "group-101",
+      "source_image_id": 101,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img101-ann117",
+      "duplicate_group": "group-101",
+      "source_image_id": 101,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img102-ann118",
+      "duplicate_group": "group-102",
+      "source_image_id": 102,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img103-ann138",
+      "duplicate_group": "group-103",
+      "source_image_id": 103,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img104-ann132",
+      "duplicate_group": "group-104",
+      "source_image_id": 104,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img105-ann133",
+      "duplicate_group": "group-105",
+      "source_image_id": 105,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img106-ann134",
+      "duplicate_group": "group-106",
+      "source_image_id": 106,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img107-ann135",
+      "duplicate_group": "group-107",
+      "source_image_id": 107,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img108-ann136",
+      "duplicate_group": "group-108",
+      "source_image_id": 108,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img109-ann137",
+      "duplicate_group": "group-109",
+      "source_image_id": 109,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img11-ann10",
+      "duplicate_group": "group-11",
+      "source_image_id": 11,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img11-ann9",
+      "duplicate_group": "group-11",
+      "source_image_id": 11,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img110-ann131",
+      "duplicate_group": "group-110",
+      "source_image_id": 110,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img111-ann130",
+      "duplicate_group": "group-111",
+      "source_image_id": 111,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img112-ann129",
+      "duplicate_group": "group-112",
+      "source_image_id": 112,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img113-ann128",
+      "duplicate_group": "group-113",
+      "source_image_id": 113,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img114-ann127",
+      "duplicate_group": "group-114",
+      "source_image_id": 114,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img115-ann126",
+      "duplicate_group": "group-115",
+      "source_image_id": 115,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img116-ann120",
+      "duplicate_group": "group-116",
+      "source_image_id": 116,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img117-ann121",
+      "duplicate_group": "group-117",
+      "source_image_id": 117,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img118-ann122",
+      "duplicate_group": "group-118",
+      "source_image_id": 118,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img119-ann123",
+      "duplicate_group": "group-119",
+      "source_image_id": 119,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img12-ann11",
+      "duplicate_group": "group-12",
+      "source_image_id": 12,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img120-ann124",
+      "duplicate_group": "group-120",
+      "source_image_id": 120,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img121-ann125",
+      "duplicate_group": "group-121",
+      "source_image_id": 121,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img122-ann119",
+      "duplicate_group": "group-122",
+      "source_image_id": 122,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img123-ann139",
+      "duplicate_group": "group-123",
+      "source_image_id": 123,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img124-ann140",
+      "duplicate_group": "group-124",
+      "source_image_id": 124,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img125-ann141",
+      "duplicate_group": "group-125",
+      "source_image_id": 125,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img126-ann142",
+      "duplicate_group": "group-126",
+      "source_image_id": 126,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img126-ann143",
+      "duplicate_group": "group-126",
+      "source_image_id": 126,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img126-ann144",
+      "duplicate_group": "group-126",
+      "source_image_id": 126,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img127-ann145",
+      "duplicate_group": "group-127",
+      "source_image_id": 127,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img128-ann146",
+      "duplicate_group": "group-128",
+      "source_image_id": 128,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img129-ann147",
+      "duplicate_group": "group-129",
+      "source_image_id": 129,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img13-ann12",
+      "duplicate_group": "group-13",
+      "source_image_id": 13,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img130-ann148",
+      "duplicate_group": "group-130",
+      "source_image_id": 130,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img131-ann149",
+      "duplicate_group": "group-131",
+      "source_image_id": 131,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img132-ann150",
+      "duplicate_group": "group-132",
+      "source_image_id": 132,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img133-ann152",
+      "duplicate_group": "group-133",
+      "source_image_id": 133,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img134-ann151",
+      "duplicate_group": "group-134",
+      "source_image_id": 134,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img135-ann153",
+      "duplicate_group": "group-135",
+      "source_image_id": 135,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img136-ann154",
+      "duplicate_group": "group-136",
+      "source_image_id": 136,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img137-ann155",
+      "duplicate_group": "group-137",
+      "source_image_id": 137,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img138-ann156",
+      "duplicate_group": "group-138",
+      "source_image_id": 138,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img139-ann157",
+      "duplicate_group": "group-139",
+      "source_image_id": 139,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img14-ann13",
+      "duplicate_group": "group-14",
+      "source_image_id": 14,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img140-ann158",
+      "duplicate_group": "group-140",
+      "source_image_id": 140,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img141-ann159",
+      "duplicate_group": "group-141",
+      "source_image_id": 141,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img142-ann160",
+      "duplicate_group": "group-142",
+      "source_image_id": 142,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img143-ann161",
+      "duplicate_group": "group-143",
+      "source_image_id": 143,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img144-ann162",
+      "duplicate_group": "group-144",
+      "source_image_id": 144,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img144-ann163",
+      "duplicate_group": "group-144",
+      "source_image_id": 144,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img145-ann164",
+      "duplicate_group": "group-145",
+      "source_image_id": 145,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img146-ann165",
+      "duplicate_group": "group-146",
+      "source_image_id": 146,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img147-ann166",
+      "duplicate_group": "group-147",
+      "source_image_id": 147,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img148-ann167",
+      "duplicate_group": "group-148",
+      "source_image_id": 148,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img149-ann168",
+      "duplicate_group": "group-149",
+      "source_image_id": 149,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img15-ann19",
+      "duplicate_group": "group-15",
+      "source_image_id": 15,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img150-ann169",
+      "duplicate_group": "group-150",
+      "source_image_id": 150,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img151-ann170",
+      "duplicate_group": "group-151",
+      "source_image_id": 151,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img152-ann171",
+      "duplicate_group": "group-152",
+      "source_image_id": 152,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img153-ann172",
+      "duplicate_group": "group-153",
+      "source_image_id": 153,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img154-ann173",
+      "duplicate_group": "group-154",
+      "source_image_id": 154,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img154-ann174",
+      "duplicate_group": "group-154",
+      "source_image_id": 154,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img154-ann175",
+      "duplicate_group": "group-154",
+      "source_image_id": 154,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img155-ann176",
+      "duplicate_group": "group-155",
+      "source_image_id": 155,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img155-ann177",
+      "duplicate_group": "group-155",
+      "source_image_id": 155,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img156-ann178",
+      "duplicate_group": "group-156",
+      "source_image_id": 156,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img157-ann180",
+      "duplicate_group": "group-157",
+      "source_image_id": 157,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img158-ann179",
+      "duplicate_group": "group-158",
+      "source_image_id": 158,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img159-ann181",
+      "duplicate_group": "group-159",
+      "source_image_id": 159,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img16-ann18",
+      "duplicate_group": "group-16",
+      "source_image_id": 16,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img160-ann182",
+      "duplicate_group": "group-160",
+      "source_image_id": 160,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img161-ann183",
+      "duplicate_group": "group-161",
+      "source_image_id": 161,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img162-ann184",
+      "duplicate_group": "group-162",
+      "source_image_id": 162,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img163-ann185",
+      "duplicate_group": "group-163",
+      "source_image_id": 163,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img164-ann186",
+      "duplicate_group": "group-164",
+      "source_image_id": 164,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img165-ann187",
+      "duplicate_group": "group-165",
+      "source_image_id": 165,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img166-ann188",
+      "duplicate_group": "group-166",
+      "source_image_id": 166,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img167-ann189",
+      "duplicate_group": "group-167",
+      "source_image_id": 167,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img168-ann190",
+      "duplicate_group": "group-168",
+      "source_image_id": 168,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img168-ann191",
+      "duplicate_group": "group-168",
+      "source_image_id": 168,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img168-ann192",
+      "duplicate_group": "group-168",
+      "source_image_id": 168,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img168-ann193",
+      "duplicate_group": "group-168",
+      "source_image_id": 168,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img169-ann194",
+      "duplicate_group": "group-169",
+      "source_image_id": 169,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img17-ann17",
+      "duplicate_group": "group-17",
+      "source_image_id": 17,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img170-ann195",
+      "duplicate_group": "group-170",
+      "source_image_id": 170,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img170-ann196",
+      "duplicate_group": "group-170",
+      "source_image_id": 170,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img171-ann197",
+      "duplicate_group": "group-171",
+      "source_image_id": 171,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img172-ann198",
+      "duplicate_group": "group-172",
+      "source_image_id": 172,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img173-ann199",
+      "duplicate_group": "group-173",
+      "source_image_id": 173,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img174-ann200",
+      "duplicate_group": "group-174",
+      "source_image_id": 174,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img175-ann201",
+      "duplicate_group": "group-175",
+      "source_image_id": 175,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img176-ann202",
+      "duplicate_group": "group-176",
+      "source_image_id": 176,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img177-ann203",
+      "duplicate_group": "group-177",
+      "source_image_id": 177,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img178-ann204",
+      "duplicate_group": "group-178",
+      "source_image_id": 178,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img179-ann205",
+      "duplicate_group": "group-179",
+      "source_image_id": 179,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img18-ann16",
+      "duplicate_group": "group-18",
+      "source_image_id": 18,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img180-ann206",
+      "duplicate_group": "group-180",
+      "source_image_id": 180,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img181-ann207",
+      "duplicate_group": "group-181",
+      "source_image_id": 181,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img181-ann209",
+      "duplicate_group": "group-181",
+      "source_image_id": 181,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img182-ann208",
+      "duplicate_group": "group-182",
+      "source_image_id": 182,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img183-ann210",
+      "duplicate_group": "group-183",
+      "source_image_id": 183,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img184-ann275",
+      "duplicate_group": "group-184",
+      "source_image_id": 184,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img185-ann211",
+      "duplicate_group": "group-185",
+      "source_image_id": 185,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img186-ann212",
+      "duplicate_group": "group-186",
+      "source_image_id": 186,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img187-ann213",
+      "duplicate_group": "group-187",
+      "source_image_id": 187,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img188-ann214",
+      "duplicate_group": "group-188",
+      "source_image_id": 188,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img189-ann215",
+      "duplicate_group": "group-189",
+      "source_image_id": 189,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img19-ann15",
+      "duplicate_group": "group-19",
+      "source_image_id": 19,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img190-ann216",
+      "duplicate_group": "group-190",
+      "source_image_id": 190,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img191-ann217",
+      "duplicate_group": "group-191",
+      "source_image_id": 191,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img192-ann218",
+      "duplicate_group": "group-192",
+      "source_image_id": 192,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img193-ann219",
+      "duplicate_group": "group-193",
+      "source_image_id": 193,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img194-ann220",
+      "duplicate_group": "group-194",
+      "source_image_id": 194,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img194-ann221",
+      "duplicate_group": "group-194",
+      "source_image_id": 194,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img194-ann222",
+      "duplicate_group": "group-194",
+      "source_image_id": 194,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img194-ann223",
+      "duplicate_group": "group-194",
+      "source_image_id": 194,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img195-ann224",
+      "duplicate_group": "group-195",
+      "source_image_id": 195,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img196-ann225",
+      "duplicate_group": "group-196",
+      "source_image_id": 196,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img197-ann226",
+      "duplicate_group": "group-197",
+      "source_image_id": 197,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img198-ann228",
+      "duplicate_group": "group-198",
+      "source_image_id": 198,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img199-ann227",
+      "duplicate_group": "group-199",
+      "source_image_id": 199,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img20-ann14",
+      "duplicate_group": "group-20",
+      "source_image_id": 20,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img200-ann229",
+      "duplicate_group": "group-200",
+      "source_image_id": 200,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img201-ann230",
+      "duplicate_group": "group-201",
+      "source_image_id": 201,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img201-ann231",
+      "duplicate_group": "group-201",
+      "source_image_id": 201,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img202-ann232",
+      "duplicate_group": "group-202",
+      "source_image_id": 202,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img203-ann233",
+      "duplicate_group": "group-203",
+      "source_image_id": 203,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img204-ann234",
+      "duplicate_group": "group-204",
+      "source_image_id": 204,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img205-ann235",
+      "duplicate_group": "group-205",
+      "source_image_id": 205,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img206-ann236",
+      "duplicate_group": "group-206",
+      "source_image_id": 206,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img207-ann237",
+      "duplicate_group": "group-207",
+      "source_image_id": 207,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img207-ann238",
+      "duplicate_group": "group-207",
+      "source_image_id": 207,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img208-ann239",
+      "duplicate_group": "group-208",
+      "source_image_id": 208,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img209-ann240",
+      "duplicate_group": "group-209",
+      "source_image_id": 209,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img21-ann20",
+      "duplicate_group": "group-21",
+      "source_image_id": 21,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img210-ann241",
+      "duplicate_group": "group-210",
+      "source_image_id": 210,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img211-ann242",
+      "duplicate_group": "group-211",
+      "source_image_id": 211,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img212-ann243",
+      "duplicate_group": "group-212",
+      "source_image_id": 212,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img213-ann244",
+      "duplicate_group": "group-213",
+      "source_image_id": 213,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img214-ann245",
+      "duplicate_group": "group-214",
+      "source_image_id": 214,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img215-ann247",
+      "duplicate_group": "group-215",
+      "source_image_id": 215,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img216-ann246",
+      "duplicate_group": "group-216",
+      "source_image_id": 216,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img217-ann248",
+      "duplicate_group": "group-217",
+      "source_image_id": 217,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img218-ann249",
+      "duplicate_group": "group-218",
+      "source_image_id": 218,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img219-ann250",
+      "duplicate_group": "group-219",
+      "source_image_id": 219,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann21",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann22",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann23",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann24",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann25",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann26",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann27",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann28",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann29",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann30",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img22-ann31",
+      "duplicate_group": "group-22",
+      "source_image_id": 22,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img220-ann251",
+      "duplicate_group": "group-220",
+      "source_image_id": 220,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img221-ann252",
+      "duplicate_group": "group-221",
+      "source_image_id": 221,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img222-ann253",
+      "duplicate_group": "group-222",
+      "source_image_id": 222,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img223-ann254",
+      "duplicate_group": "group-223",
+      "source_image_id": 223,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img224-ann255",
+      "duplicate_group": "group-224",
+      "source_image_id": 224,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img225-ann256",
+      "duplicate_group": "group-225",
+      "source_image_id": 225,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img226-ann257",
+      "duplicate_group": "group-226",
+      "source_image_id": 226,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img227-ann258",
+      "duplicate_group": "group-227",
+      "source_image_id": 227,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img228-ann259",
+      "duplicate_group": "group-228",
+      "source_image_id": 228,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img229-ann260",
+      "duplicate_group": "group-229",
+      "source_image_id": 229,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img23-ann32",
+      "duplicate_group": "group-23",
+      "source_image_id": 23,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img230-ann261",
+      "duplicate_group": "group-230",
+      "source_image_id": 230,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img231-ann262",
+      "duplicate_group": "group-231",
+      "source_image_id": 231,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img232-ann263",
+      "duplicate_group": "group-232",
+      "source_image_id": 232,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img233-ann264",
+      "duplicate_group": "group-233",
+      "source_image_id": 233,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img233-ann265",
+      "duplicate_group": "group-233",
+      "source_image_id": 233,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img234-ann266",
+      "duplicate_group": "group-234",
+      "source_image_id": 234,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img235-ann267",
+      "duplicate_group": "group-235",
+      "source_image_id": 235,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img236-ann268",
+      "duplicate_group": "group-236",
+      "source_image_id": 236,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img237-ann269",
+      "duplicate_group": "group-237",
+      "source_image_id": 237,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img238-ann270",
+      "duplicate_group": "group-238",
+      "source_image_id": 238,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img239-ann271",
+      "duplicate_group": "group-239",
+      "source_image_id": 239,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img24-ann33",
+      "duplicate_group": "group-24",
+      "source_image_id": 24,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img240-ann272",
+      "duplicate_group": "group-240",
+      "source_image_id": 240,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img241-ann273",
+      "duplicate_group": "group-241",
+      "source_image_id": 241,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img242-ann274",
+      "duplicate_group": "group-242",
+      "source_image_id": 242,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img243-ann276",
+      "duplicate_group": "group-243",
+      "source_image_id": 243,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img244-ann277",
+      "duplicate_group": "group-244",
+      "source_image_id": 244,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img245-ann278",
+      "duplicate_group": "group-245",
+      "source_image_id": 245,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img246-ann279",
+      "duplicate_group": "group-246",
+      "source_image_id": 246,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img246-ann280",
+      "duplicate_group": "group-246",
+      "source_image_id": 246,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img247-ann282",
+      "duplicate_group": "group-247",
+      "source_image_id": 247,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img248-ann281",
+      "duplicate_group": "group-248",
+      "source_image_id": 248,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img249-ann283",
+      "duplicate_group": "group-249",
+      "source_image_id": 249,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img25-ann34",
+      "duplicate_group": "group-25",
+      "source_image_id": 25,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img250-ann284",
+      "duplicate_group": "group-250",
+      "source_image_id": 250,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img251-ann285",
+      "duplicate_group": "group-251",
+      "source_image_id": 251,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img252-ann286",
+      "duplicate_group": "group-252",
+      "source_image_id": 252,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img253-ann287",
+      "duplicate_group": "group-253",
+      "source_image_id": 253,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img254-ann288",
+      "duplicate_group": "group-254",
+      "source_image_id": 254,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img255-ann289",
+      "duplicate_group": "group-255",
+      "source_image_id": 255,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img256-ann290",
+      "duplicate_group": "group-256",
+      "source_image_id": 256,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img257-ann291",
+      "duplicate_group": "group-257",
+      "source_image_id": 257,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img258-ann292",
+      "duplicate_group": "group-258",
+      "source_image_id": 258,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img258-ann293",
+      "duplicate_group": "group-258",
+      "source_image_id": 258,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img259-ann294",
+      "duplicate_group": "group-259",
+      "source_image_id": 259,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img259-ann295",
+      "duplicate_group": "group-259",
+      "source_image_id": 259,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img26-ann35",
+      "duplicate_group": "group-26",
+      "source_image_id": 26,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img260-ann296",
+      "duplicate_group": "group-260",
+      "source_image_id": 260,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img261-ann297",
+      "duplicate_group": "group-261",
+      "source_image_id": 261,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img262-ann298",
+      "duplicate_group": "group-262",
+      "source_image_id": 262,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img263-ann299",
+      "duplicate_group": "group-263",
+      "source_image_id": 263,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img264-ann300",
+      "duplicate_group": "group-264",
+      "source_image_id": 264,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img265-ann301",
+      "duplicate_group": "group-265",
+      "source_image_id": 265,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img265-ann302",
+      "duplicate_group": "group-265",
+      "source_image_id": 265,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img265-ann303",
+      "duplicate_group": "group-265",
+      "source_image_id": 265,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img265-ann304",
+      "duplicate_group": "group-265",
+      "source_image_id": 265,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img265-ann305",
+      "duplicate_group": "group-265",
+      "source_image_id": 265,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img266-ann306",
+      "duplicate_group": "group-266",
+      "source_image_id": 266,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img267-ann307",
+      "duplicate_group": "group-267",
+      "source_image_id": 267,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img268-ann308",
+      "duplicate_group": "group-268",
+      "source_image_id": 268,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img268-ann309",
+      "duplicate_group": "group-268",
+      "source_image_id": 268,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img269-ann310",
+      "duplicate_group": "group-269",
+      "source_image_id": 269,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img27-ann42",
+      "duplicate_group": "group-27",
+      "source_image_id": 27,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img270-ann311",
+      "duplicate_group": "group-270",
+      "source_image_id": 270,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img271-ann312",
+      "duplicate_group": "group-271",
+      "source_image_id": 271,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img272-ann313",
+      "duplicate_group": "group-272",
+      "source_image_id": 272,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img273-ann314",
+      "duplicate_group": "group-273",
+      "source_image_id": 273,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img274-ann315",
+      "duplicate_group": "group-274",
+      "source_image_id": 274,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img275-ann320",
+      "duplicate_group": "group-275",
+      "source_image_id": 275,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img276-ann318",
+      "duplicate_group": "group-276",
+      "source_image_id": 276,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img276-ann319",
+      "duplicate_group": "group-276",
+      "source_image_id": 276,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img277-ann317",
+      "duplicate_group": "group-277",
+      "source_image_id": 277,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img278-ann316",
+      "duplicate_group": "group-278",
+      "source_image_id": 278,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img279-ann321",
+      "duplicate_group": "group-279",
+      "source_image_id": 279,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img279-ann322",
+      "duplicate_group": "group-279",
+      "source_image_id": 279,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img28-ann41",
+      "duplicate_group": "group-28",
+      "source_image_id": 28,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img280-ann323",
+      "duplicate_group": "group-280",
+      "source_image_id": 280,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img281-ann324",
+      "duplicate_group": "group-281",
+      "source_image_id": 281,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img282-ann325",
+      "duplicate_group": "group-282",
+      "source_image_id": 282,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img283-ann326",
+      "duplicate_group": "group-283",
+      "source_image_id": 283,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img284-ann327",
+      "duplicate_group": "group-284",
+      "source_image_id": 284,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img285-ann328",
+      "duplicate_group": "group-285",
+      "source_image_id": 285,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img286-ann329",
+      "duplicate_group": "group-286",
+      "source_image_id": 286,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img287-ann330",
+      "duplicate_group": "group-287",
+      "source_image_id": 287,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img288-ann332",
+      "duplicate_group": "group-288",
+      "source_image_id": 288,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img289-ann331",
+      "duplicate_group": "group-289",
+      "source_image_id": 289,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img29-ann40",
+      "duplicate_group": "group-29",
+      "source_image_id": 29,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img290-ann333",
+      "duplicate_group": "group-290",
+      "source_image_id": 290,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img291-ann334",
+      "duplicate_group": "group-291",
+      "source_image_id": 291,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img292-ann335",
+      "duplicate_group": "group-292",
+      "source_image_id": 292,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img293-ann336",
+      "duplicate_group": "group-293",
+      "source_image_id": 293,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img294-ann337",
+      "duplicate_group": "group-294",
+      "source_image_id": 294,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img295-ann338",
+      "duplicate_group": "group-295",
+      "source_image_id": 295,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img296-ann339",
+      "duplicate_group": "group-296",
+      "source_image_id": 296,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img296-ann340",
+      "duplicate_group": "group-296",
+      "source_image_id": 296,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img297-ann341",
+      "duplicate_group": "group-297",
+      "source_image_id": 297,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img297-ann342",
+      "duplicate_group": "group-297",
+      "source_image_id": 297,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img298-ann343",
+      "duplicate_group": "group-298",
+      "source_image_id": 298,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img299-ann344",
+      "duplicate_group": "group-299",
+      "source_image_id": 299,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img3-ann6",
+      "duplicate_group": "group-3",
+      "source_image_id": 3,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img30-ann39",
+      "duplicate_group": "group-30",
+      "source_image_id": 30,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img300-ann345",
+      "duplicate_group": "group-300",
+      "source_image_id": 300,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img301-ann346",
+      "duplicate_group": "group-301",
+      "source_image_id": 301,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img302-ann347",
+      "duplicate_group": "group-302",
+      "source_image_id": 302,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img31-ann37",
+      "duplicate_group": "group-31",
+      "source_image_id": 31,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img31-ann38",
+      "duplicate_group": "group-31",
+      "source_image_id": 31,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img32-ann36",
+      "duplicate_group": "group-32",
+      "source_image_id": 32,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img33-ann43",
+      "duplicate_group": "group-33",
+      "source_image_id": 33,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img34-ann75",
+      "duplicate_group": "group-34",
+      "source_image_id": 34,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img35-ann74",
+      "duplicate_group": "group-35",
+      "source_image_id": 35,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img36-ann73",
+      "duplicate_group": "group-36",
+      "source_image_id": 36,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img365-ann348",
+      "duplicate_group": "group-365",
+      "source_image_id": 365,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img366-ann349",
+      "duplicate_group": "group-366",
+      "source_image_id": 366,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img366-ann350",
+      "duplicate_group": "group-366",
+      "source_image_id": 366,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img366-ann351",
+      "duplicate_group": "group-366",
+      "source_image_id": 366,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img367-ann352",
+      "duplicate_group": "group-367",
+      "source_image_id": 367,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img368-ann353",
+      "duplicate_group": "group-368",
+      "source_image_id": 368,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img369-ann355",
+      "duplicate_group": "group-369",
+      "source_image_id": 369,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img37-ann72",
+      "duplicate_group": "group-37",
+      "source_image_id": 37,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img370-ann354",
+      "duplicate_group": "group-370",
+      "source_image_id": 370,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img371-ann356",
+      "duplicate_group": "group-371",
+      "source_image_id": 371,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img372-ann357",
+      "duplicate_group": "group-372",
+      "source_image_id": 372,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img373-ann358",
+      "duplicate_group": "group-373",
+      "source_image_id": 373,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img374-ann359",
+      "duplicate_group": "group-374",
+      "source_image_id": 374,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img375-ann360",
+      "duplicate_group": "group-375",
+      "source_image_id": 375,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img376-ann361",
+      "duplicate_group": "group-376",
+      "source_image_id": 376,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img377-ann362",
+      "duplicate_group": "group-377",
+      "source_image_id": 377,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img378-ann363",
+      "duplicate_group": "group-378",
+      "source_image_id": 378,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img379-ann364",
+      "duplicate_group": "group-379",
+      "source_image_id": 379,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img38-ann71",
+      "duplicate_group": "group-38",
+      "source_image_id": 38,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img380-ann365",
+      "duplicate_group": "group-380",
+      "source_image_id": 380,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img381-ann366",
+      "duplicate_group": "group-381",
+      "source_image_id": 381,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img382-ann367",
+      "duplicate_group": "group-382",
+      "source_image_id": 382,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img383-ann368",
+      "duplicate_group": "group-383",
+      "source_image_id": 383,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img384-ann369",
+      "duplicate_group": "group-384",
+      "source_image_id": 384,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img385-ann370",
+      "duplicate_group": "group-385",
+      "source_image_id": 385,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img386-ann371",
+      "duplicate_group": "group-386",
+      "source_image_id": 386,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img387-ann372",
+      "duplicate_group": "group-387",
+      "source_image_id": 387,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img388-ann373",
+      "duplicate_group": "group-388",
+      "source_image_id": 388,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img389-ann374",
+      "duplicate_group": "group-389",
+      "source_image_id": 389,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img39-ann64",
+      "duplicate_group": "group-39",
+      "source_image_id": 39,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img390-ann375",
+      "duplicate_group": "group-390",
+      "source_image_id": 390,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img391-ann376",
+      "duplicate_group": "group-391",
+      "source_image_id": 391,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img392-ann377",
+      "duplicate_group": "group-392",
+      "source_image_id": 392,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img393-ann378",
+      "duplicate_group": "group-393",
+      "source_image_id": 393,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img394-ann379",
+      "duplicate_group": "group-394",
+      "source_image_id": 394,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img395-ann380",
+      "duplicate_group": "group-395",
+      "source_image_id": 395,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img396-ann381",
+      "duplicate_group": "group-396",
+      "source_image_id": 396,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img397-ann382",
+      "duplicate_group": "group-397",
+      "source_image_id": 397,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img398-ann383",
+      "duplicate_group": "group-398",
+      "source_image_id": 398,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img399-ann384",
+      "duplicate_group": "group-399",
+      "source_image_id": 399,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img4-ann5",
+      "duplicate_group": "group-4",
+      "source_image_id": 4,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img40-ann65",
+      "duplicate_group": "group-40",
+      "source_image_id": 40,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img40-ann66",
+      "duplicate_group": "group-40",
+      "source_image_id": 40,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img400-ann385",
+      "duplicate_group": "group-400",
+      "source_image_id": 400,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img401-ann386",
+      "duplicate_group": "group-401",
+      "source_image_id": 401,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img402-ann387",
+      "duplicate_group": "group-402",
+      "source_image_id": 402,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img403-ann388",
+      "duplicate_group": "group-403",
+      "source_image_id": 403,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img404-ann389",
+      "duplicate_group": "group-404",
+      "source_image_id": 404,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img405-ann390",
+      "duplicate_group": "group-405",
+      "source_image_id": 405,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img406-ann391",
+      "duplicate_group": "group-406",
+      "source_image_id": 406,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img407-ann392",
+      "duplicate_group": "group-407",
+      "source_image_id": 407,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img408-ann393",
+      "duplicate_group": "group-408",
+      "source_image_id": 408,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img409-ann394",
+      "duplicate_group": "group-409",
+      "source_image_id": 409,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img41-ann67",
+      "duplicate_group": "group-41",
+      "source_image_id": 41,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img410-ann395",
+      "duplicate_group": "group-410",
+      "source_image_id": 410,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img411-ann396",
+      "duplicate_group": "group-411",
+      "source_image_id": 411,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img412-ann397",
+      "duplicate_group": "group-412",
+      "source_image_id": 412,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img413-ann398",
+      "duplicate_group": "group-413",
+      "source_image_id": 413,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img414-ann399",
+      "duplicate_group": "group-414",
+      "source_image_id": 414,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img415-ann400",
+      "duplicate_group": "group-415",
+      "source_image_id": 415,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img416-ann401",
+      "duplicate_group": "group-416",
+      "source_image_id": 416,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img417-ann402",
+      "duplicate_group": "group-417",
+      "source_image_id": 417,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img418-ann403",
+      "duplicate_group": "group-418",
+      "source_image_id": 418,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img419-ann404",
+      "duplicate_group": "group-419",
+      "source_image_id": 419,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img42-ann68",
+      "duplicate_group": "group-42",
+      "source_image_id": 42,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img420-ann405",
+      "duplicate_group": "group-420",
+      "source_image_id": 420,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img421-ann406",
+      "duplicate_group": "group-421",
+      "source_image_id": 421,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img421-ann407",
+      "duplicate_group": "group-421",
+      "source_image_id": 421,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img422-ann409",
+      "duplicate_group": "group-422",
+      "source_image_id": 422,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img422-ann410",
+      "duplicate_group": "group-422",
+      "source_image_id": 422,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img422-ann411",
+      "duplicate_group": "group-422",
+      "source_image_id": 422,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img423-ann408",
+      "duplicate_group": "group-423",
+      "source_image_id": 423,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img424-ann412",
+      "duplicate_group": "group-424",
+      "source_image_id": 424,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img425-ann413",
+      "duplicate_group": "group-425",
+      "source_image_id": 425,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img426-ann414",
+      "duplicate_group": "group-426",
+      "source_image_id": 426,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img427-ann415",
+      "duplicate_group": "group-427",
+      "source_image_id": 427,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img427-ann416",
+      "duplicate_group": "group-427",
+      "source_image_id": 427,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img428-ann417",
+      "duplicate_group": "group-428",
+      "source_image_id": 428,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img429-ann418",
+      "duplicate_group": "group-429",
+      "source_image_id": 429,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img43-ann69",
+      "duplicate_group": "group-43",
+      "source_image_id": 43,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img430-ann419",
+      "duplicate_group": "group-430",
+      "source_image_id": 430,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img431-ann420",
+      "duplicate_group": "group-431",
+      "source_image_id": 431,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img432-ann421",
+      "duplicate_group": "group-432",
+      "source_image_id": 432,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img433-ann422",
+      "duplicate_group": "group-433",
+      "source_image_id": 433,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img434-ann423",
+      "duplicate_group": "group-434",
+      "source_image_id": 434,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img435-ann424",
+      "duplicate_group": "group-435",
+      "source_image_id": 435,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img436-ann425",
+      "duplicate_group": "group-436",
+      "source_image_id": 436,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img437-ann426",
+      "duplicate_group": "group-437",
+      "source_image_id": 437,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img438-ann427",
+      "duplicate_group": "group-438",
+      "source_image_id": 438,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img439-ann428",
+      "duplicate_group": "group-439",
+      "source_image_id": 439,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img44-ann70",
+      "duplicate_group": "group-44",
+      "source_image_id": 44,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img440-ann429",
+      "duplicate_group": "group-440",
+      "source_image_id": 440,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img441-ann430",
+      "duplicate_group": "group-441",
+      "source_image_id": 441,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img442-ann431",
+      "duplicate_group": "group-442",
+      "source_image_id": 442,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img443-ann432",
+      "duplicate_group": "group-443",
+      "source_image_id": 443,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img444-ann433",
+      "duplicate_group": "group-444",
+      "source_image_id": 444,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img445-ann434",
+      "duplicate_group": "group-445",
+      "source_image_id": 445,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img446-ann435",
+      "duplicate_group": "group-446",
+      "source_image_id": 446,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img447-ann436",
+      "duplicate_group": "group-447",
+      "source_image_id": 447,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img448-ann437",
+      "duplicate_group": "group-448",
+      "source_image_id": 448,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img449-ann438",
+      "duplicate_group": "group-449",
+      "source_image_id": 449,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img45-ann63",
+      "duplicate_group": "group-45",
+      "source_image_id": 45,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img450-ann439",
+      "duplicate_group": "group-450",
+      "source_image_id": 450,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img451-ann440",
+      "duplicate_group": "group-451",
+      "source_image_id": 451,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img452-ann441",
+      "duplicate_group": "group-452",
+      "source_image_id": 452,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img453-ann442",
+      "duplicate_group": "group-453",
+      "source_image_id": 453,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img454-ann443",
+      "duplicate_group": "group-454",
+      "source_image_id": 454,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img455-ann444",
+      "duplicate_group": "group-455",
+      "source_image_id": 455,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img456-ann445",
+      "duplicate_group": "group-456",
+      "source_image_id": 456,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img457-ann446",
+      "duplicate_group": "group-457",
+      "source_image_id": 457,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img458-ann447",
+      "duplicate_group": "group-458",
+      "source_image_id": 458,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img459-ann448",
+      "duplicate_group": "group-459",
+      "source_image_id": 459,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img46-ann62",
+      "duplicate_group": "group-46",
+      "source_image_id": 46,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img460-ann449",
+      "duplicate_group": "group-460",
+      "source_image_id": 460,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img461-ann450",
+      "duplicate_group": "group-461",
+      "source_image_id": 461,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img462-ann451",
+      "duplicate_group": "group-462",
+      "source_image_id": 462,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img462-ann452",
+      "duplicate_group": "group-462",
+      "source_image_id": 462,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img462-ann453",
+      "duplicate_group": "group-462",
+      "source_image_id": 462,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img463-ann454",
+      "duplicate_group": "group-463",
+      "source_image_id": 463,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img464-ann455",
+      "duplicate_group": "group-464",
+      "source_image_id": 464,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img465-ann456",
+      "duplicate_group": "group-465",
+      "source_image_id": 465,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img466-ann457",
+      "duplicate_group": "group-466",
+      "source_image_id": 466,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img467-ann458",
+      "duplicate_group": "group-467",
+      "source_image_id": 467,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img468-ann459",
+      "duplicate_group": "group-468",
+      "source_image_id": 468,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img469-ann460",
+      "duplicate_group": "group-469",
+      "source_image_id": 469,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img47-ann61",
+      "duplicate_group": "group-47",
+      "source_image_id": 47,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img470-ann461",
+      "duplicate_group": "group-470",
+      "source_image_id": 470,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img471-ann462",
+      "duplicate_group": "group-471",
+      "source_image_id": 471,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img472-ann463",
+      "duplicate_group": "group-472",
+      "source_image_id": 472,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img473-ann464",
+      "duplicate_group": "group-473",
+      "source_image_id": 473,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img474-ann465",
+      "duplicate_group": "group-474",
+      "source_image_id": 474,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img475-ann466",
+      "duplicate_group": "group-475",
+      "source_image_id": 475,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img476-ann467",
+      "duplicate_group": "group-476",
+      "source_image_id": 476,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img477-ann468",
+      "duplicate_group": "group-477",
+      "source_image_id": 477,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img477-ann469",
+      "duplicate_group": "group-477",
+      "source_image_id": 477,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img478-ann470",
+      "duplicate_group": "group-478",
+      "source_image_id": 478,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img478-ann471",
+      "duplicate_group": "group-478",
+      "source_image_id": 478,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img478-ann472",
+      "duplicate_group": "group-478",
+      "source_image_id": 478,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img478-ann473",
+      "duplicate_group": "group-478",
+      "source_image_id": 478,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img479-ann474",
+      "duplicate_group": "group-479",
+      "source_image_id": 479,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img48-ann60",
+      "duplicate_group": "group-48",
+      "source_image_id": 48,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img480-ann475",
+      "duplicate_group": "group-480",
+      "source_image_id": 480,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img481-ann476",
+      "duplicate_group": "group-481",
+      "source_image_id": 481,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img482-ann477",
+      "duplicate_group": "group-482",
+      "source_image_id": 482,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img483-ann478",
+      "duplicate_group": "group-483",
+      "source_image_id": 483,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img484-ann479",
+      "duplicate_group": "group-484",
+      "source_image_id": 484,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img485-ann480",
+      "duplicate_group": "group-485",
+      "source_image_id": 485,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img486-ann481",
+      "duplicate_group": "group-486",
+      "source_image_id": 486,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img487-ann482",
+      "duplicate_group": "group-487",
+      "source_image_id": 487,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img488-ann483",
+      "duplicate_group": "group-488",
+      "source_image_id": 488,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img489-ann484",
+      "duplicate_group": "group-489",
+      "source_image_id": 489,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img49-ann59",
+      "duplicate_group": "group-49",
+      "source_image_id": 49,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img490-ann485",
+      "duplicate_group": "group-490",
+      "source_image_id": 490,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img491-ann486",
+      "duplicate_group": "group-491",
+      "source_image_id": 491,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img492-ann487",
+      "duplicate_group": "group-492",
+      "source_image_id": 492,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img493-ann488",
+      "duplicate_group": "group-493",
+      "source_image_id": 493,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img494-ann489",
+      "duplicate_group": "group-494",
+      "source_image_id": 494,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img495-ann490",
+      "duplicate_group": "group-495",
+      "source_image_id": 495,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img496-ann491",
+      "duplicate_group": "group-496",
+      "source_image_id": 496,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img497-ann492",
+      "duplicate_group": "group-497",
+      "source_image_id": 497,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img498-ann493",
+      "duplicate_group": "group-498",
+      "source_image_id": 498,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img499-ann494",
+      "duplicate_group": "group-499",
+      "source_image_id": 499,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img5-ann4",
+      "duplicate_group": "group-5",
+      "source_image_id": 5,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img50-ann56",
+      "duplicate_group": "group-50",
+      "source_image_id": 50,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img50-ann57",
+      "duplicate_group": "group-50",
+      "source_image_id": 50,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img50-ann58",
+      "duplicate_group": "group-50",
+      "source_image_id": 50,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img500-ann495",
+      "duplicate_group": "group-500",
+      "source_image_id": 500,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img501-ann496",
+      "duplicate_group": "group-501",
+      "source_image_id": 501,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img502-ann497",
+      "duplicate_group": "group-502",
+      "source_image_id": 502,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img503-ann498",
+      "duplicate_group": "group-503",
+      "source_image_id": 503,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img504-ann499",
+      "duplicate_group": "group-504",
+      "source_image_id": 504,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img505-ann500",
+      "duplicate_group": "group-505",
+      "source_image_id": 505,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img506-ann501",
+      "duplicate_group": "group-506",
+      "source_image_id": 506,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img507-ann502",
+      "duplicate_group": "group-507",
+      "source_image_id": 507,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img508-ann503",
+      "duplicate_group": "group-508",
+      "source_image_id": 508,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img509-ann504",
+      "duplicate_group": "group-509",
+      "source_image_id": 509,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img51-ann50",
+      "duplicate_group": "group-51",
+      "source_image_id": 51,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img510-ann505",
+      "duplicate_group": "group-510",
+      "source_image_id": 510,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img511-ann506",
+      "duplicate_group": "group-511",
+      "source_image_id": 511,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img512-ann507",
+      "duplicate_group": "group-512",
+      "source_image_id": 512,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img513-ann508",
+      "duplicate_group": "group-513",
+      "source_image_id": 513,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img514-ann509",
+      "duplicate_group": "group-514",
+      "source_image_id": 514,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img515-ann510",
+      "duplicate_group": "group-515",
+      "source_image_id": 515,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img516-ann511",
+      "duplicate_group": "group-516",
+      "source_image_id": 516,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img517-ann512",
+      "duplicate_group": "group-517",
+      "source_image_id": 517,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img518-ann513",
+      "duplicate_group": "group-518",
+      "source_image_id": 518,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img519-ann514",
+      "duplicate_group": "group-519",
+      "source_image_id": 519,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img52-ann51",
+      "duplicate_group": "group-52",
+      "source_image_id": 52,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img520-ann515",
+      "duplicate_group": "group-520",
+      "source_image_id": 520,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img521-ann516",
+      "duplicate_group": "group-521",
+      "source_image_id": 521,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img522-ann517",
+      "duplicate_group": "group-522",
+      "source_image_id": 522,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img523-ann518",
+      "duplicate_group": "group-523",
+      "source_image_id": 523,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img524-ann519",
+      "duplicate_group": "group-524",
+      "source_image_id": 524,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img525-ann520",
+      "duplicate_group": "group-525",
+      "source_image_id": 525,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img526-ann521",
+      "duplicate_group": "group-526",
+      "source_image_id": 526,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img526-ann522",
+      "duplicate_group": "group-526",
+      "source_image_id": 526,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img527-ann523",
+      "duplicate_group": "group-527",
+      "source_image_id": 527,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img527-ann524",
+      "duplicate_group": "group-527",
+      "source_image_id": 527,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img528-ann525",
+      "duplicate_group": "group-528",
+      "source_image_id": 528,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img529-ann526",
+      "duplicate_group": "group-529",
+      "source_image_id": 529,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img53-ann52",
+      "duplicate_group": "group-53",
+      "source_image_id": 53,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img530-ann527",
+      "duplicate_group": "group-530",
+      "source_image_id": 530,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img531-ann528",
+      "duplicate_group": "group-531",
+      "source_image_id": 531,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img532-ann529",
+      "duplicate_group": "group-532",
+      "source_image_id": 532,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img533-ann530",
+      "duplicate_group": "group-533",
+      "source_image_id": 533,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img534-ann531",
+      "duplicate_group": "group-534",
+      "source_image_id": 534,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img535-ann532",
+      "duplicate_group": "group-535",
+      "source_image_id": 535,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img535-ann533",
+      "duplicate_group": "group-535",
+      "source_image_id": 535,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img536-ann534",
+      "duplicate_group": "group-536",
+      "source_image_id": 536,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img537-ann535",
+      "duplicate_group": "group-537",
+      "source_image_id": 537,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img538-ann536",
+      "duplicate_group": "group-538",
+      "source_image_id": 538,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img539-ann537",
+      "duplicate_group": "group-539",
+      "source_image_id": 539,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img54-ann53",
+      "duplicate_group": "group-54",
+      "source_image_id": 54,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img540-ann538",
+      "duplicate_group": "group-540",
+      "source_image_id": 540,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img541-ann539",
+      "duplicate_group": "group-541",
+      "source_image_id": 541,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img541-ann540",
+      "duplicate_group": "group-541",
+      "source_image_id": 541,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img542-ann541",
+      "duplicate_group": "group-542",
+      "source_image_id": 542,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img543-ann542",
+      "duplicate_group": "group-543",
+      "source_image_id": 543,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img544-ann543",
+      "duplicate_group": "group-544",
+      "source_image_id": 544,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img544-ann544",
+      "duplicate_group": "group-544",
+      "source_image_id": 544,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img545-ann545",
+      "duplicate_group": "group-545",
+      "source_image_id": 545,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img546-ann546",
+      "duplicate_group": "group-546",
+      "source_image_id": 546,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img547-ann547",
+      "duplicate_group": "group-547",
+      "source_image_id": 547,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img548-ann548",
+      "duplicate_group": "group-548",
+      "source_image_id": 548,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img548-ann549",
+      "duplicate_group": "group-548",
+      "source_image_id": 548,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img549-ann550",
+      "duplicate_group": "group-549",
+      "source_image_id": 549,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img55-ann54",
+      "duplicate_group": "group-55",
+      "source_image_id": 55,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img550-ann551",
+      "duplicate_group": "group-550",
+      "source_image_id": 550,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img551-ann552",
+      "duplicate_group": "group-551",
+      "source_image_id": 551,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img552-ann553",
+      "duplicate_group": "group-552",
+      "source_image_id": 552,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img553-ann554",
+      "duplicate_group": "group-553",
+      "source_image_id": 553,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img554-ann555",
+      "duplicate_group": "group-554",
+      "source_image_id": 554,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img555-ann556",
+      "duplicate_group": "group-555",
+      "source_image_id": 555,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img556-ann557",
+      "duplicate_group": "group-556",
+      "source_image_id": 556,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img556-ann558",
+      "duplicate_group": "group-556",
+      "source_image_id": 556,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img557-ann559",
+      "duplicate_group": "group-557",
+      "source_image_id": 557,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img558-ann560",
+      "duplicate_group": "group-558",
+      "source_image_id": 558,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img559-ann561",
+      "duplicate_group": "group-559",
+      "source_image_id": 559,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img56-ann55",
+      "duplicate_group": "group-56",
+      "source_image_id": 56,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img560-ann562",
+      "duplicate_group": "group-560",
+      "source_image_id": 560,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img561-ann563",
+      "duplicate_group": "group-561",
+      "source_image_id": 561,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img562-ann564",
+      "duplicate_group": "group-562",
+      "source_image_id": 562,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img563-ann565",
+      "duplicate_group": "group-563",
+      "source_image_id": 563,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img564-ann566",
+      "duplicate_group": "group-564",
+      "source_image_id": 564,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img565-ann567",
+      "duplicate_group": "group-565",
+      "source_image_id": 565,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img566-ann568",
+      "duplicate_group": "group-566",
+      "source_image_id": 566,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img567-ann569",
+      "duplicate_group": "group-567",
+      "source_image_id": 567,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img568-ann570",
+      "duplicate_group": "group-568",
+      "source_image_id": 568,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img569-ann571",
+      "duplicate_group": "group-569",
+      "source_image_id": 569,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img57-ann49",
+      "duplicate_group": "group-57",
+      "source_image_id": 57,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img570-ann572",
+      "duplicate_group": "group-570",
+      "source_image_id": 570,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img571-ann573",
+      "duplicate_group": "group-571",
+      "source_image_id": 571,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img572-ann574",
+      "duplicate_group": "group-572",
+      "source_image_id": 572,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img573-ann575",
+      "duplicate_group": "group-573",
+      "source_image_id": 573,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img574-ann576",
+      "duplicate_group": "group-574",
+      "source_image_id": 574,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img575-ann577",
+      "duplicate_group": "group-575",
+      "source_image_id": 575,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img576-ann578",
+      "duplicate_group": "group-576",
+      "source_image_id": 576,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img577-ann579",
+      "duplicate_group": "group-577",
+      "source_image_id": 577,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img578-ann580",
+      "duplicate_group": "group-578",
+      "source_image_id": 578,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img579-ann581",
+      "duplicate_group": "group-579",
+      "source_image_id": 579,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img58-ann48",
+      "duplicate_group": "group-58",
+      "source_image_id": 58,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img580-ann582",
+      "duplicate_group": "group-580",
+      "source_image_id": 580,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img581-ann583",
+      "duplicate_group": "group-581",
+      "source_image_id": 581,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img582-ann584",
+      "duplicate_group": "group-582",
+      "source_image_id": 582,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img583-ann585",
+      "duplicate_group": "group-583",
+      "source_image_id": 583,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img584-ann586",
+      "duplicate_group": "group-584",
+      "source_image_id": 584,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img585-ann587",
+      "duplicate_group": "group-585",
+      "source_image_id": 585,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img585-ann588",
+      "duplicate_group": "group-585",
+      "source_image_id": 585,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img586-ann589",
+      "duplicate_group": "group-586",
+      "source_image_id": 586,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img587-ann590",
+      "duplicate_group": "group-587",
+      "source_image_id": 587,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img588-ann591",
+      "duplicate_group": "group-588",
+      "source_image_id": 588,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img589-ann592",
+      "duplicate_group": "group-589",
+      "source_image_id": 589,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img59-ann47",
+      "duplicate_group": "group-59",
+      "source_image_id": 59,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img590-ann593",
+      "duplicate_group": "group-590",
+      "source_image_id": 590,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img591-ann594",
+      "duplicate_group": "group-591",
+      "source_image_id": 591,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img592-ann595",
+      "duplicate_group": "group-592",
+      "source_image_id": 592,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img593-ann596",
+      "duplicate_group": "group-593",
+      "source_image_id": 593,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img594-ann597",
+      "duplicate_group": "group-594",
+      "source_image_id": 594,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img595-ann598",
+      "duplicate_group": "group-595",
+      "source_image_id": 595,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img596-ann599",
+      "duplicate_group": "group-596",
+      "source_image_id": 596,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img597-ann600",
+      "duplicate_group": "group-597",
+      "source_image_id": 597,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img598-ann601",
+      "duplicate_group": "group-598",
+      "source_image_id": 598,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img599-ann602",
+      "duplicate_group": "group-599",
+      "source_image_id": 599,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img6-ann3",
+      "duplicate_group": "group-6",
+      "source_image_id": 6,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img60-ann46",
+      "duplicate_group": "group-60",
+      "source_image_id": 60,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img600-ann603",
+      "duplicate_group": "group-600",
+      "source_image_id": 600,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img601-ann604",
+      "duplicate_group": "group-601",
+      "source_image_id": 601,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img602-ann605",
+      "duplicate_group": "group-602",
+      "source_image_id": 602,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img603-ann606",
+      "duplicate_group": "group-603",
+      "source_image_id": 603,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img604-ann607",
+      "duplicate_group": "group-604",
+      "source_image_id": 604,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img604-ann608",
+      "duplicate_group": "group-604",
+      "source_image_id": 604,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img605-ann634",
+      "duplicate_group": "group-605",
+      "source_image_id": 605,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img606-ann635",
+      "duplicate_group": "group-606",
+      "source_image_id": 606,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img607-ann636",
+      "duplicate_group": "group-607",
+      "source_image_id": 607,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img608-ann637",
+      "duplicate_group": "group-608",
+      "source_image_id": 608,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img609-ann638",
+      "duplicate_group": "group-609",
+      "source_image_id": 609,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img61-ann45",
+      "duplicate_group": "group-61",
+      "source_image_id": 61,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img610-ann609",
+      "duplicate_group": "group-610",
+      "source_image_id": 610,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img611-ann610",
+      "duplicate_group": "group-611",
+      "source_image_id": 611,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img612-ann612",
+      "duplicate_group": "group-612",
+      "source_image_id": 612,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img613-ann611",
+      "duplicate_group": "group-613",
+      "source_image_id": 613,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img614-ann613",
+      "duplicate_group": "group-614",
+      "source_image_id": 614,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img615-ann614",
+      "duplicate_group": "group-615",
+      "source_image_id": 615,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img616-ann620",
+      "duplicate_group": "group-616",
+      "source_image_id": 616,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img617-ann619",
+      "duplicate_group": "group-617",
+      "source_image_id": 617,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img618-ann618",
+      "duplicate_group": "group-618",
+      "source_image_id": 618,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img619-ann617",
+      "duplicate_group": "group-619",
+      "source_image_id": 619,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img62-ann44",
+      "duplicate_group": "group-62",
+      "source_image_id": 62,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img620-ann616",
+      "duplicate_group": "group-620",
+      "source_image_id": 620,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img621-ann615",
+      "duplicate_group": "group-621",
+      "source_image_id": 621,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img622-ann621",
+      "duplicate_group": "group-622",
+      "source_image_id": 622,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img623-ann622",
+      "duplicate_group": "group-623",
+      "source_image_id": 623,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img624-ann623",
+      "duplicate_group": "group-624",
+      "source_image_id": 624,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img625-ann624",
+      "duplicate_group": "group-625",
+      "source_image_id": 625,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img626-ann625",
+      "duplicate_group": "group-626",
+      "source_image_id": 626,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img627-ann626",
+      "duplicate_group": "group-627",
+      "source_image_id": 627,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img628-ann632",
+      "duplicate_group": "group-628",
+      "source_image_id": 628,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img629-ann631",
+      "duplicate_group": "group-629",
+      "source_image_id": 629,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img63-ann76",
+      "duplicate_group": "group-63",
+      "source_image_id": 63,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img630-ann630",
+      "duplicate_group": "group-630",
+      "source_image_id": 630,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img631-ann629",
+      "duplicate_group": "group-631",
+      "source_image_id": 631,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img632-ann628",
+      "duplicate_group": "group-632",
+      "source_image_id": 632,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img633-ann627",
+      "duplicate_group": "group-633",
+      "source_image_id": 633,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img634-ann633",
+      "duplicate_group": "group-634",
+      "source_image_id": 634,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img635-ann639",
+      "duplicate_group": "group-635",
+      "source_image_id": 635,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img636-ann640",
+      "duplicate_group": "group-636",
+      "source_image_id": 636,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img637-ann644",
+      "duplicate_group": "group-637",
+      "source_image_id": 637,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img638-ann641",
+      "duplicate_group": "group-638",
+      "source_image_id": 638,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img639-ann643",
+      "duplicate_group": "group-639",
+      "source_image_id": 639,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img64-ann77",
+      "duplicate_group": "group-64",
+      "source_image_id": 64,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img64-ann78",
+      "duplicate_group": "group-64",
+      "source_image_id": 64,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img640-ann642",
+      "duplicate_group": "group-640",
+      "source_image_id": 640,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img641-ann645",
+      "duplicate_group": "group-641",
+      "source_image_id": 641,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img642-ann646",
+      "duplicate_group": "group-642",
+      "source_image_id": 642,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img643-ann647",
+      "duplicate_group": "group-643",
+      "source_image_id": 643,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img644-ann648",
+      "duplicate_group": "group-644",
+      "source_image_id": 644,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img645-ann649",
+      "duplicate_group": "group-645",
+      "source_image_id": 645,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img646-ann650",
+      "duplicate_group": "group-646",
+      "source_image_id": 646,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img647-ann651",
+      "duplicate_group": "group-647",
+      "source_image_id": 647,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img648-ann652",
+      "duplicate_group": "group-648",
+      "source_image_id": 648,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img649-ann653",
+      "duplicate_group": "group-649",
+      "source_image_id": 649,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img65-ann79",
+      "duplicate_group": "group-65",
+      "source_image_id": 65,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img650-ann654",
+      "duplicate_group": "group-650",
+      "source_image_id": 650,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img651-ann655",
+      "duplicate_group": "group-651",
+      "source_image_id": 651,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img652-ann656",
+      "duplicate_group": "group-652",
+      "source_image_id": 652,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img653-ann657",
+      "duplicate_group": "group-653",
+      "source_image_id": 653,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img654-ann658",
+      "duplicate_group": "group-654",
+      "source_image_id": 654,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img655-ann659",
+      "duplicate_group": "group-655",
+      "source_image_id": 655,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img656-ann660",
+      "duplicate_group": "group-656",
+      "source_image_id": 656,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img657-ann661",
+      "duplicate_group": "group-657",
+      "source_image_id": 657,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img658-ann662",
+      "duplicate_group": "group-658",
+      "source_image_id": 658,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img659-ann663",
+      "duplicate_group": "group-659",
+      "source_image_id": 659,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img66-ann81",
+      "duplicate_group": "group-66",
+      "source_image_id": 66,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img660-ann664",
+      "duplicate_group": "group-660",
+      "source_image_id": 660,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img661-ann665",
+      "duplicate_group": "group-661",
+      "source_image_id": 661,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img662-ann666",
+      "duplicate_group": "group-662",
+      "source_image_id": 662,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img663-ann667",
+      "duplicate_group": "group-663",
+      "source_image_id": 663,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img664-ann668",
+      "duplicate_group": "group-664",
+      "source_image_id": 664,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img67-ann80",
+      "duplicate_group": "group-67",
+      "source_image_id": 67,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img68-ann82",
+      "duplicate_group": "group-68",
+      "source_image_id": 68,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img69-ann83",
+      "duplicate_group": "group-69",
+      "source_image_id": 69,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img7-ann2",
+      "duplicate_group": "group-7",
+      "source_image_id": 7,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img70-ann84",
+      "duplicate_group": "group-70",
+      "source_image_id": 70,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img71-ann85",
+      "duplicate_group": "group-71",
+      "source_image_id": 71,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img72-ann86",
+      "duplicate_group": "group-72",
+      "source_image_id": 72,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img73-ann87",
+      "duplicate_group": "group-73",
+      "source_image_id": 73,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img74-ann88",
+      "duplicate_group": "group-74",
+      "source_image_id": 74,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img75-ann89",
+      "duplicate_group": "group-75",
+      "source_image_id": 75,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img76-ann90",
+      "duplicate_group": "group-76",
+      "source_image_id": 76,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img77-ann91",
+      "duplicate_group": "group-77",
+      "source_image_id": 77,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img78-ann107",
+      "duplicate_group": "group-78",
+      "source_image_id": 78,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img79-ann92",
+      "duplicate_group": "group-79",
+      "source_image_id": 79,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img8-ann1",
+      "duplicate_group": "group-8",
+      "source_image_id": 8,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img80-ann93",
+      "duplicate_group": "group-80",
+      "source_image_id": 80,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img80-ann94",
+      "duplicate_group": "group-80",
+      "source_image_id": 80,
+      "split": "test"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img81-ann95",
+      "duplicate_group": "group-81",
+      "source_image_id": 81,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img82-ann96",
+      "duplicate_group": "group-82",
+      "source_image_id": 82,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img83-ann97",
+      "duplicate_group": "group-83",
+      "source_image_id": 83,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img84-ann98",
+      "duplicate_group": "group-84",
+      "source_image_id": 84,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img85-ann99",
+      "duplicate_group": "group-85",
+      "source_image_id": 85,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img86-ann100",
+      "duplicate_group": "group-86",
+      "source_image_id": 86,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img87-ann101",
+      "duplicate_group": "group-87",
+      "source_image_id": 87,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img88-ann102",
+      "duplicate_group": "group-88",
+      "source_image_id": 88,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img89-ann103",
+      "duplicate_group": "group-89",
+      "source_image_id": 89,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img9-ann7",
+      "duplicate_group": "group-9",
+      "source_image_id": 9,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img90-ann104",
+      "duplicate_group": "group-90",
+      "source_image_id": 90,
+      "split": "train"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img91-ann105",
+      "duplicate_group": "group-91",
+      "source_image_id": 91,
+      "split": "validation"
+    },
+    {
+      "class": "cat",
+      "crop_id": "img92-ann106",
+      "duplicate_group": "group-92",
+      "source_image_id": 92,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img93-ann108",
+      "duplicate_group": "group-93",
+      "source_image_id": 93,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img94-ann109",
+      "duplicate_group": "group-94",
+      "source_image_id": 94,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img95-ann110",
+      "duplicate_group": "group-95",
+      "source_image_id": 95,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img96-ann111",
+      "duplicate_group": "group-96",
+      "source_image_id": 96,
+      "split": "test"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img97-ann112",
+      "duplicate_group": "group-97",
+      "source_image_id": 97,
+      "split": "train"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img98-ann113",
+      "duplicate_group": "group-98",
+      "source_image_id": 98,
+      "split": "validation"
+    },
+    {
+      "class": "dog",
+      "crop_id": "img99-ann114",
+      "duplicate_group": "group-99",
+      "source_image_id": 99,
+      "split": "train"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 42,
+  "source_release": "v0.1.1",
+  "splits": {
+    "test": {
+      "crop_count": 71,
+      "crop_ratio": 0.1062874251497006,
+      "image_count": 60,
+      "ratio": 0.1
+    },
+    "train": {
+      "crop_count": 469,
+      "crop_ratio": 0.7020958083832335,
+      "image_count": 420,
+      "ratio": 0.7
+    },
+    "validation": {
+      "crop_count": 128,
+      "crop_ratio": 0.19161676646706588,
+      "image_count": 120,
+      "ratio": 0.2
+    }
+  },
+  "total_images": 600
+}

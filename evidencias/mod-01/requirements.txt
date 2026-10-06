@@ -1,0 +1,4 @@
+# Versiones con las que se entrenó el modelo en el Proyecto 3 y se verificó MOD-1.
+torch==2.14.0
+torchvision==0.29.0
+pillow==10.4.0
