@@ -626,6 +626,352 @@ El servidor de producción escucha en `http://localhost:3100`. El script usa
 La plantilla `.env.production.example` contiene la configuración de
 producción, con `PORT=3100`.
 
+Para publicar el portal en un servidor de AWS, ver
+[Despliegue en AWS](#despliegue-en-aws).
+
+## Despliegue en AWS
+
+El portal corre en **un solo servidor EC2 con IP pública** que ejecuta el mismo
+`docker-compose.yml` del repo, más
+[`docker-compose.aws.yml`](docker-compose.aws.yml). Ese archivo solo cambia dos
+cosas: publica nginx en el puerto 80 (en local es el 8080) y deja los demás puertos
+accesibles únicamente desde el propio servidor. No se usa Terraform ni RDS: MariaDB
+y MinIO siguen en contenedores, con sus volúmenes en el disco de la instancia.
+
+Todo se hace desde la consola web de AWS y una terminal SSH. Esta guía no contiene
+claves ni contraseñas, y ninguna debe agregarse aquí.
+
+> **Región: `us-east-2` (Ohio).** La cuenta nueva del equipo es un *proyecto* de la
+> nueva experiencia de AWS: todos sus recursos van en la región del proyecto. Las
+> políticas del proyecto bloquean `us-east-1` (una consulta de solo lectura a EC2 en
+> esa región devuelve `explicit deny in a service control policy`). Para confirmar
+> la región: AWS Settings > View all projects > Overview > Additional info > Region.
+> Esto no afecta al bucket S3 del DVC, que sigue en la cuenta anterior.
+
+### Datos del despliegue
+
+Actualiza esta tabla cuando cambie algo del servidor (sin secretos):
+
+| Dato | Valor |
+|---|---|
+| URL del portal | `http://18.227.79.227` (sin Elastic IP: cambia si la instancia se detiene y se vuelve a iniciar) |
+| Región | `us-east-2` (zona `us-east-2a`) |
+| Instancia | `portal-proyecto4` (`i-02234c3f51db2446e`), `m7i-flex.large`, Ubuntu Server 24.04 LTS, 30 GiB gp3 cifrado |
+| Security group | `portal-proyecto4-sg`: 80 abierto, 22 solo desde la IP de quien administra |
+| Llave SSH | Key pair `portal-proyecto4` (ED25519); la `.pem` la guarda Angel |
+| Commit desplegado | `git rev-parse --short HEAD` en el servidor |
+
+### 1. Tipo de instancia y disco
+
+La cuenta está en el plan gratuito, que solo permite tipos elegibles para la capa
+gratuita. Estos son los de `us-east-2` (consultado el 2026-10-06):
+
+| Tipo | vCPU | Memoria | ¿Alcanza para este stack? |
+|---|---|---|---|
+| **`m7i-flex.large`** | 2 | 8 GiB | **Sí, recomendado.** Corre todos los servicios, incluido el entrenamiento |
+| `c7i-flex.large` | 2 | 4 GiB | Solo con los servicios indispensables y swap (ver paso 8) |
+| `t3.small`, `t4g.small`, `t8i.small` | 2 | 2 GiB | No: compilar las imágenes y los procesos Python con PyTorch no caben |
+| `t3.micro`, `t4g.micro`, `t8i.micro` | 2 | 1 GiB | No |
+
+- **Disco:** 30 GiB `gp3`. Las imágenes de Python con PyTorch, MLflow y Node, más la
+  caché de compilación, ocupan varios GB, y los volúmenes de MariaDB y MinIO crecen
+  con las imágenes que se suban.
+- **Costo:** la instancia consume créditos del plan por cada hora encendida, aunque
+  nadie la use. Revisa el saldo en AWS Settings > Billing y apágala al terminar
+  (paso 12).
+
+### 2. Lanzar la instancia (consola web)
+
+1. Entra a la consola de AWS y, arriba a la derecha, elige la región
+   **US East (Ohio) `us-east-2`**.
+2. Ve a **EC2 > Instances > Launch instances**.
+3. **Name:** `portal-proyecto4`.
+4. **Application and OS Images:** *Ubuntu Server 24.04 LTS (HVM), SSD Volume Type*,
+   arquitectura **64-bit (x86)**. Debe decir *Free tier eligible*.
+5. **Instance type:** `m7i-flex.large`.
+6. **Key pair:** *Create new key pair*. Nombre `portal-proyecto4`, tipo **ED25519**,
+   formato **.pem**. El archivo se descarga una sola vez. Guárdalo fuera del repo y no
+   lo compartas por chat ni lo subas a git.
+7. **Network settings > Edit:**
+   - VPC por defecto y cualquier subred; **Auto-assign public IP: Enable**.
+   - **Firewall:** *Create security group*, nombre `portal-proyecto4-sg`.
+   - Regla 1: **SSH**, TCP 22, *Source type* **My IP**.
+   - *Add security group rule*: **HTTP**, TCP 80, *Source type* **Anywhere**
+     (`0.0.0.0/0`).
+   - No abras 3100, 3306, 5000, 9000 ni 9001: esos servicios no tienen autenticación
+     pensada para internet.
+8. **Configure storage:** `30` GiB, `gp3`.
+9. **Advanced details:** deja *Metadata version* en **V2 only (token required)**. No
+   hace falta *IAM instance profile*: el servidor no usa servicios de AWS.
+10. **Launch instance.** En el detalle de la instancia, copia la
+    **Public IPv4 address**.
+
+Notas:
+
+- *My IP* es la IP de la red desde la que estás. Si cambias de red (casa,
+  universidad), SSH dará *timeout*. Edita la regla 22 del security group y vuelve a
+  elegir *My IP*. Si otra persona del equipo necesita entrar por SSH, agrega su IP
+  como otra regla 22.
+- El botón **Connect > EC2 Instance Connect** de la consola no funciona con SSH
+  restringido a tu IP. Usa la terminal (paso 3).
+- La IP pública **cambia si detienes e inicias** la instancia. Si necesitas una URL
+  fija: **EC2 > Elastic IPs > Allocate Elastic IP address**, luego **Actions >
+  Associate** con la instancia. Libérala al terminar, porque consume créditos aunque
+  no esté asociada.
+
+### 3. Conectarse por SSH
+
+macOS / Linux:
+
+```bash
+chmod 400 ~/Downloads/portal-proyecto4.pem
+ssh -i ~/Downloads/portal-proyecto4.pem ubuntu@<IP-pública>
+```
+
+Windows (PowerShell). El `icacls` evita el error *UNPROTECTED PRIVATE KEY FILE*:
+
+```powershell
+icacls "$HOME\Downloads\portal-proyecto4.pem" /inheritance:r /grant:r "$($env:USERNAME):R"
+ssh -i "$HOME\Downloads\portal-proyecto4.pem" ubuntu@<IP-pública>
+```
+
+### 4. Swap, Docker y Docker Compose
+
+Todo esto se ejecuta en el servidor. Primero, 4 GiB de swap como margen para la
+compilación de las imágenes:
+
+```bash
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+Docker Engine con los plugins de Compose y Buildx, desde el repositorio oficial de
+Docker para Ubuntu. Los Dockerfiles usan `RUN --mount`, que requiere BuildKit/Buildx:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker ubuntu
+exit
+```
+
+Vuelve a entrar por SSH para que el grupo `docker` aplique, y comprueba:
+
+```bash
+docker compose version     # 2.24.4 o más nuevo (docker-compose.aws.yml usa !override)
+docker run --rm hello-world
+```
+
+### 5. Clonar el repo
+
+El repo es público, así que no hace falta ninguna credencial de GitHub en el
+servidor:
+
+```bash
+git clone https://github.com/alebonita/Proyecto4-team2.git
+cd Proyecto4-team2
+```
+
+### 6. Crear el `.env` sin exponer secretos
+
+Las contraseñas se generan **en el servidor** y nunca salen de él. No las imprimas,
+no las copies a un chat y no las pongas en este README.
+
+```bash
+cp .env.example .env
+chmod 600 .env
+sed -i "s/^MARIADB_ROOT_PASSWORD=.*/MARIADB_ROOT_PASSWORD=$(openssl rand -hex 32)/" .env
+sed -i "s/^MINIO_ROOT_USER=.*/MINIO_ROOT_USER=portal-admin/" .env
+sed -i "s/^MINIO_ROOT_PASSWORD=.*/MINIO_ROOT_PASSWORD=$(openssl rand -hex 32)/" .env
+# Que todos los `docker compose` del servidor usen también docker-compose.aws.yml:
+echo 'COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml' >> .env
+```
+
+Copilot (opcional). `read -s` no muestra la key ni la guarda en el historial:
+
+```bash
+read -rsp "ANTHROPIC_API_KEY: " KEY && echo
+sed -i "s|^ANTHROPIC_API_KEY=.*|ANTHROPIC_API_KEY=$KEY|" .env && unset KEY
+```
+
+Para comprobar qué variables quedaron definidas sin ver sus valores:
+
+```bash
+awk -F= '/^[A-Z_]+=/{print $1, ($2=="" ? "(vacía)" : "(definida)")}' .env
+```
+
+- **No cambies `MARIADB_ROOT_PASSWORD` después del primer arranque.** MariaDB la
+  guarda en su volumen al inicializarse. Si la cambias en `.env`, el backend ya no
+  podrá conectarse.
+- No pongas credenciales de AWS en `.env`.
+
+### 7. Datos del Proyecto 3 (opcional; antes del primer arranque)
+
+El portal funciona sin estos datos, pero entonces Models, Evaluation, Experiments e
+Inference salen vacíos o con "No verificable". Los datos viven en el remote DVC
+`prod`, un bucket S3 de **la cuenta anterior** (perfil SSO `mlops-p2`) que la cuenta
+nueva no puede leer. Lo más simple es copiarlos desde una laptop que ya hizo
+`dvc pull` (sección
+[Proyecto 3 completo en un clon limpio](#proyecto-3-completo-en-un-clon-limpio-datos-modelo-y-corridas)).
+
+En la laptop, desde la raíz del repo. El archivo se crea **fuera** del repo para
+que no termine en git:
+
+```bash
+tar czf ../p3-data.tgz data/raw/images data/raw/annotations data/crops data/models data/mlflow-snapshot
+scp -i <ruta-a>/portal-proyecto4.pem ../p3-data.tgz ubuntu@<IP-pública>:~/Proyecto4-team2/
+```
+
+En el servidor:
+
+```bash
+cd ~/Proyecto4-team2
+tar xzf p3-data.tgz && rm p3-data.tgz
+```
+
+Hazlo **antes** del paso 8. Si Docker arranca primero, crea `data/crops` y
+`data/models` vacías y con dueño `root`, y el `tar` falla con *Permission denied*.
+En ese caso, corre `sudo chown -R ubuntu:ubuntu data` y repite el `tar`.
+
+### 8. Arrancar
+
+```bash
+cd ~/Proyecto4-team2
+export GIT_COMMIT="$(git rev-parse HEAD)"
+docker compose config --quiet      # valida que no falte ninguna variable
+docker compose up -d --build
+docker compose ps
+```
+
+La primera compilación tarda varios minutos. Si copiaste los datos del paso 7,
+carga después las corridas de MLflow. Hazlo solo en un stack nuevo, porque reemplaza
+la base `mlflow`:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh && source "$HOME/.local/bin/env"
+cd ~/Proyecto4-team2/app
+MLFLOW_TRACKING_URI=http://localhost:5000 uv run python -m tracking.snapshot restore
+```
+
+**Qué servicios son indispensables:**
+
+| Servicio | ¿Indispensable? | Por qué |
+|---|---|---|
+| `frontend` (nginx) | Sí | Sirve el portal y reenvía `/api`, `/api/ml` y `/copilot-api` |
+| `backend` | Sí | API del portal (imágenes, anotaciones, búsqueda) |
+| `mariadb` | Sí | Metadatos, anotaciones y cola de jobs |
+| `minio` | Sí | Archivos de las imágenes |
+| `ml-api` | Sí | nginx espera a que esté *healthy*. Atiende Training, Models e Inference |
+| `copilot` | Sí, aunque no tenga key | nginx no arranca si no existe el host `copilot`. Sin `ANTHROPIC_API_KEY` el chat responde 503 |
+| `mlflow` | No | Experiments y "Abrir en MLflow". Sin él, `ml-api` responde 503 en esas vistas |
+| `training-worker` | No | Ejecuta los jobs de entrenamiento. Es el que más memoria usa mientras entrena |
+| `app` | No | Compuerta de calidad. Necesita `data/raw` del paso 7: sin esos datos falla 5 veces y se detiene, sin afectar al portal |
+
+Si la memoria no alcanza (por ejemplo en `c7i-flex.large`), levanta solo lo
+indispensable. `frontend` arrastra a sus dependencias:
+
+```bash
+docker compose up -d --build frontend
+docker compose stop training-worker mlflow app   # si ya estaban corriendo
+free -h && docker stats --no-stream               # memoria por contenedor
+```
+
+### 9. Frontend apuntando a la IP pública
+
+**No hay que cambiar código.** El frontend se compila con `VITE_API_BASE_URL=/api`,
+una ruta relativa. El navegador llama a `/api/...` en el mismo host desde el que cargó
+la página (`http://<IP-pública>`), y nginx lo reenvía dentro de la red de Docker a
+`backend`, `ml-api` y `copilot`. El único cambio es el puerto (8080 → 80), y ya está
+en `docker-compose.aws.yml`.
+
+No pongas `VITE_API_BASE_URL=http://<IP>:3100`. Habría que abrir el 3100 a internet
+y recompilar cada vez que cambie la IP.
+
+La excepción es el enlace **"Abrir en MLflow"**, que usa `VITE_MLFLOW_UI_URL` (por
+defecto `http://localhost:5000`). MLflow no tiene autenticación y no se publica. Para
+verlo, abre un túnel SSH desde tu máquina y el enlace funcionará tal cual:
+
+```bash
+ssh -i <ruta-a>/portal-proyecto4.pem -L 5000:127.0.0.1:5000 -L 9001:127.0.0.1:9001 ubuntu@<IP-pública>
+# Con el túnel abierto: MLflow en http://localhost:5000 y consola de MinIO en http://localhost:9001
+```
+
+### 10. Lista de verificación
+
+En el servidor:
+
+- [ ] `docker compose ps`: `mariadb`, `minio`, `backend`, `ml-api`, `copilot` y
+      `frontend` en `running`, y `ml-api` en `healthy`.
+- [ ] `curl -fsS http://localhost/api/health` responde
+      `{"status":"ok","database":"connected",...}`.
+- [ ] `curl -fsS http://localhost/api/ml/health` responde 200.
+- [ ] `df -h /` por debajo de 80 % y `free -h` con memoria disponible.
+
+Desde tu máquina, idealmente desde otra red (por ejemplo, datos del celular):
+
+- [ ] `http://<IP-pública>` abre el portal.
+- [ ] Subir una imagen y verla en el listado. Eso prueba backend, MariaDB y MinIO.
+- [ ] Los puertos internos no responden: `curl -m 5 http://<IP-pública>:3100/health`
+      y `curl -m 5 http://<IP-pública>:9001` deben terminar en *timeout*.
+- [ ] Después de `sudo reboot` en el servidor, el portal vuelve solo en uno o dos
+      minutos.
+- [ ] La tabla [Datos del despliegue](#datos-del-despliegue) está llena.
+- [ ] Opcional, con los datos del paso 7, el smoke test del portal desde tu máquina:
+      `cd app && APP10_PORTAL_URL=http://<IP-pública> uv run pytest tests/test_app10_portal_smoke.py -v`.
+
+### 11. Actualizar el servidor después de un cambio en el código
+
+```bash
+ssh -i <ruta-a>/portal-proyecto4.pem ubuntu@<IP-pública>
+cd ~/Proyecto4-team2
+git pull
+export GIT_COMMIT="$(git rev-parse HEAD)"
+docker compose up -d --build          # o con la lista mínima del paso 8: ... --build frontend
+docker compose ps
+docker image prune -f                  # libera disco de imágenes viejas
+```
+
+- Solo se reconstruyen las imágenes cuyo código cambió. Para un cambio solo de
+  frontend: `docker compose up -d --build frontend`.
+- Las migraciones nuevas de la base se aplican solas al reiniciar `backend` (ver
+  [Producción](#producción)).
+- Logs de un servicio: `docker compose logs -f --tail=100 backend`.
+
+### 12. Apagar y limpiar al terminar la entrega
+
+- **Pausa:** EC2 > Instances > *Instance state* > **Stop**. La instancia deja de
+  consumir créditos; el disco (y la Elastic IP, si hay) siguen consumiendo poco. Al
+  volver a iniciarla, la IP pública cambia, salvo con Elastic IP.
+- **Final:** **Terminate instance**. Eso borra el disco con los datos de MariaDB y
+  MinIO, así que respalda antes lo que necesites. Después: *Release* de la Elastic IP
+  y borrar el security group `portal-proyecto4-sg` y el key pair.
+- Revisa el saldo de créditos en AWS Settings > Billing.
+
+### Problemas comunes
+
+| Síntoma | Causa probable | Solución |
+|---|---|---|
+| SSH da *Connection timed out* | Tu IP cambió | Edita la regla 22 del security group con *My IP* |
+| *UNPROTECTED PRIVATE KEY FILE* | Permisos de la `.pem` | `chmod 400` (macOS/Linux) o el `icacls` del paso 3 |
+| *UnauthorizedOperation* o *explicit deny* al lanzar | Región equivocada | Usa `us-east-2` |
+| No se puede elegir el tipo de instancia | El plan gratuito solo permite tipos elegibles | Usa uno de la tabla del paso 1 |
+| Accesos que funcionaban empiezan a dar *Access Denied* | Créditos agotados o límite de gasto | Revisa AWS Settings > Billing |
+| El portal no abre | Falta la regla 80, o `frontend` no arrancó | Revisa el security group, `docker compose ps` y `docker compose logs frontend` |
+| `502 Bad Gateway` en `/api` | `backend` caído o migrando | `docker compose logs backend` |
+| La compilación muere con *exit code 137* o *Killed* | Falta memoria | Confirma el swap (`free -h`), levanta solo lo indispensable o usa `m7i-flex.large` |
+| *unknown tag !override* | Compose anterior a 2.24.4 | `sudo apt-get install --only-upgrade docker-compose-plugin` |
+| *Define GIT_COMMIT…* | Falta la variable en esa terminal | `export GIT_COMMIT="$(git rev-parse HEAD)"` |
+
 ## Variables de entorno
 
 Se copian de `.env.example`. Ningún valor real se versiona: `.gitignore`
