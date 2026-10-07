@@ -654,7 +654,8 @@ Actualiza esta tabla cuando cambie algo del servidor (sin secretos):
 
 | Dato | Valor |
 |---|---|
-| URL del portal | `http://18.227.79.227` (sin Elastic IP: cambia si la instancia se detiene y se vuelve a iniciar) |
+| Estado | **Detenida** (*stopped*) desde el 2026-10-06, después de probarla. Para usarla: EC2 > Instances > *Instance state* > **Start** |
+| URL del portal | `http://<IP-pública>`. Sin Elastic IP, la IP cambia en cada *Start*; la nueva aparece en *Public IPv4 address*. En la prueba del 2026-10-06 fue `18.227.79.227` |
 | Región | `us-east-2` (zona `us-east-2a`) |
 | Instancia | `portal-proyecto4` (`i-02234c3f51db2446e`), `m7i-flex.large`, Ubuntu Server 24.04 LTS, 30 GiB gp3 cifrado |
 | Security group | `portal-proyecto4-sg`: 80 abierto, 22 solo desde la IP de quien administra |
@@ -815,33 +816,77 @@ awk -F= '/^[A-Z_]+=/{print $1, ($2=="" ? "(vacía)" : "(definida)")}' .env
   podrá conectarse.
 - No pongas credenciales de AWS en `.env`.
 
+Todos los comandos `docker compose` (incluso `ps` y `logs`) exigen `GIT_COMMIT`.
+Para que cada sesión SSH lo tenga definido:
+
+```bash
+echo 'export GIT_COMMIT="$(git -C ~/Proyecto4-team2 rev-parse HEAD 2>/dev/null)"' >> ~/.bashrc
+```
+
+Después de un `git pull` en la misma sesión, vuelve a exportarlo (paso 11).
+
+En Linux, el servicio `app` escribe en `./reports` con el usuario `appuser` del
+contenedor, no con `ubuntu`. Sin este permiso, la compuerta de calidad se reinicia
+con `PermissionError`. En Docker Desktop (macOS/Windows) no pasa. Git no registra ese
+permiso, así que no ensucia el repo:
+
+```bash
+chmod -R a+rwX reports
+```
+
 ### 7. Datos del Proyecto 3 (opcional; antes del primer arranque)
 
 El portal funciona sin estos datos, pero entonces Models, Evaluation, Experiments e
 Inference salen vacíos o con "No verificable". Los datos viven en el remote DVC
 `prod`, un bucket S3 de **la cuenta anterior** (perfil SSO `mlops-p2`) que la cuenta
-nueva no puede leer. Lo más simple es copiarlos desde una laptop que ya hizo
-`dvc pull` (sección
-[Proyecto 3 completo en un clon limpio](#proyecto-3-completo-en-un-clon-limpio-datos-modelo-y-corridas)).
+nueva no puede leer. Por eso los datos se suben al servidor desde una máquina que ya
+los tenga. Así se hizo el 2026-10-06:
 
-En la laptop, desde la raíz del repo. El archivo se crea **fuera** del repo para
-que no termine en git:
+**Opción A (la que se usó): copia local del caché DVC.** Sirve una copia de la
+carpeta del bucket `mlops-p2-dvc-cache` (con `files/md5/...`, unos 700 MB). En tu
+máquina, desde la carpeta que contiene esa copia (el `.tar` queda fuera del repo):
+
+```bash
+tar cf dvc-cache.tar -C mlops-p2-dvc-cache files
+scp -i <ruta-a>/portal-proyecto4.pem dvc-cache.tar ubuntu@<IP-pública>:~/
+```
+
+En Git Bash de Windows, usa rutas `/c/...` en lugar de `C:\...`: con `C:` el `tar`
+cree que es un servidor remoto.
+
+En el servidor, `dvc pull` lee esa copia como remote local. No toca S3 ni necesita
+credenciales, y el remote se agrega solo en `.dvc/config.local`, que está ignorado
+por git:
+
+```bash
+mkdir -p ~/dvc-cache && tar xf ~/dvc-cache.tar -C ~/dvc-cache && rm ~/dvc-cache.tar
+curl -LsSf https://astral.sh/uv/install.sh | sh && source "$HOME/.local/bin/env"
+cd ~/Proyecto4-team2
+DVC="uvx --from dvc==3.67.1 dvc"
+$DVC remote add --local -f localcache /home/ubuntu/dvc-cache
+$DVC pull -r localcache data/raw/images.dvc data/raw/annotations.dvc data/models.dvc data/mlflow-snapshot.dvc crops
+$DVC status data/raw/images.dvc data/raw/annotations.dvc data/models.dvc data/mlflow-snapshot.dvc crops
+$DVC remote remove --local localcache
+rm -rf ~/dvc-cache .dvc/cache          # libera ~1.4 GB; los datos ya están en data/
+```
+
+Resultado esperado: `data/raw/images` 600 archivos, `data/raw/annotations` 10,
+`data/models` 8, `data/mlflow-snapshot` 52 y `data/crops` 668.
+
+**Opción B: datos ya materializados en una laptop** (que hizo `dvc pull`, ver
+[Proyecto 3 completo en un clon limpio](#proyecto-3-completo-en-un-clon-limpio-datos-modelo-y-corridas)).
+Desde la raíz del repo en la laptop:
 
 ```bash
 tar czf ../p3-data.tgz data/raw/images data/raw/annotations data/crops data/models data/mlflow-snapshot
 scp -i <ruta-a>/portal-proyecto4.pem ../p3-data.tgz ubuntu@<IP-pública>:~/Proyecto4-team2/
-```
-
-En el servidor:
-
-```bash
-cd ~/Proyecto4-team2
-tar xzf p3-data.tgz && rm p3-data.tgz
+# En el servidor:
+cd ~/Proyecto4-team2 && tar xzf p3-data.tgz && rm p3-data.tgz
 ```
 
 Hazlo **antes** del paso 8. Si Docker arranca primero, crea `data/crops` y
-`data/models` vacías y con dueño `root`, y el `tar` falla con *Permission denied*.
-En ese caso, corre `sudo chown -R ubuntu:ubuntu data` y repite el `tar`.
+`data/models` vacías y con dueño `root`, y la copia falla con *Permission denied*.
+En ese caso, corre `sudo chown -R ubuntu:ubuntu data` y repite la copia.
 
 ### 8. Arrancar
 
@@ -853,15 +898,20 @@ docker compose up -d --build
 docker compose ps
 ```
 
-La primera compilación tarda varios minutos. Si copiaste los datos del paso 7,
-carga después las corridas de MLflow. Hazlo solo en un stack nuevo, porque reemplaza
-la base `mlflow`:
+En `m7i-flex.large`, la compilación de todas las imágenes tardó unos 3 minutos y
+el arranque con `--wait` unos 5, la primera vez porque descarga MariaDB y MinIO.
+Si copiaste los datos del paso 7, carga después las corridas de MLflow. Hazlo solo
+en un stack nuevo, porque reemplaza la base `mlflow`. Termina listando los 12 run IDs
+con `OK`:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh && source "$HOME/.local/bin/env"
-cd ~/Proyecto4-team2/app
+cd ~/Proyecto4-team2/app      # uv ya quedó instalado en el paso 7
 MLFLOW_TRACKING_URI=http://localhost:5000 uv run python -m tracking.snapshot restore
 ```
+
+Memoria medida con todo el stack arriba (2026-10-06): unos 4.1 de 7.6 GiB. `mlflow`
+usa unos 2.3 GiB por sí solo; `ml-api` y `training-worker` en reposo, unos 340 MiB
+cada uno; los demás, menos de 120 MiB cada uno.
 
 **Qué servicios son indispensables:**
 
@@ -873,7 +923,7 @@ MLFLOW_TRACKING_URI=http://localhost:5000 uv run python -m tracking.snapshot res
 | `minio` | Sí | Archivos de las imágenes |
 | `ml-api` | Sí | nginx espera a que esté *healthy*. Atiende Training, Models e Inference |
 | `copilot` | Sí, aunque no tenga key | nginx no arranca si no existe el host `copilot`. Sin `ANTHROPIC_API_KEY` el chat responde 503 |
-| `mlflow` | No | Experiments y "Abrir en MLflow". Sin él, `ml-api` responde 503 en esas vistas |
+| `mlflow` | No | Experiments y "Abrir en MLflow". Sin él, `ml-api` responde 503 en esas vistas. Es el que más memoria usa en reposo (~2.3 GiB): el primero a apagar si falta memoria |
 | `training-worker` | No | Ejecuta los jobs de entrenamiento. Es el que más memoria usa mientras entrena |
 | `app` | No | Compuerta de calidad. Necesita `data/raw` del paso 7: sin esos datos falla 5 veces y se detiene, sin afectar al portal |
 
@@ -926,8 +976,20 @@ Desde tu máquina, idealmente desde otra red (por ejemplo, datos del celular):
 - [ ] Después de `sudo reboot` en el servidor, el portal vuelve solo en uno o dos
       minutos.
 - [ ] La tabla [Datos del despliegue](#datos-del-despliegue) está llena.
-- [ ] Opcional, con los datos del paso 7, el smoke test del portal desde tu máquina:
+- [ ] Opcional, con los datos del paso 7, el smoke test del portal:
       `cd app && APP10_PORTAL_URL=http://<IP-pública> uv run pytest tests/test_app10_portal_smoke.py -v`.
+      En el servidor de AWS se espera que **falle en el paso 5** con
+      `'unverifiable' == 'published'`. Models confirma la publicación del modelo en el
+      S3 de la cuenta anterior, y el servidor no tiene credenciales de esa cuenta.
+      Los pasos 1 a 4 (Training, Experiments, Evaluation y el checkpoint del
+      candidato) sí pasan.
+
+Resultado de la prueba del 2026-10-06 (todo el stack, con los datos del paso 7):
+todos los servicios arriba, `/api/health` y `/api/ml/health` en 200 desde internet,
+3100, 3306, 5000, 9000 y 9001 en *timeout* desde fuera, una imagen subida por la IP
+pública llegó a MinIO y se borró (204), la compuerta de calidad terminó en
+`status=warning` y las 12 corridas de MLflow quedaron restauradas. El smoke test
+falló solo en el paso 5, como se explica arriba.
 
 ### 11. Actualizar el servidor después de un cambio en el código
 
@@ -970,7 +1032,9 @@ docker image prune -f                  # libera disco de imágenes viejas
 | `502 Bad Gateway` en `/api` | `backend` caído o migrando | `docker compose logs backend` |
 | La compilación muere con *exit code 137* o *Killed* | Falta memoria | Confirma el swap (`free -h`), levanta solo lo indispensable o usa `m7i-flex.large` |
 | *unknown tag !override* | Compose anterior a 2.24.4 | `sudo apt-get install --only-upgrade docker-compose-plugin` |
-| *Define GIT_COMMIT…* | Falta la variable en esa terminal | `export GIT_COMMIT="$(git rev-parse HEAD)"` |
+| *Define GIT_COMMIT…*, incluso en `docker compose ps` o `logs` | Falta la variable en esa terminal | `export GIT_COMMIT="$(git rev-parse HEAD)"`, o la línea de `~/.bashrc` del paso 6 |
+| `app` se reinicia con `PermissionError: '/app/reports/quality.json'` | `./reports` no es escribible por el usuario del contenedor (solo en Linux) | `chmod -R a+rwX reports` y `docker compose up -d --force-recreate app` |
+| `tar: Cannot connect to C: resolve failed` | `tar` de Git Bash con una ruta `C:\...` | Usa `/c/...` |
 
 ## Variables de entorno
 
