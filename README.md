@@ -282,6 +282,10 @@ equipo** (AWS-3). La entrega ya no depende de la cuenta anterior.
 | `prod` (por defecto) | `s3://mlops-p4-equipo-452857281704` | `us-east-2` | El que usa todo el equipo |
 | `p2-origen` | `s3://mlops-p2-dvc-cache-280764207006` | `us-east-1` | Original de la cuenta anterior, solo lectura. No se modifica |
 
+El bucket está en `us-east-2`, y no en `us-east-1`, porque el proyecto de AWS del
+equipo bloquea `us-east-1` con una política de la organización y el bucket va en la
+misma región que el servidor del portal.
+
 El bucket es privado: acceso público bloqueado, objetos con dueño único, cifrado
 SSE-S3, versionado activo y política que rechaza conexiones sin HTTPS. Contiene:
 
@@ -311,7 +315,10 @@ dvc pull
 
 Los comandos de este README que dicen `dvc pull -r prod ...` ya apuntan al bucket
 del equipo. El CI sigue leyendo `p2-origen`, porque su rol OIDC vive en la cuenta
-anterior. Moverlo al bucket del equipo requiere crear un rol OIDC en la cuenta nueva.
+anterior y este repo no lo tiene configurado (`AWS_ROLE_ARN`). En la cuenta del equipo
+no se puede crear uno: la política de la organización prohíbe crear proveedores OIDC,
+y el equipo decidió no activar las funciones avanzadas. Por eso los jobs del CI que
+bajan datos de AWS se saltan con un aviso.
 
 ### Cómo se copió (y cómo repetirlo)
 

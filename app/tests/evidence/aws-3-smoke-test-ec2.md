@@ -1,7 +1,9 @@
 # Evidencia AWS-3: smoke test del portal en EC2 con el bucket del equipo
 
 Ejecución: 2026-10-07 01:15 UTC, contra el portal desplegado en AWS
-(`http://3.14.144.7`, instancia `i-02234c3f51db2446e`, `us-east-2`).
+(`http://3.14.144.7`, instancia `i-02234c3f51db2446e`, `us-east-2`). Esa era la IP
+pública de ese momento; desde el 2026-10-07 el portal tiene la Elastic IP
+`http://18.216.36.30`.
 
 - **Código:** commit `2449a82` de `feat/aws-3-datos-bucket-equipo`.
   `tests/test_app10_portal_smoke.py` sin cambios.
