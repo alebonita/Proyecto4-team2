@@ -1,0 +1,47 @@
+# Despliegue en AWS: un solo servidor EC2 (ver "Despliegue en AWS" en el README).
+# Se usa encima de docker-compose.yml, sin modificarlo:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.aws.yml up -d --build
+#
+# Solo nginx (servicio `frontend`) queda publicado, en el puerto 80. El resto de los
+# puertos se publica únicamente en 127.0.0.1 del servidor: desde fuera se llega a
+# ellos por túnel SSH, nunca por internet. `!override` reemplaza la lista de puertos
+# de docker-compose.yml en vez de sumarla (requiere Docker Compose 2.24.4 o más nuevo).
+#
+# `restart: unless-stopped` hace que el portal vuelva solo después de reiniciar el
+# servidor. `app` conserva su `on-failure:5`: sin los datos del release la compuerta
+# falla, y así no queda reiniciándose para siempre.
+
+services:
+  frontend:
+    ports: !override
+      - "80:80"
+    restart: unless-stopped
+
+  backend:
+    ports: !override
+      - "127.0.0.1:3100:3100"
+    restart: unless-stopped
+
+  mariadb:
+    ports: !override
+      - "127.0.0.1:3306:3306"
+    restart: unless-stopped
+
+  minio:
+    ports: !override
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    restart: unless-stopped
+
+  mlflow:
+    restart: unless-stopped
+
+  ml-api:
+    restart: unless-stopped
+
+  copilot:
+    restart: unless-stopped
+
+  training-worker:
+    restart: unless-stopped

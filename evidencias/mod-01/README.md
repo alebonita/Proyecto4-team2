@@ -7,7 +7,7 @@ Cubre la parte "modelo existente" del entregable 1 (*Modelo existente y variante
 | Lo que se pide | Dónde está |
 |---|---|
 | Referencia al modelo propio del Proyecto 3 | [Referencia a la entrega del Proyecto 3](#referencia-a-la-entrega-del-proyecto-3) y `model/model-card.md` |
-| Pesos originales | `model/best.pt` |
+| Pesos originales | `model/best.pt`, que se baja del bucket del equipo (no está en git; ver [Archivo de pesos](#archivo-de-pesos)) |
 | Versión, run ID y hashes SHA-256 | [Identidad del modelo](#identidad-del-modelo), [Archivo de pesos](#archivo-de-pesos) y `SHA256SUMS` |
 | Mapa de clases | [Clases](#clases-orden-de-salida-del-modelo) |
 | Preprocesamiento | [Preprocesamiento](#preprocesamiento-el-mismo-de-validación-test-e-inferencia) |
@@ -40,12 +40,24 @@ Para contrastar que este es el modelo propio del equipo:
 
 | | |
 |---|---|
-| En esta carpeta | `model/best.pt` (45 043 841 bytes) |
-| Original en S3 | `s3://mlops-p2-dvc-cache-280764207006/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt` (us-east-1) |
+| En esta carpeta | `model/best.pt` (45 043 841 bytes). **No está en git:** el CI prohíbe versionar `.pt`, así que se baja con el comando de abajo |
+| **Bucket del equipo** | `s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt` (us-east-2), `VersionId` `EjTJmO7R0aChwGTKXk_rcD02NEjvhHxE` |
+| Con DVC | `data/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt` (`dvc pull data/models.dvc` desde la raíz del repo, con el remoto del bucket del equipo) |
+| Original en S3 (P3) | `s3://mlops-p2-dvc-cache-280764207006/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt` (us-east-1, cuenta anterior) |
 | Original en MLflow | artefacto `checkpoints/best.pt` del run de arriba |
 | **SHA-256** | `84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52` |
 
-El SHA-256 coincide con el registrado en `reports/models/registry.json` y `reports/models/s3_publications.json` del Proyecto 3. Para comprobarlo: `shasum -a 256 model/best.pt`.
+Para bajarlo, desde esta carpeta y con tu perfil de AWS del proyecto del equipo:
+
+```bash
+aws s3 cp s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt \
+  model/best.pt --region us-east-2 --profile <tu-perfil>
+shasum -a 256 model/best.pt   # 84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52
+```
+
+Si falta, `predict.py` no truena: avisa y muestra este mismo comando.
+
+El SHA-256 coincide con el registrado en `reports/models/registry.json` y `reports/models/s3_publications.json` del Proyecto 3. **Verificado el 2026-10-06:** la copia del bucket del equipo es idéntica byte a byte (`cmp`) al `model/best.pt` que estaba en git, y su `ChecksumSHA256` en S3 es el mismo.
 
 **Verificado contra S3 el 2026-10-05** (rol de solo lectura `MLOpsDataAccess`, cuenta `280764207006`): el objeto existe (45 043 841 bytes, subido 2026-10-02T20:15:44Z), su checksum SHA-256 guardado por S3 es `84d6c88b…5fa90d52`, y la copia descargada es idéntica byte a byte (`cmp`) a `model/best.pt`. `model-card.md` de S3 también coincide (`b3dd3e51…7a8703`). Para repetirlo:
 
@@ -103,8 +115,10 @@ Errores: `img131-ann149`, `img263-ann299`, `img633-ann627`, los tres son cat pre
 Requiere Python 3.12 (verificado con 3.12.6 en una MacBook con Apple M3, macOS 15.7.1, CPU).
 
 ```bash
+aws s3 cp s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt \
+  model/best.pt --region us-east-2 --profile <tu-perfil>   # los pesos (ver Archivo de pesos)
 pip install -r requirements.txt   # torch 2.14.0, torchvision 0.29.0, pillow 10.4.0
-shasum -a 256 -c SHA256SUMS       # todos los archivos de la carpeta están íntegros
+shasum -a 256 -c SHA256SUMS       # todos los archivos de la carpeta están íntegros, best.pt incluido
 python predict.py                 # verifica SHA-256 y predice una imagen de validación
 python predict.py img.png         # predice otra imagen
 python predict.py --all           # los 128 de validación + predictions_original_validation.csv
