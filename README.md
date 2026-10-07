@@ -655,7 +655,7 @@ Actualiza esta tabla cuando cambie algo del servidor (sin secretos):
 | Dato | Valor |
 |---|---|
 | Estado | Encendida desde el 2026-10-06. Para no consumir créditos: EC2 > Instances > *Instance state* > **Stop**; para volver a usarla, **Start** |
-| URL del portal | **http://3.14.144.7** (2026-10-06). Sin Elastic IP, la IP cambia en cada *Stop*/*Start*; la nueva aparece en *Public IPv4 address* |
+| URL del portal | **http://18.216.36.30**. Es una Elastic IP (`eipalloc-06bfd73237d154119`, asignada el 2026-10-07): no cambia aunque la instancia se detenga y se vuelva a iniciar |
 | Región | `us-east-2` (zona `us-east-2a`) |
 | Instancia | `portal-proyecto4` (`i-02234c3f51db2446e`), `m7i-flex.large`, Ubuntu Server 24.04 LTS, 30 GiB gp3 cifrado |
 | Security group | `portal-proyecto4-sg`: 80 abierto, 22 solo desde la IP de quien administra |
@@ -715,10 +715,12 @@ Notas:
   como otra regla 22.
 - El botón **Connect > EC2 Instance Connect** de la consola no funciona con SSH
   restringido a tu IP. Usa la terminal (paso 3).
-- La IP pública **cambia si detienes e inicias** la instancia. Si necesitas una URL
-  fija: **EC2 > Elastic IPs > Allocate Elastic IP address**, luego **Actions >
-  Associate** con la instancia. Libérala al terminar, porque consume créditos aunque
-  no esté asociada.
+- Sin Elastic IP, la IP pública **cambia si detienes e inicias** la instancia. Para
+  una URL fija: **EC2 > Elastic IPs > Allocate Elastic IP address**, luego **Actions >
+  Associate** con la instancia. La de este servidor ya está asignada (ver
+  [Datos del despliegue](#datos-del-despliegue)). Cuesta lo mismo que la IP pública
+  normal (0.005 USD/hora), pero **también cobra con la instancia detenida**, así que
+  libérala al terminar.
 
 ### 3. Conectarse por SSH
 
@@ -1014,11 +1016,13 @@ docker image prune -f                  # libera disco de imágenes viejas
 ### 12. Apagar y limpiar al terminar la entrega
 
 - **Pausa:** EC2 > Instances > *Instance state* > **Stop**. La instancia deja de
-  consumir créditos; el disco (y la Elastic IP, si hay) siguen consumiendo poco. Al
-  volver a iniciarla, la IP pública cambia, salvo con Elastic IP.
+  consumir créditos; el disco (unos 0.08 USD/día) y la Elastic IP (unos 0.12 USD/día)
+  siguen consumiendo. Al volver a iniciarla, la dirección sigue siendo la misma
+  gracias a la Elastic IP.
 - **Final:** **Terminate instance**. Eso borra el disco con los datos de MariaDB y
-  MinIO, así que respalda antes lo que necesites. Después: *Release* de la Elastic IP
-  y borrar el security group `portal-proyecto4-sg` y el key pair.
+  MinIO, así que respalda antes lo que necesites. Después: **EC2 > Elastic IPs >
+  Release** de `eipalloc-06bfd73237d154119`, y borrar el security group
+  `portal-proyecto4-sg` y el key pair.
 - Revisa el saldo de créditos en AWS Settings > Billing.
 
 ### Problemas comunes
