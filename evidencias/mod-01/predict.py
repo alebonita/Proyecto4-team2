@@ -5,6 +5,9 @@ Requiere: torch, torchvision y pillow (probado con torch 2.14.0 / torchvision 0.
     python predict.py                      # verifica SHA-256 y predice una imagen de validación
     python predict.py ruta/a/imagen.png    # predice una imagen cualquiera
     python predict.py --all                # evalúa los 128 recortes de validation_manifest.csv
+
+Los pesos (`model/best.pt`) no están en git: se bajan del bucket del equipo (ver
+"Archivo de pesos" en README.md). Si faltan, el script dice cómo bajarlos.
 """
 
 import csv
@@ -21,6 +24,8 @@ from torchvision.transforms import v2
 HERE = Path(__file__).resolve().parent
 WEIGHTS = HERE / "model" / "best.pt"
 EXPECTED_SHA256 = "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52"
+# Los pesos no se versionan en git (el CI prohíbe .pt); viven en el bucket del equipo.
+WEIGHTS_S3 = "s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/checkpoint/best.pt"
 
 # Índice de salida del modelo -> clase (class_map del checkpoint: dog=0, cat=1).
 CLASSES = ["dog", "cat"]
@@ -58,6 +63,13 @@ def sha256(path: Path) -> str:
 
 
 def load_model() -> nn.Module:
+    if not WEIGHTS.is_file():
+        raise SystemExit(
+            f"No está {WEIGHTS.relative_to(HERE)}: los pesos no se guardan en git.\n"
+            "Bájalos del bucket del equipo con tu perfil de AWS del proyecto:\n\n"
+            f'  aws s3 cp {WEIGHTS_S3} "{WEIGHTS}" --region us-east-2 --profile <tu-perfil>\n\n'
+            f"SHA-256 esperado: {EXPECTED_SHA256} (ver «Archivo de pesos» en README.md)."
+        )
     actual = sha256(WEIGHTS)
     if actual != EXPECTED_SHA256:
         raise SystemExit(f"SHA-256 distinto: {actual} (esperado {EXPECTED_SHA256})")
