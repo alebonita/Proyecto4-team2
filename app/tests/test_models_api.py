@@ -453,8 +453,13 @@ def _real_publications() -> list[dict]:
     return json.loads(path.read_text("utf-8"))["publications"]
 
 
+# AWS-3: la publicación vigente es la del bucket del equipo. La de OPS-07 (bucket de la
+# cuenta anterior) sigue en s3_publications.json como histórico.
+TEAM_BUCKET = "mlops-p4-equipo-452857281704"
+
+
 def test_real_registry_and_s3_publication(tmp_path):
-    """Con S3 confirmando cada objeto de la publicación real de OPS-07 → published."""
+    """Con S3 confirmando cada objeto de la publicación real vigente → published."""
     registry = json.loads((ROOT / "reports" / "models" / "registry.json").read_text("utf-8"))
 
     listed = models(_real_client(tmp_path, FakeS3(_real_publications())))
@@ -463,7 +468,7 @@ def test_real_registry_and_s3_publication(tmp_path):
     model = listed[entry["model_version"]]
     assert (model.run_id, model.checkpoint_sha256) == (entry["run_id"], entry["checkpoint_sha256"])
     assert model.publication.status == "published"
-    assert model.publication.bucket == BUCKET
+    assert model.publication.bucket == TEAM_BUCKET
     assert {obj.name for obj in model.publication.objects} >= set(entry["files"])
 
 
