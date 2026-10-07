@@ -654,8 +654,8 @@ Actualiza esta tabla cuando cambie algo del servidor (sin secretos):
 
 | Dato | Valor |
 |---|---|
-| Estado | **Detenida** (*stopped*) desde el 2026-10-06, después de probarla. Para usarla: EC2 > Instances > *Instance state* > **Start** |
-| URL del portal | `http://<IP-pública>`. Sin Elastic IP, la IP cambia en cada *Start*; la nueva aparece en *Public IPv4 address*. En la prueba del 2026-10-06 fue `18.227.79.227` |
+| Estado | Encendida desde el 2026-10-06. Para no consumir créditos: EC2 > Instances > *Instance state* > **Stop**; para volver a usarla, **Start** |
+| URL del portal | **http://3.14.144.7** (2026-10-06). Sin Elastic IP, la IP cambia en cada *Stop*/*Start*; la nueva aparece en *Public IPv4 address* |
 | Región | `us-east-2` (zona `us-east-2a`) |
 | Instancia | `portal-proyecto4` (`i-02234c3f51db2446e`), `m7i-flex.large`, Ubuntu Server 24.04 LTS, 30 GiB gp3 cifrado |
 | Security group | `portal-proyecto4-sg`: 80 abierto, 22 solo desde la IP de quien administra |
@@ -973,8 +973,9 @@ Desde tu máquina, idealmente desde otra red (por ejemplo, datos del celular):
 - [ ] Subir una imagen y verla en el listado. Eso prueba backend, MariaDB y MinIO.
 - [ ] Los puertos internos no responden: `curl -m 5 http://<IP-pública>:3100/health`
       y `curl -m 5 http://<IP-pública>:9001` deben terminar en *timeout*.
-- [ ] Después de `sudo reboot` en el servidor, el portal vuelve solo en uno o dos
-      minutos.
+- [ ] Después de `sudo reboot` (o *Stop*/*Start*), el portal vuelve solo. En la
+      prueba, la página cargó a los ~10 s y `/api` dio `502` unos 40 s más, mientras
+      arrancaban `backend` y `ml-api`.
 - [ ] La tabla [Datos del despliegue](#datos-del-despliegue) está llena.
 - [ ] Opcional, con los datos del paso 7, el smoke test del portal:
       `cd app && APP10_PORTAL_URL=http://<IP-pública> uv run pytest tests/test_app10_portal_smoke.py -v`.
@@ -982,7 +983,8 @@ Desde tu máquina, idealmente desde otra red (por ejemplo, datos del celular):
       `'unverifiable' == 'published'`. Models confirma la publicación del modelo en el
       S3 de la cuenta anterior, y el servidor no tiene credenciales de esa cuenta.
       Los pasos 1 a 4 (Training, Experiments, Evaluation y el checkpoint del
-      candidato) sí pasan.
+      candidato) sí pasan; el test se detiene en el primer fallo, así que los pasos
+      6 (Inference) y 7 (cola de anotación) no llegan a correr.
 
 Resultado de la prueba del 2026-10-06 (todo el stack, con los datos del paso 7):
 todos los servicios arriba, `/api/health` y `/api/ml/health` en 200 desde internet,
