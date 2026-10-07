@@ -11,6 +11,14 @@
 # `restart: unless-stopped` hace que el portal vuelva solo después de reiniciar el
 # servidor. `app` conserva su `on-failure:5`: sin los datos del release la compuerta
 # falla, y así no queda reiniciándose para siempre.
+#
+# AWS-3: la instancia tiene el rol `portal-proyecto4-ec2` (lee `models/` y escribe en
+# `edge-captures/` del bucket del equipo). docker-compose.yml desactiva el metadata
+# service en `ml-api` porque fuera de EC2 no existe; aquí se reactiva para que boto3
+# tome las credenciales del rol y Models confirme la publicación en S3. Requiere
+# `HttpPutResponseHopLimit=2` en la instancia (un salto más por la red de Docker).
+# `backend` no define esa variable, así que ya puede usar el rol cuando lo necesite
+# (AWS-1). Ver "Datos del proyecto" en el README.
 
 services:
   frontend:
@@ -38,6 +46,8 @@ services:
     restart: unless-stopped
 
   ml-api:
+    environment:
+      AWS_EC2_METADATA_DISABLED: "false"
     restart: unless-stopped
 
   copilot:

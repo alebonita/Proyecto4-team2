@@ -94,6 +94,100 @@
           "etag": "276857efa4019352f6ff180d592f6a36"
         }
       }
+    },
+    {
+      "model_version": "1.0.0",
+      "model_name": "dog-cat-resnet18",
+      "run_id": "bb448230424146349a969253d30db43b",
+      "checkpoint_sha256": "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+      "bucket": "mlops-p4-equipo-452857281704",
+      "region": "us-east-2",
+      "published_at": "2026-10-07T01:10:38Z",
+      "files": {
+        "checkpoint/best.pt": {
+          "key": "models/dog-cat-resnet18/1.0.0/checkpoint/best.pt",
+          "version_id": "EjTJmO7R0aChwGTKXk_rcD02NEjvhHxE",
+          "size": 45043841,
+          "sha256": "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+          "s3_checksum_sha256": "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+          "download_sha256": "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+          "etag": "5fb6da4eaa508973c7967a8f04562be4"
+        },
+        "model-card.md": {
+          "key": "models/dog-cat-resnet18/1.0.0/model-card.md",
+          "version_id": "9JyFDTDfcuopTSPYRq4v8.wlgO6359mq",
+          "size": 1790,
+          "sha256": "b3dd3e51a9e0adb70c1d94b48cbba8a08eff8fe105bfaebb5a352f5f5e7a8703",
+          "s3_checksum_sha256": "b3dd3e51a9e0adb70c1d94b48cbba8a08eff8fe105bfaebb5a352f5f5e7a8703",
+          "download_sha256": "b3dd3e51a9e0adb70c1d94b48cbba8a08eff8fe105bfaebb5a352f5f5e7a8703",
+          "etag": "dfc3c3285222b9c06b7b5ef2d17a8cc3"
+        },
+        "package.json": {
+          "key": "models/dog-cat-resnet18/1.0.0/package.json",
+          "version_id": "HXht.YzkzLQlDHmNw7vSMrETTfuw_9lQ",
+          "size": 3064,
+          "sha256": "b584f4cb8cb19bade61a577a5d136500b68db6ffda8f3c0cedbb2a116d9592d0",
+          "s3_checksum_sha256": "b584f4cb8cb19bade61a577a5d136500b68db6ffda8f3c0cedbb2a116d9592d0",
+          "download_sha256": "b584f4cb8cb19bade61a577a5d136500b68db6ffda8f3c0cedbb2a116d9592d0",
+          "etag": "c46760499dc30358e2f33efe1d3addfb"
+        },
+        "dependencies.json": {
+          "key": "models/dog-cat-resnet18/1.0.0/dependencies.json",
+          "version_id": "OVnVvyRbAr7DGuszfUgzPi18rixkFEB8",
+          "size": 256,
+          "sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "s3_checksum_sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "download_sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "etag": "276857efa4019352f6ff180d592f6a36"
+        }
+      }
+    },
+    {
+      "model_version": "0.9.0",
+      "model_name": "dog-cat-resnet18",
+      "run_id": "83e5a40ad86942478269c49a66d1d04b",
+      "checkpoint_sha256": "db64816aaf6062fff6bafde464f33c9433f33eb03ca3a0ee5f97cc191515e097",
+      "bucket": "mlops-p4-equipo-452857281704",
+      "region": "us-east-2",
+      "published_at": "2026-10-07T01:10:44Z",
+      "files": {
+        "checkpoint/best.pt": {
+          "key": "models/dog-cat-resnet18/0.9.0/checkpoint/best.pt",
+          "version_id": "y4Uvh57ZDM56MWhKHr.K4_L_AB1NC3OU",
+          "size": 45043841,
+          "sha256": "db64816aaf6062fff6bafde464f33c9433f33eb03ca3a0ee5f97cc191515e097",
+          "s3_checksum_sha256": "db64816aaf6062fff6bafde464f33c9433f33eb03ca3a0ee5f97cc191515e097",
+          "download_sha256": "db64816aaf6062fff6bafde464f33c9433f33eb03ca3a0ee5f97cc191515e097",
+          "etag": "19946d774ae8a58b9811a35b98268ab4"
+        },
+        "model-card.md": {
+          "key": "models/dog-cat-resnet18/0.9.0/model-card.md",
+          "version_id": "ZfA6c3X2Xu1UbroGZBC9jqzxn4rkz41W",
+          "size": 1585,
+          "sha256": "80b7e5a77a597e16ca93d833779f6901a429fe7c320f06df2d2d92d8ed3e9c7f",
+          "s3_checksum_sha256": "80b7e5a77a597e16ca93d833779f6901a429fe7c320f06df2d2d92d8ed3e9c7f",
+          "download_sha256": "80b7e5a77a597e16ca93d833779f6901a429fe7c320f06df2d2d92d8ed3e9c7f",
+          "etag": "765968a84ef5d9d6b5873f2f48353018"
+        },
+        "package.json": {
+          "key": "models/dog-cat-resnet18/0.9.0/package.json",
+          "version_id": "Q8sWuHDvIxlmYUWPQIMLa74cUIXvaUo3",
+          "size": 2648,
+          "sha256": "bcad7701368b5f065435fe48d8dc5009139c785ab92535452a4b3717280728fb",
+          "s3_checksum_sha256": "bcad7701368b5f065435fe48d8dc5009139c785ab92535452a4b3717280728fb",
+          "download_sha256": "bcad7701368b5f065435fe48d8dc5009139c785ab92535452a4b3717280728fb",
+          "etag": "afcc9f3ba10e7d746c779372e3319628"
+        },
+        "dependencies.json": {
+          "key": "models/dog-cat-resnet18/0.9.0/dependencies.json",
+          "version_id": "GGYpNRyxTUkc3ANa07HCikLDXb1gZRRE",
+          "size": 256,
+          "sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "s3_checksum_sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "download_sha256": "71e0bddd72fbf056bf1d80d454cf046e634ec9ae81708d3ee58031785d732504",
+          "etag": "276857efa4019352f6ff180d592f6a36"
+        }
+      }
     }
   ]
 }

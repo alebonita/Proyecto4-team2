@@ -1,7 +1,12 @@
+[core]
+    remote = prod
 ['remote "dev"']
     url = s3://dvc-cache
     endpointurl = http://localhost:9000
     region = us-east-1
 ['remote "prod"']
+    url = s3://mlops-p4-equipo-452857281704
+    region = us-east-2
+['remote "p2-origen"']
     url = s3://mlops-p2-dvc-cache-280764207006
     region = us-east-1
