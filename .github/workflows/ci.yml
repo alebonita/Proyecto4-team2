@@ -275,7 +275,7 @@ jobs:
           uv pip install --no-build --python .venv-dvc-ci/bin/python 'dvc[s3]==3.67.1'
       - name: Recuperar únicamente los datos versionados de PROD
         if: steps.role.outputs.configured == 'true'
-        run: .venv-dvc-ci/bin/dvc pull -r prod data/raw/images.dvc data/raw/annotations.dvc
+        run: .venv-dvc-ci/bin/dvc pull -r p2-origen data/raw/images.dvc data/raw/annotations.dvc
       - name: Instalar dependencias del pipeline
         if: steps.role.outputs.configured == 'true'
         working-directory: app
@@ -364,7 +364,7 @@ jobs:
 
       - name: Recuperar datos versionados de PROD
         if: steps.role.outputs.configured == 'true'
-        run: .venv-dvc-e2e/bin/dvc pull -r prod data/raw/images.dvc data/raw/annotations.dvc
+        run: .venv-dvc-e2e/bin/dvc pull -r p2-origen data/raw/images.dvc data/raw/annotations.dvc
 
       - name: Instalar dependencias Python
         if: steps.role.outputs.configured == 'true'

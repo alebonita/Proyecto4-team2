@@ -240,7 +240,11 @@ definidos por el administrador.
 
 Los remotes no son intercambiables:
 
-- `prod` = AWS S3 compartido, bucket `mlops-p2-dvc-cache-280764207006`.
+- `prod` = AWS S3 del equipo, bucket `mlops-p4-equipo-452857281704` (us-east-2),
+  remoto por defecto desde AWS-3. Ver [Datos del proyecto](#datos-del-proyecto).
+- `p2-origen` = el remoto original de la cuenta anterior, bucket
+  `mlops-p2-dvc-cache-280764207006` (solo lectura, con el perfil SSO `mlops-p2`
+  de los pasos 6 a 8). Se conserva sin cambios.
 - `dev` = MinIO local, bucket `dvc-cache`.
 
 Si solo necesitas recuperar el dataset de producción, no levantes MinIO. El
@@ -267,6 +271,112 @@ Copilot; nunca pongas una API key real en esta documentación.
 
 Cada persona usa su propia identidad AWS, no comparte passwords, sesiones SSO
 ni access keys, y mantiene `.dvc/config.local` fuera de Git.
+
+## Datos del proyecto
+
+El dataset y el modelo del Proyecto 3 están en el bucket de la **cuenta del
+equipo** (AWS-3). La entrega ya no depende de la cuenta anterior.
+
+| Remoto DVC | Bucket | Región | Uso |
+|---|---|---|---|
+| `prod` (por defecto) | `s3://mlops-p4-equipo-452857281704` | `us-east-2` | El que usa todo el equipo |
+| `p2-origen` | `s3://mlops-p2-dvc-cache-280764207006` | `us-east-1` | Original de la cuenta anterior, solo lectura. No se modifica |
+
+El bucket está en `us-east-2`, y no en `us-east-1`, porque el proyecto de AWS del
+equipo bloquea `us-east-1` con una política de la organización y el bucket va en la
+misma región que el servidor del portal.
+
+El bucket es privado: acceso público bloqueado, objetos con dueño único, cifrado
+SSE-S3, versionado activo y política que rechaza conexiones sin HTTPS. Contiene:
+
+| Prefijo | Qué hay | Quién escribe |
+|---|---|---|
+| `files/md5/...` | Caché de DVC: dataset, recortes, modelos y snapshot de MLflow | El equipo con `dvc push` |
+| `models/dog-cat-resnet18/<versión>/` | Paquetes publicados del modelo (1.0.0 y 0.9.0), registrados en `reports/models/s3_publications.json` con `ChecksumSHA256` y `VersionId` | El equipo con `classification.publication publish` |
+| `edge-captures/` | Capturas de Capturas Edge (AWS-1) | El servidor del portal, con su rol |
+
+### Bajar los datos
+
+Con tu propia identidad en el proyecto de AWS del equipo (no la de la cuenta
+anterior). Las credenciales quedan en tu perfil de AWS y en `.dvc/config.local`,
+nunca en archivos versionados:
+
+```bash
+aws login --profile <tu-perfil>          # región us-east-2
+uv venv .venv-dvc --python 3.12
+uv pip install --python .venv-dvc 'dvc[s3]==3.67.1' 'botocore[crt]'
+source .venv-dvc/bin/activate             # Windows: .venv-dvc\Scripts\activate
+dvc remote modify --local prod profile <tu-perfil>
+dvc pull
+```
+
+`botocore[crt]` es obligatorio con perfiles de `aws login`. Sin él, DVC falla con
+`Using the login credential provider requires an additional dependency`.
+
+Los comandos de este README que dicen `dvc pull -r prod ...` ya apuntan al bucket
+del equipo. El CI sigue leyendo `p2-origen`, porque su rol OIDC vive en la cuenta
+anterior y este repo no lo tiene configurado (`AWS_ROLE_ARN`). En la cuenta del equipo
+no se puede crear uno: la política de la organización prohíbe crear proveedores OIDC,
+y el equipo decidió no activar las funciones avanzadas. Por eso los jobs del CI que
+bajan datos de AWS se saltan con un aviso.
+
+### Cómo se copió (y cómo repetirlo)
+
+El 2026-10-06 la copia se hizo desde una copia local del bucket original, que tiene
+la misma estructura `files/md5/...` que el remoto de DVC:
+
+```bash
+aws s3 sync <copia-local>/files s3://mlops-p4-equipo-452857281704/files --profile <perfil-equipo>
+```
+
+Para repetirla directo de bucket a bucket con DVC, se usan dos perfiles: uno con
+lectura del origen y otro con escritura en el destino:
+
+```bash
+dvc remote modify --local p2-origen profile mlops-p2       # lectura, cuenta anterior
+dvc remote modify --local prod profile <perfil-equipo>      # escritura, cuenta del equipo
+dvc pull -r p2-origen                                       # todo lo versionado
+dvc push -r prod
+dvc status -c -r prod                                       # "Cache and remote 'prod' are in sync."
+```
+
+El bucket se creó así (no hace falta repetirlo):
+
+```bash
+B=mlops-p4-equipo-452857281704; P="--profile <perfil-equipo> --region us-east-2"
+aws s3api create-bucket --bucket $B --create-bucket-configuration LocationConstraint=us-east-2 $P
+aws s3api put-public-access-block --bucket $B $P \
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+aws s3api put-bucket-versioning --bucket $B --versioning-configuration Status=Enabled $P
+# Más cifrado SSE-S3 por defecto y una bucket policy que niega `aws:SecureTransport = false`.
+```
+
+**Verificación (2026-10-06):** en un checkout limpio, fuera del repo de trabajo y
+con una identidad del proyecto del equipo (sin la cuenta anterior), `dvc pull` bajó
+600 imágenes, 10 anotaciones, 8 archivos de modelos, 52 del snapshot de MLflow y 668
+recortes. `dvc status` respondió "Data and pipelines are up to date" y
+`dvc status -c -r prod` "Cache and remote 'prod' are in sync". En el bucket hay
+1367 objetos en `files/`, los mismos de la copia del original.
+
+### Rol de IAM del servidor
+
+La instancia del portal (ver [Despliegue en AWS](#despliegue-en-aws)) usa el rol
+`portal-proyecto4-ec2`, mediante el perfil de instancia del mismo nombre, sin access
+keys. Su política inline `s3-models-read-edge-captures-write` permite solo:
+
+| Acción | Recurso |
+|---|---|
+| `s3:GetObject`, `s3:GetObjectVersion` | `models/*` |
+| `s3:PutObject` | `edge-captures/*` |
+| `s3:ListBucket` | El bucket, solo con prefijo `models/` o `edge-captures/` |
+
+Probado desde el contenedor `ml-api`: escribir en `edge-captures/` y leer o listar
+`models/` funciona. Escribir en `models/`, listar `files/` y borrar en
+`edge-captures/` responde `AccessDenied`.
+
+Para que los contenedores puedan usar el rol, la instancia tiene IMDSv2 obligatorio
+con `HttpPutResponseHopLimit=2`, y `docker-compose.aws.yml` pone
+`AWS_EC2_METADATA_DISABLED=false` en `ml-api`. `backend` no define esa variable.
 
 ## Requisitos
 
@@ -646,7 +756,8 @@ claves ni contraseñas, y ninguna debe agregarse aquí.
 > políticas del proyecto bloquean `us-east-1` (una consulta de solo lectura a EC2 en
 > esa región devuelve `explicit deny in a service control policy`). Para confirmar
 > la región: AWS Settings > View all projects > Overview > Additional info > Region.
-> Esto no afecta al bucket S3 del DVC, que sigue en la cuenta anterior.
+> Desde AWS-3, los datos y el modelo también están en un bucket del equipo en esta
+> misma región (ver [Datos del proyecto](#datos-del-proyecto)).
 
 ### Datos del despliegue
 
@@ -655,11 +766,13 @@ Actualiza esta tabla cuando cambie algo del servidor (sin secretos):
 | Dato | Valor |
 |---|---|
 | Estado | Encendida desde el 2026-10-06. Para no consumir créditos: EC2 > Instances > *Instance state* > **Stop**; para volver a usarla, **Start** |
-| URL del portal | **http://3.14.144.7** (2026-10-06). Sin Elastic IP, la IP cambia en cada *Stop*/*Start*; la nueva aparece en *Public IPv4 address* |
+| URL del portal | **http://18.216.36.30**. Es una Elastic IP (`eipalloc-06bfd73237d154119`, asignada el 2026-10-07): no cambia aunque la instancia se detenga y se vuelva a iniciar |
 | Región | `us-east-2` (zona `us-east-2a`) |
 | Instancia | `portal-proyecto4` (`i-02234c3f51db2446e`), `m7i-flex.large`, Ubuntu Server 24.04 LTS, 30 GiB gp3 cifrado |
 | Security group | `portal-proyecto4-sg`: 80 abierto, 22 solo desde la IP de quien administra |
 | Llave SSH | Key pair `portal-proyecto4` (ED25519); la `.pem` la guarda Angel |
+| Rol de IAM | `portal-proyecto4-ec2` (perfil de instancia del mismo nombre): lee `models/` y escribe en `edge-captures/` del bucket del equipo. IMDSv2 con *hop limit* 2. Ver [Rol de IAM del servidor](#rol-de-iam-del-servidor) |
+| Bucket del equipo | `mlops-p4-equipo-452857281704` (`us-east-2`) |
 | Commit desplegado | `git rev-parse --short HEAD` en el servidor |
 
 ### 1. Tipo de instancia y disco
@@ -702,8 +815,10 @@ gratuita. Estos son los de `us-east-2` (consultado el 2026-10-06):
    - No abras 3100, 3306, 5000, 9000 ni 9001: esos servicios no tienen autenticación
      pensada para internet.
 8. **Configure storage:** `30` GiB, `gp3`.
-9. **Advanced details:** deja *Metadata version* en **V2 only (token required)**. No
-   hace falta *IAM instance profile*: el servidor no usa servicios de AWS.
+9. **Advanced details:** deja *Metadata version* en **V2 only (token required)** y
+   pon *Metadata response hop limit* en **2**, para que los contenedores lleguen al
+   metadata service. En *IAM instance profile* elige `portal-proyecto4-ec2`; ese
+   perfil se creó en AWS-3, ver [Rol de IAM del servidor](#rol-de-iam-del-servidor).
 10. **Launch instance.** En el detalle de la instancia, copia la
     **Public IPv4 address**.
 
@@ -715,10 +830,12 @@ Notas:
   como otra regla 22.
 - El botón **Connect > EC2 Instance Connect** de la consola no funciona con SSH
   restringido a tu IP. Usa la terminal (paso 3).
-- La IP pública **cambia si detienes e inicias** la instancia. Si necesitas una URL
-  fija: **EC2 > Elastic IPs > Allocate Elastic IP address**, luego **Actions >
-  Associate** con la instancia. Libérala al terminar, porque consume créditos aunque
-  no esté asociada.
+- Sin Elastic IP, la IP pública **cambia si detienes e inicias** la instancia. Para
+  una URL fija: **EC2 > Elastic IPs > Allocate Elastic IP address**, luego **Actions >
+  Associate** con la instancia. La de este servidor ya está asignada (ver
+  [Datos del despliegue](#datos-del-despliegue)). Cuesta lo mismo que la IP pública
+  normal (0.005 USD/hora), pero **también cobra con la instancia detenida**, así que
+  libérala al terminar.
 
 ### 3. Conectarse por SSH
 
@@ -837,10 +954,12 @@ chmod -R a+rwX reports
 ### 7. Datos del Proyecto 3 (opcional; antes del primer arranque)
 
 El portal funciona sin estos datos, pero entonces Models, Evaluation, Experiments e
-Inference salen vacíos o con "No verificable". Los datos viven en el remote DVC
-`prod`, un bucket S3 de **la cuenta anterior** (perfil SSO `mlops-p2`) que la cuenta
-nueva no puede leer. Por eso los datos se suben al servidor desde una máquina que ya
-los tenga. Así se hizo el 2026-10-06:
+Inference salen vacíos. Los datos están en el remoto DVC `prod`, el bucket del equipo
+(ver [Datos del proyecto](#datos-del-proyecto)). El rol del servidor no lee `files/`
+a propósito: solo necesita `models/` y `edge-captures/`. Por eso los datos se suben al
+servidor desde una máquina que ya los tenga (opciones A y B), o con `dvc pull` en el
+servidor usando credenciales temporales tuyas, solo para ese comando (opción C). El
+2026-10-06 se usó la opción A:
 
 **Opción A (la que se usó): copia local del caché DVC.** Sirve una copia de la
 carpeta del bucket `mlops-p2-dvc-cache` (con `files/md5/...`, unos 700 MB). En tu
@@ -882,6 +1001,16 @@ tar czf ../p3-data.tgz data/raw/images data/raw/annotations data/crops data/mode
 scp -i <ruta-a>/portal-proyecto4.pem ../p3-data.tgz ubuntu@<IP-pública>:~/Proyecto4-team2/
 # En el servidor:
 cd ~/Proyecto4-team2 && tar xzf p3-data.tgz && rm p3-data.tgz
+```
+
+**Opción C: `dvc pull` en el servidor con tus credenciales temporales.** Desde tu
+máquina, con tu perfil del proyecto. Las credenciales viajan por la entrada de SSH y
+no se escriben en el servidor. `tr -d ''` hace falta si lo corres desde Windows:
+
+```bash
+{ aws configure export-credentials --profile <tu-perfil> --format env
+  echo 'cd ~/Proyecto4-team2 && uvx --from "dvc[s3]==3.67.1" dvc pull'
+} | tr -d '' | ssh -i <ruta-a>/portal-proyecto4.pem ubuntu@<IP-pública> 'bash -s'
 ```
 
 Hazlo **antes** del paso 8. Si Docker arranca primero, crea `data/crops` y
@@ -979,19 +1108,18 @@ Desde tu máquina, idealmente desde otra red (por ejemplo, datos del celular):
 - [ ] La tabla [Datos del despliegue](#datos-del-despliegue) está llena.
 - [ ] Opcional, con los datos del paso 7, el smoke test del portal:
       `cd app && APP10_PORTAL_URL=http://<IP-pública> uv run pytest tests/test_app10_portal_smoke.py -v`.
-      En el servidor de AWS se espera que **falle en el paso 5** con
-      `'unverifiable' == 'published'`. Models confirma la publicación del modelo en el
-      S3 de la cuenta anterior, y el servidor no tiene credenciales de esa cuenta.
-      Los pasos 1 a 4 (Training, Experiments, Evaluation y el checkpoint del
-      candidato) sí pasan; el test se detiene en el primer fallo, así que los pasos
-      6 (Inference) y 7 (cola de anotación) no llegan a correr.
+      Desde AWS-3 pasa completo: Models confirma la publicación en el bucket del
+      equipo con el rol del servidor. Evidencia:
+      [aws-3-smoke-test-ec2.md](app/tests/evidence/aws-3-smoke-test-ec2.md).
 
 Resultado de la prueba del 2026-10-06 (todo el stack, con los datos del paso 7):
 todos los servicios arriba, `/api/health` y `/api/ml/health` en 200 desde internet,
 3100, 3306, 5000, 9000 y 9001 en *timeout* desde fuera, una imagen subida por la IP
 pública llegó a MinIO y se borró (204), la compuerta de calidad terminó en
-`status=warning` y las 12 corridas de MLflow quedaron restauradas. El smoke test
-falló solo en el paso 5, como se explica arriba.
+`status=warning` y las 12 corridas de MLflow quedaron restauradas. Ese día el smoke
+test falló en el paso 5 (Models: `'unverifiable' == 'published'`), porque el modelo
+solo estaba publicado en el S3 de la cuenta anterior y los pasos 6 y 7 no llegaron a
+correr. Con AWS-3 (bucket del equipo y rol del servidor) **pasa completo**.
 
 ### 11. Actualizar el servidor después de un cambio en el código
 
@@ -1001,6 +1129,7 @@ cd ~/Proyecto4-team2
 git pull
 export GIT_COMMIT="$(git rev-parse HEAD)"
 docker compose up -d --build          # o con la lista mínima del paso 8: ... --build frontend
+docker compose restart frontend        # nginx vuelve a resolver backend/ml-api/copilot
 docker compose ps
 docker image prune -f                  # libera disco de imágenes viejas
 ```
@@ -1014,11 +1143,13 @@ docker image prune -f                  # libera disco de imágenes viejas
 ### 12. Apagar y limpiar al terminar la entrega
 
 - **Pausa:** EC2 > Instances > *Instance state* > **Stop**. La instancia deja de
-  consumir créditos; el disco (y la Elastic IP, si hay) siguen consumiendo poco. Al
-  volver a iniciarla, la IP pública cambia, salvo con Elastic IP.
+  consumir créditos; el disco (unos 0.08 USD/día) y la Elastic IP (unos 0.12 USD/día)
+  siguen consumiendo. Al volver a iniciarla, la dirección sigue siendo la misma
+  gracias a la Elastic IP.
 - **Final:** **Terminate instance**. Eso borra el disco con los datos de MariaDB y
-  MinIO, así que respalda antes lo que necesites. Después: *Release* de la Elastic IP
-  y borrar el security group `portal-proyecto4-sg` y el key pair.
+  MinIO, así que respalda antes lo que necesites. Después: **EC2 > Elastic IPs >
+  Release** de `eipalloc-06bfd73237d154119`, y borrar el security group
+  `portal-proyecto4-sg` y el key pair.
 - Revisa el saldo de créditos en AWS Settings > Billing.
 
 ### Problemas comunes
@@ -1032,6 +1163,8 @@ docker image prune -f                  # libera disco de imágenes viejas
 | Accesos que funcionaban empiezan a dar *Access Denied* | Créditos agotados o límite de gasto | Revisa AWS Settings > Billing |
 | El portal no abre | Falta la regla 80, o `frontend` no arrancó | Revisa el security group, `docker compose ps` y `docker compose logs frontend` |
 | `502 Bad Gateway` en `/api` | `backend` caído o migrando | `docker compose logs backend` |
+| `502` en `/api` o `/api/ml` justo después de actualizar | Se recreó `backend` o `ml-api` con otra IP interna y nginx guarda la anterior (resuelve los nombres al arrancar) | `docker compose restart frontend` |
+| Models dice "No verificable" en el servidor | `ml-api` no obtiene credenciales del rol | Comprueba el perfil de instancia `portal-proyecto4-ec2`, el *hop limit* 2 y que `docker compose exec ml-api printenv AWS_EC2_METADATA_DISABLED` diga `false` |
 | La compilación muere con *exit code 137* o *Killed* | Falta memoria | Confirma el swap (`free -h`), levanta solo lo indispensable o usa `m7i-flex.large` |
 | *unknown tag !override* | Compose anterior a 2.24.4 | `sudo apt-get install --only-upgrade docker-compose-plugin` |
 | *Define GIT_COMMIT…*, incluso en `docker compose ps` o `logs` | Falta la variable en esa terminal | `export GIT_COMMIT="$(git rev-parse HEAD)"`, o la línea de `~/.bashrc` del paso 6 |
@@ -1220,6 +1353,10 @@ que el portal funcione de punta a punta:
 
 Esta sección contiene los detalles del remote DVC opcional de desarrollo. Para
 el onboarding completo, empieza por [Onboarding de desarrollo](#onboarding-de-desarrollo).
+
+> **Desde AWS-3**, `prod` apunta al bucket del equipo
+> (`mlops-p4-equipo-452857281704`, `us-east-2`) y el bucket original de esta sección
+> se conserva como el remoto `p2-origen`. Ver [Datos del proyecto](#datos-del-proyecto).
 No necesitas MinIO para leer el dataset compartido de producción.
 
 - `dev` usa `s3://dvc-cache` con endpoint `http://localhost:9000` (MinIO local).
