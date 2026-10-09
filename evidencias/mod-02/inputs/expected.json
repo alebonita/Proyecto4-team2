@@ -1,0 +1,107 @@
+{
+  "classes": [
+    "dog",
+    "cat"
+  ],
+  "input_name": "input",
+  "output_name": "logits",
+  "input_shape": [
+    1,
+    3,
+    128,
+    128
+  ],
+  "input_dtype": "float32 little-endian, NCHW, ya normalizado (ver MOD-1)",
+  "samples": [
+    {
+      "crop_id": "img102-ann118",
+      "why": "dog muy seguro",
+      "image": "../mod-01/validation/dog/img102-ann118.png",
+      "image_sha256": "e43865d6d47d606382320492baf4d2a7f53885769561b721f3b910e306908df2",
+      "true_class": "dog",
+      "original_class": "dog",
+      "original_probs": {
+        "dog": 1.0,
+        "cat": 1.631879698038574e-08
+      },
+      "original_logits": [
+        9.450039863586426,
+        -8.480908393859863
+      ],
+      "onnxruntime_python_class": "dog",
+      "max_abs_diff_logits_python": 2.86102294921875e-06
+    },
+    {
+      "crop_id": "img31-ann38",
+      "why": "cat muy seguro",
+      "image": "../mod-01/validation/cat/img31-ann38.png",
+      "image_sha256": "3ce3784e0af25c9c6caaeb4622674b364b4acd3b954839fed52f928e32be493d",
+      "true_class": "cat",
+      "original_class": "cat",
+      "original_probs": {
+        "dog": 1.3203392654759227e-06,
+        "cat": 0.9999986886978149
+      },
+      "original_logits": [
+        -6.408275604248047,
+        7.129344463348389
+      ],
+      "onnxruntime_python_class": "cat",
+      "max_abs_diff_logits_python": 4.76837158203125e-07
+    },
+    {
+      "crop_id": "img125-ann141",
+      "why": "cat con confianza media",
+      "image": "../mod-01/validation/cat/img125-ann141.png",
+      "image_sha256": "75be52a94ffe3a8c6c8d9948040ea15a358515d470a7c0e5e036506c254179b1",
+      "true_class": "cat",
+      "original_class": "cat",
+      "original_probs": {
+        "dog": 0.09394776821136475,
+        "cat": 0.9060521721839905
+      },
+      "original_logits": [
+        -1.0828195810317993,
+        1.1835381984710693
+      ],
+      "onnxruntime_python_class": "cat",
+      "max_abs_diff_logits_python": 2.7418136596679688e-06
+    },
+    {
+      "crop_id": "img560-ann562",
+      "why": "dog dudoso (≈0.61)",
+      "image": "../mod-01/validation/dog/img560-ann562.png",
+      "image_sha256": "7f2ac44faa65667f643863b8214e5c1285361401bb4cec311e62a8bafab545e9",
+      "true_class": "dog",
+      "original_class": "dog",
+      "original_probs": {
+        "dog": 0.6062876582145691,
+        "cat": 0.3937123119831085
+      },
+      "original_logits": [
+        0.22040581703186035,
+        -0.21132826805114746
+      ],
+      "onnxruntime_python_class": "dog",
+      "max_abs_diff_logits_python": 1.1920928955078125e-06
+    },
+    {
+      "crop_id": "img263-ann299",
+      "why": "cat que el original confunde con dog (≈0.54, caso límite)",
+      "image": "../mod-01/validation/cat/img263-ann299.png",
+      "image_sha256": "399b6da5e02b7e1d170a466f1058a5823d41b9b631f0f57f9aa0371004c25af3",
+      "true_class": "cat",
+      "original_class": "dog",
+      "original_probs": {
+        "dog": 0.5446587204933167,
+        "cat": 0.45534124970436096
+      },
+      "original_logits": [
+        0.3233082890510559,
+        0.1441960334777832
+      ],
+      "onnxruntime_python_class": "dog",
+      "max_abs_diff_logits_python": 3.427267074584961e-07
+    }
+  ]
+}

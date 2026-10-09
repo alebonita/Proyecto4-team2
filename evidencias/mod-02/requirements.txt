@@ -1,0 +1,9 @@
+# MOD-2 — versiones con las que se exportó el ONNX (ver export_log.json).
+# torch/torchvision son las mismas del Proyecto 3 y MOD-1; en Linux pip instala la build con CUDA,
+# pero la exportación corre en CPU.
+torch==2.14.0
+torchvision==0.29.0
+pillow==10.4.0
+numpy==2.5.3
+onnx==1.23.2
+onnxruntime==1.30.0

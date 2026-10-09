@@ -1,0 +1,8 @@
+best.pt SHA-256 OK: 84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52
+ONNX: model/dog-cat-resnet18-1.0.0-fp32.onnx (44961942 bytes)
+ONNX SHA-256: 6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f
+  img102-ann118  original=dog onnxruntime(python)=dog Δlogits=2.86e-06
+  img31-ann38    original=cat onnxruntime(python)=cat Δlogits=4.77e-07
+  img125-ann141  original=cat onnxruntime(python)=cat Δlogits=2.74e-06
+  img560-ann562  original=dog onnxruntime(python)=dog Δlogits=1.19e-06
+  img263-ann299  original=dog onnxruntime(python)=dog Δlogits=3.43e-07
