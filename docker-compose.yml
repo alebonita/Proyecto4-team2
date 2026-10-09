@@ -19,7 +19,7 @@ x-pipeline-env: &pipeline-env
 
 services:
   mariadb:
-    image: mariadb:11
+    image: public.ecr.aws/docker/library/mariadb:11
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Define MARIADB_ROOT_PASSWORD en .env}
       MARIADB_DATABASE: image_repo
