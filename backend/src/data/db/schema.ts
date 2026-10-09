@@ -279,10 +279,11 @@ export const inferenceQueueEntries = mysqlTable(
 );
 
 /**
- * AWS-1 — fotos que el celular clasificó con el modelo optimizado (Capturas Edge).
+ * AWS-1 — fotos que el dispositivo edge (laptop) clasificó con el modelo optimizado
+ * (Capturas Edge).
  *
  * La foto vive en S3 (`imageKey`, prefijo edge-captures/) y aquí queda el evento.
- * `captureId` lo genera el celular: el índice único hace que un reenvío del mismo
+ * `captureId` lo genera el dispositivo: el índice único hace que un reenvío del mismo
  * evento no cree un segundo registro.
  */
 export const edgeCaptures = mysqlTable(
@@ -299,7 +300,7 @@ export const edgeCaptures = mysqlTable(
       length: 64,
     }).notNull(),
 
-    // Momento en que el celular tomó la foto (lo reporta el dispositivo).
+    // Momento en que el dispositivo edge tomó la foto (lo reporta el dispositivo).
     capturedAt: datetime('captured_at', {
       mode: 'date',
       fsp: 3,
@@ -321,6 +322,13 @@ export const edgeCaptures = mysqlTable(
 
     latencyMs: double('latency_ms').notNull(),
 
+    // AWS-2: recorte clasificado dentro de la foto, en píxeles (opcional: o vienen
+    // los cuatro o ninguno).
+    cropX: double('crop_x'),
+    cropY: double('crop_y'),
+    cropWidth: double('crop_width'),
+    cropHeight: double('crop_height'),
+
     // Key del objeto en S3 (edge-captures/<captureId>.jpg).
     imageKey: varchar('image_key', {
       length: 512,
@@ -331,6 +339,8 @@ export const edgeCaptures = mysqlTable(
   },
   (table) => [
     uniqueIndex('edge_captures_capture_id_unique').on(table.captureId),
+    // AWS-2: la consulta del portal ordena por captured_at (desempate por id).
+    index('edge_captures_captured_at_id_idx').on(table.capturedAt, table.id),
     index('edge_captures_received_at_idx').on(table.receivedAt),
     index('edge_captures_device_id_idx').on(table.deviceId),
   ],

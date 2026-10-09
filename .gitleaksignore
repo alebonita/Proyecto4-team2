@@ -1,11 +1,8 @@
-# Falsos positivos conocidos de gitleaks (Secret scan del CI).
+# Falsos positivos conocidos de gitleaks (regla generic-api-key), por huella exacta:
+# <commit>:<archivo>:<regla>:<línea>. No es una lista para callar hallazgos nuevos.
 #
-# El commit f4299a8 de la rama feat/aws-2-consulta-capturas (AWS-2) escribió como
-# literal una clave de dispositivo de PRUEBA ("clave-de-prueba-...") en dos tests
-# del backend. No es una credencial real y ya se corrigió en 2cabee3 (la clave se
-# genera con randomBytes), pero el commit sigue en el historial y el CI escanea
-# todas las ramas, así que hacía fallar el Secret scan de cualquier PR.
-#
-# Formato: <commit>:<archivo>:<regla>:<línea>. Agrega aquí solo hallazgos revisados.
+# AWS-2 (commit f4299a8): los tests usaban una clave de dispositivo ficticia escrita
+# como literal. Desde el commit siguiente la generan en cada corrida con randomBytes,
+# pero el CI escanea todo el historial (`gitleaks git`) y ese commit no se reescribe.
 f4299a81dc074f430dfb49a053f99e7eaf5a46d1:backend/tests/edge-capture-http.test.ts:generic-api-key:14
 f4299a81dc074f430dfb49a053f99e7eaf5a46d1:backend/tests/edge-capture-service.test.ts:generic-api-key:26
