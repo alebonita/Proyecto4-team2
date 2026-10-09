@@ -112,6 +112,9 @@ services:
       # APP-09: la cola de anotación (APP-08) verifica modelo, checkpoint y recorte
       # contra reports/models/registry.json y reports/crops.json.
       REPORTS_DIR: /reports
+      # AWS-2: clave del dispositivo edge (laptop) para POST /edge-captures, desde .env.
+      # Vacía, ese endpoint responde 503 (no queda abierto). Ver .env.example.
+      EDGE_DEVICE_KEY: ${EDGE_DEVICE_KEY:-}
     volumes:
       - ./app/policies:/pipeline/policies
       - ./app/splits:/pipeline/splits

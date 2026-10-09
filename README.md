@@ -368,11 +368,13 @@ keys. Su política inline `s3-models-read-edge-captures-write` permite solo:
 |---|---|
 | `s3:GetObject`, `s3:GetObjectVersion` | `models/*` |
 | `s3:PutObject` | `edge-captures/*` |
+| `s3:GetObject` | `edge-captures/*` (AWS-2: las URL firmadas de las fotos se ejecutan con este permiso) |
 | `s3:ListBucket` | El bucket, solo con prefijo `models/` o `edge-captures/` |
 
 Probado desde el contenedor `ml-api`: escribir en `edge-captures/` y leer o listar
 `models/` funciona. Escribir en `models/`, listar `files/` y borrar en
-`edge-captures/` responde `AccessDenied`.
+`edge-captures/` responde `AccessDenied`. El permiso de lectura en `edge-captures/*`
+se agregó en AWS-2 (ver [Capturas Edge](#capturas-edge-aws-1-aws-2)).
 
 Para que los contenedores puedan usar el rol, la instancia tiene IMDSv2 obligatorio
 con `HttpPutResponseHopLimit=2`, y `docker-compose.aws.yml` pone
@@ -1005,12 +1007,14 @@ cd ~/Proyecto4-team2 && tar xzf p3-data.tgz && rm p3-data.tgz
 
 **Opción C: `dvc pull` en el servidor con tus credenciales temporales.** Desde tu
 máquina, con tu perfil del proyecto. Las credenciales viajan por la entrada de SSH y
-no se escriben en el servidor. `tr -d ''` hace falta si lo corres desde Windows:
+no se escriben en el servidor. `tr -d '
+'` hace falta si lo corres desde Windows:
 
 ```bash
 { aws configure export-credentials --profile <tu-perfil> --format env
   echo 'cd ~/Proyecto4-team2 && uvx --from "dvc[s3]==3.67.1" dvc pull'
-} | tr -d '' | ssh -i <ruta-a>/portal-proyecto4.pem ubuntu@<IP-pública> 'bash -s'
+} | tr -d '
+' | ssh -i <ruta-a>/portal-proyecto4.pem ubuntu@<IP-pública> 'bash -s'
 ```
 
 Hazlo **antes** del paso 8. Si Docker arranca primero, crea `data/crops` y
@@ -1191,7 +1195,7 @@ ignora todo `.env*` salvo las plantillas de ejemplo.
 | `MLFLOW_PORT`           | Puerto del host para la UI de MLflow (opcional, 5000 por defecto) |
 | `EDGE_CAPTURES_BUCKET`  | Bucket de S3 para las fotos de Capturas Edge (AWS-1). Vacío en local: se usa MinIO |
 | `EDGE_CAPTURES_REGION`  | Región de ese bucket (`us-east-2` por defecto) |
-| `EDGE_CAPTURES_ALLOWED_ORIGINS` | Orígenes permitidos por CORS en `/edge-captures`, separados por coma, o `*` (por defecto) |
+| `EDGE_DEVICE_KEY`       | Clave del dispositivo edge (laptop) para `POST /edge-captures` (encabezado `X-Device-Key`). Solo en el `.env`, nunca en git. Vacía: el endpoint responde 503 |
 
 Los `.env` son configuración local de Compose/backend/MinIO/Copilot. Las
 credenciales AWS se obtienen mediante el perfil SSO `mlops-p2`; nunca las
@@ -1214,22 +1218,66 @@ copies a un `.env`.
 | GET    | `/categories`               | Categorías disponibles con su color         |
 | GET    | `/dashboard/summary`        | Métricas calculadas en SQL                  |
 | GET    | `/export/coco`              | Descarga el dataset en formato COCO         |
-| POST   | `/edge-captures`            | Capturas Edge: foto JPEG y evento del celular, idempotente por `capture_id` (AWS-1) |
+| POST   | `/edge-captures`            | Capturas Edge: foto JPEG y evento del dispositivo edge (laptop), con clave `X-Device-Key`, idempotente por `capture_id` (AWS-1, AWS-2) |
+| GET    | `/edge-captures`            | Capturas de la más reciente a la más antigua, paginadas, con URL firmada de cada foto (AWS-2) |
+| GET    | `/edge-captures/:capture_id`| Una captura, con URL firmada de su foto (AWS-2) |
 
-### Capturas Edge (AWS-1)
+### Capturas Edge (AWS-1, AWS-2)
 
-`POST /edge-captures` (desde fuera, `POST /api/edge-captures`) recibe en
-`multipart/form-data` la foto (`image`, JPEG) y los campos `capture_id`,
-`captured_at`, `device_id`, `model_version`, `predicted_class` (`dog` o `cat`),
-`confidence` (0 a 1) y `latency_ms`.
+El **dispositivo edge** es una laptop con un programa en Python que clasifica fotos con
+el modelo optimizado y las envía al portal.
 
+**Enviar**: `POST /edge-captures` (desde fuera, `POST /api/edge-captures`).
+- Exige el encabezado **`X-Device-Key`** con la clave del dispositivo
+  (`EDGE_DEVICE_KEY` en el `.env` del servidor). Sin ella o con otra, responde `401`.
+- Recibe en `multipart/form-data` la foto (`image`, JPEG) y los campos `capture_id`,
+  `captured_at`, `device_id`, `model_version`, `predicted_class` (`dog` o `cat`),
+  `confidence` (0 a 1), `latency_ms` y, opcional, `crop`: el recorte clasificado
+  como JSON `{"x","y","width","height"}` en píxeles, que debe caber en la foto.
 - La foto va a `s3://mlops-p4-equipo-452857281704/edge-captures/<capture_id>.jpg`,
-  con el rol del servidor. En local, sin `EDGE_CAPTURES_BUCKET`, va a MinIO.
-- El evento va a la tabla `edge_captures` de MariaDB, con `received_at` e
-  `image_key`.
+  con el rol del servidor y una copia del registro en los metadatos del objeto. En
+  local, sin `EDGE_CAPTURES_BUCKET`, va a MinIO.
+- El evento va a la tabla `edge_captures` de MariaDB.
 - Responde `201` con el registro; si el `capture_id` ya existía, `200` con el
   registro existente, sin crear otro registro ni otra foto.
-- CORS solo en esta ruta, con los orígenes de `EDGE_CAPTURES_ALLOWED_ORIGINS`.
+- Sin CORS: lo llama un programa, no una página web.
+
+```python
+import json, requests
+
+with open("captura.jpg", "rb") as foto:
+    r = requests.post(
+        "http://18.216.36.30/api/edge-captures",
+        headers={"X-Device-Key": CLAVE_DEL_DISPOSITIVO},  # léela de una variable de entorno
+        files={"image": ("captura.jpg", foto, "image/jpeg")},
+        data={
+            "capture_id": capture_id, "captured_at": "2026-10-08T18:30:00-06:00",
+            "device_id": "laptop-equipo", "model_version": "1.0.0",
+            "predicted_class": "dog", "confidence": "0.93", "latency_ms": "41.7",
+            "crop": json.dumps({"x": 120, "y": 80, "width": 200, "height": 160}),
+        },
+        timeout=30,
+    )
+r.raise_for_status()  # 201 nueva, 200 si ya existía
+```
+
+**Consultar** (abierto para el portal, sin clave):
+- **`GET /edge-captures?page=1&pageSize=20`:** de la más reciente a la más antigua
+  por `captured_at`. Devuelve `{ items, page, pageSize, total }`.
+- **`GET /edge-captures/<capture_id>`:** una sola captura (`404` si no existe).
+
+Cada captura trae sus campos, `crop` (o `null`), `image_key` e `image_url`: una URL
+firmada de S3 que abre la foto durante 15 minutos.
+
+**Demostrar que los datos están en AWS** (solo lectura, desde cualquier máquina con
+la AWS CLI y una identidad del proyecto):
+
+```bash
+AWS_PROFILE=<tu-perfil> bash scripts/p4/consulta-aws.sh <capture_id>
+```
+
+Muestra que la foto existe en el bucket (tamaño, versión, cifrado) y el registro
+guardado con ella. Permisos y detalles en el propio script.
 
 Reglas completas: [backend/specs/edge-captures.spec.md](backend/specs/edge-captures.spec.md).
 
