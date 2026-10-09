@@ -1,0 +1,21 @@
+# Configuracion del dispositivo edge. Las rutas relativas se resuelven
+# desde la carpeta de este archivo, no desde donde ejecutes el programa.
+
+# Indice de la camara: 0 es /dev/video0. Si hay varias, prueba 1, 2...
+camera_index: 0
+
+# Carpeta donde se guardan las fotos JPEG (se crea si no existe).
+output_dir: captures
+
+# Calidad JPEG, de 1 a 100.
+jpeg_quality: 95
+
+# auto: ventana si hay pantalla, terminal si no. true: pide ventana. false: solo terminal.
+preview: auto
+
+# Cuadros que se descartan al abrir la camara (la exposicion tarda en ajustarse).
+warmup_frames: 5
+
+# Resolucion opcional. Defínelas las dos o deja las dos vacías.
+width:
+height:
