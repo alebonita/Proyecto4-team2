@@ -60,3 +60,12 @@ prueba se borró después.
 `npm test` en `backend/`: **159 passed** en 14 archivos, incluidos los nuevos
 `edge-capture-validation`, `edge-capture-service` y `edge-capture-http`.
 `npm run lint`, `npm run typecheck` y `npm run build` sin errores.
+
+## Después (AWS-2)
+
+- El dispositivo edge resultó ser una laptop con un programa en Python, no un
+  celular: en AWS-2 se quitó CORS de `/edge-captures` y el envío exige la clave
+  `X-Device-Key`.
+- Las dos capturas `aws1-prueba-20261008182407*` de esta evidencia se borraron el
+  2026-10-08 (S3 y MariaDB). Ver
+  [aws-2-consulta-capturas.md](aws-2-consulta-capturas.md).
