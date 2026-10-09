@@ -1,6 +1,6 @@
 # OPS-03: servidor MLflow persistente. Runs en MariaDB y artefactos en MinIO
 # (ver entrypoint.py); el contenedor no guarda estado propio.
-FROM python:3.12-slim
+FROM public.ecr.aws/docker/library/python:3.12-slim
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.13 /uv /usr/local/bin/uv
 
