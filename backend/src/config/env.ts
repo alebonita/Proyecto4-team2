@@ -55,17 +55,13 @@ const envSchema = z.object({
 
   EDGE_CAPTURES_REGION: z.string().min(1).default('us-east-2'),
 
-  // AWS-1: orígenes que pueden llamar a POST /edge-captures desde el navegador
-  // (la página del celular vive en otro origen). Lista separada por comas, o `*`.
-  EDGE_CAPTURES_ALLOWED_ORIGINS: z
-    .string()
-    .default('*')
-    .transform((value) =>
-      value
-        .split(',')
-        .map((origin) => origin.trim())
-        .filter((origin) => origin.length > 0),
-    ),
+  // AWS-2: clave que el dispositivo edge (laptop) manda en `X-Device-Key` para poder
+  // enviar capturas. Nunca va en el repo: vive en el .env del servidor. Sin valor,
+  // POST /edge-captures rechaza todo (503) en vez de quedar abierto.
+  EDGE_DEVICE_KEY: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.string().trim().min(16, 'EDGE_DEVICE_KEY debe tener al menos 16 caracteres.').optional(),
+  ),
 });
 
 /**

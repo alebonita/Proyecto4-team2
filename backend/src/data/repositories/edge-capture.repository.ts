@@ -1,12 +1,13 @@
-import { eq } from 'drizzle-orm';
+import { count, desc, eq } from 'drizzle-orm';
 
 import { db } from '../db/client.js';
 import { type EdgeCapture, edgeCaptures, type NewEdgeCapture } from '../db/schema.js';
 
 /**
- * Busca una captura ya registrada por el `capture_id` que generó el celular.
+ * Busca una captura ya registrada por el `capture_id` que generó el dispositivo edge.
  *
- * AWS-1 usa esta consulta para que un reenvío del mismo evento sea idempotente.
+ * AWS-1 usa esta consulta para que un reenvío del mismo evento sea idempotente, y
+ * AWS-2 para consultar una sola captura.
  */
 export async function findEdgeCaptureByCaptureId(captureId: string): Promise<EdgeCapture | null> {
   const rows = await db
@@ -39,4 +40,34 @@ export async function createEdgeCaptureRow(capture: NewEdgeCapture): Promise<Edg
   }
 
   return row;
+}
+
+export interface ListEdgeCapturesOptions {
+  limit: number;
+  offset: number;
+}
+
+/**
+ * AWS-2 — consulta de una página de capturas, de la más reciente a la más antigua
+ * por `captured_at`. El `id` desempata dos capturas con la misma fecha, para que la
+ * paginación sea estable. Se exporta sin ejecutar para poder probar el orden.
+ */
+export function buildEdgeCaptureListQuery({ limit, offset }: ListEdgeCapturesOptions) {
+  return db
+    .select()
+    .from(edgeCaptures)
+    .orderBy(desc(edgeCaptures.capturedAt), desc(edgeCaptures.id))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function listEdgeCaptureRows(
+  options: ListEdgeCapturesOptions,
+): Promise<EdgeCapture[]> {
+  return buildEdgeCaptureListQuery(options);
+}
+
+export async function countEdgeCaptures(): Promise<number> {
+  const rows = await db.select({ total: count() }).from(edgeCaptures);
+  return rows[0]?.total ?? 0;
 }
