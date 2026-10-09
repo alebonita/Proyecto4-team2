@@ -1,0 +1,3 @@
+# MOD-3: el .onnx vive en el bucket del equipo, igual que best.pt (MOD-1) y el fp32 (MOD-2).
+*.onnx
+node_modules/

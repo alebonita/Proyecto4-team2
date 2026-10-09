@@ -1,0 +1,8 @@
+{
+  "name": "mod-03-verify-web",
+  "private": true,
+  "type": "module",
+  "description": "MOD-3: carga la variante INT8 con onnxruntime-web y compara con el original",
+  "scripts": { "verify": "node verify_web.mjs" },
+  "dependencies": { "onnxruntime-web": "1.22.0" }
+}

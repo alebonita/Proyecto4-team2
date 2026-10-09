@@ -1,0 +1,11 @@
+onnxruntime-web 1.22.0 (backend wasm), Node v22.22.0
+modelo: model/dog-cat-resnet18-1.0.0-int8.onnx  SHA-256 9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
+entrada: input  salida: logits
+
+OK  img102-ann118  real=dog original=dog web=dog p_web(dog)=1.000000  Δlogits=7.13e-2
+OK  img31-ann38    real=cat original=cat web=cat p_web(cat)=0.999998  Δlogits=2.88e-1
+OK  img125-ann141  real=cat original=cat web=cat p_web(cat)=0.898945  Δlogits=4.32e-2
+OK  img560-ann562  real=dog original=dog web=dog p_web(dog)=0.638797  Δlogits=7.37e-2
+OK  img263-ann299  real=cat original=dog web=dog p_web(dog)=0.570789  Δlogits=5.68e-2
+
+OK: 5/5 con la misma clase que el original -> resultados_web.json

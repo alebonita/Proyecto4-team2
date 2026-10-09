@@ -1,0 +1,94 @@
+{
+  "runtime": "onnxruntime-web 1.22.0 (wasm)",
+  "node": "v22.22.0",
+  "modelo": "model/dog-cat-resnet18-1.0.0-int8.onnx",
+  "modelo_sha256": "9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd",
+  "coinciden": "5/5",
+  "resultados": [
+    {
+      "crop_id": "img102-ann118",
+      "caso": "dog muy seguro",
+      "clase_real": "dog",
+      "clase_original": "dog",
+      "clase_web": "dog",
+      "coincide": true,
+      "prob_original": {
+        "dog": 1,
+        "cat": 1.631879698038574e-8
+      },
+      "prob_web": {
+        "dog": 0.9999999855793213,
+        "cat": 1.4420678731963196e-8
+      },
+      "max_abs_diff_logits": 0.07127189636230469
+    },
+    {
+      "crop_id": "img31-ann38",
+      "caso": "cat muy seguro",
+      "clase_real": "cat",
+      "clase_original": "cat",
+      "clase_web": "cat",
+      "coincide": true,
+      "prob_original": {
+        "dog": 0.0000013203392654759227,
+        "cat": 0.9999986886978149
+      },
+      "prob_web": {
+        "dog": 0.0000020181178124272244,
+        "cat": 0.9999979818821877
+      },
+      "max_abs_diff_logits": 0.287600040435791
+    },
+    {
+      "crop_id": "img125-ann141",
+      "caso": "cat con confianza media",
+      "clase_real": "cat",
+      "clase_original": "cat",
+      "clase_web": "cat",
+      "coincide": true,
+      "prob_original": {
+        "dog": 0.09394776821136475,
+        "cat": 0.9060521721839905
+      },
+      "prob_web": {
+        "dog": 0.10105497131393694,
+        "cat": 0.8989450286860631
+      },
+      "max_abs_diff_logits": 0.04324746131896973
+    },
+    {
+      "crop_id": "img560-ann562",
+      "caso": "dog dudoso (≈0.61)",
+      "clase_real": "dog",
+      "clase_original": "dog",
+      "clase_web": "dog",
+      "coincide": true,
+      "prob_original": {
+        "dog": 0.6062876582145691,
+        "cat": 0.3937123119831085
+      },
+      "prob_web": {
+        "dog": 0.63879671751245,
+        "cat": 0.3612032824875499
+      },
+      "max_abs_diff_logits": 0.07374441623687744
+    },
+    {
+      "crop_id": "img263-ann299",
+      "caso": "cat que el original confunde con dog (≈0.54, caso límite)",
+      "clase_real": "cat",
+      "clase_original": "dog",
+      "clase_web": "dog",
+      "coincide": true,
+      "prob_original": {
+        "dog": 0.5446587204933167,
+        "cat": 0.45534124970436096
+      },
+      "prob_web": {
+        "dog": 0.5707894188268365,
+        "cat": 0.42921058117316346
+      },
+      "max_abs_diff_logits": 0.056788623332977295
+    }
+  ]
+}
