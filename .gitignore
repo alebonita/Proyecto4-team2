@@ -26,3 +26,8 @@
 # Tracking local de MLflow (runs y artefactos) cuando no hay servidor remoto.
 mlruns/
 mlartifacts/
+
+# Conjunto de calibración (imágenes de entrenamiento): se comparte por Drive, nunca en Git.
+# Solo evidencias/calibracion/calibration-ids.csv se versiona.
+/calibracion/
+/calibracion.zip
