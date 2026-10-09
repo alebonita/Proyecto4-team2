@@ -40,6 +40,20 @@ export type {
 } from './dashboard.builder.js';
 export { buildDashboardSummary, buildThumbnailUrl } from './dashboard.builder.js';
 export { getDashboardSummary } from './dashboard.service.js';
+// Capturas Edge (AWS-1)
+export type {
+  EdgeCaptureRecord,
+  SaveEdgeCaptureInput,
+  SaveEdgeCaptureResult,
+} from './edge-capture.service.js';
+export { saveEdgeCapture } from './edge-capture.service.js';
+export type { EdgeCaptureFields } from './edge-capture.validation.js';
+export {
+  buildEdgeCaptureKey,
+  EDGE_CAPTURES_PREFIX,
+  EDGE_MODEL_CLASSES,
+  edgeCaptureFieldsSchema,
+} from './edge-capture.validation.js';
 // Errores tipados: la capa UI los mapea a códigos HTTP (SPEC-VALID-001).
 export { NotFoundError, TraceabilityUnavailableError, ValidationError } from './errors.js';
 export type { HealthStatus } from './health.service.js';
