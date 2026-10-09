@@ -18,9 +18,13 @@ export {
   updateAnnotationRow,
 } from './repositories/annotation.repository.js';
 export { listCategories } from './repositories/category.repository.js';
+export type { ListEdgeCapturesOptions } from './repositories/edge-capture.repository.js';
 export {
+  buildEdgeCaptureListQuery,
+  countEdgeCaptures,
   createEdgeCaptureRow,
   findEdgeCaptureByCaptureId,
+  listEdgeCaptureRows,
 } from './repositories/edge-capture.repository.js';
 export type {
   ClassSearch,
@@ -47,7 +51,11 @@ export {
   findInferenceQueueEntryByKey,
 } from './repositories/inference-queue.repository.js';
 // Fotos de Capturas Edge: bucket S3 del equipo en AWS, MinIO en local (AWS-1).
-export { edgeCapturesBucket, putEdgeCaptureObject } from './storage/edge-capture.storage.js';
+export {
+  edgeCapturesBucket,
+  getEdgeCaptureImageUrl,
+  putEdgeCaptureObject,
+} from './storage/edge-capture.storage.js';
 // Funciones de almacenamiento en MinIO.
 export {
   deleteImageObject,

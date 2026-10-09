@@ -4,24 +4,34 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { z } from 'zod';
 
 /**
- * AWS-1: POST /edge-captures por HTTP, con CORS para la página del celular.
+ * AWS-1/AWS-2: /edge-captures por HTTP. El envío exige la clave del dispositivo edge
+ * (laptop); las consultas quedan abiertas para el portal. Sin CORS.
  */
 
 class MockValidationError extends Error {}
+class MockNotFoundError extends Error {}
+
+const DEVICE_KEY = 'clave-de-prueba-0123456789abcdef';
 
 const capture = {
   capture_id: 'cap-0001',
   captured_at: '2026-10-08T15:04:05.000Z',
-  device_id: 'pixel-7-equipo',
+  received_at: '2026-10-08T15:04:06.000Z',
+  device_id: 'laptop-equipo',
   model_version: '1.0.0-int8',
   predicted_class: 'dog',
   confidence: 0.93,
   latency_ms: 41.7,
-  received_at: '2026-10-08T15:04:06.000Z',
+  crop: { x: 8, y: 4, width: 40, height: 30 },
   image_key: 'edge-captures/cap-0001.jpg',
 };
 
 const saveEdgeCaptureMock = vi.fn();
+const listEdgeCapturesMock = vi.fn();
+const getEdgeCaptureMock = vi.fn();
+const checkEdgeDeviceKeyMock = vi.fn((provided: string | undefined) =>
+  provided === DEVICE_KEY ? 'ok' : 'rejected',
+);
 
 let server: Server | undefined;
 let baseUrl: string;
@@ -33,9 +43,9 @@ beforeAll(async () => {
   process.env.MINIO_ACCESS_KEY = 'ci';
   process.env.MINIO_SECRET_KEY = 'ci';
   process.env.MINIO_BUCKET = 'image-annotations';
-  process.env.EDGE_CAPTURES_ALLOWED_ORIGINS = 'https://celular.example.com';
 
   vi.doMock('../src/logic/index.js', () => ({
+    checkEdgeDeviceKey: checkEdgeDeviceKeyMock,
     checkHealth: vi.fn(),
     createAnnotationForImage: vi.fn(),
     createSettingsService: vi.fn(() => ({
@@ -50,11 +60,13 @@ beforeAll(async () => {
     getAnnotationsForImage: vi.fn(),
     getCategories: vi.fn(),
     getDashboardSummary: vi.fn(),
+    getEdgeCapture: getEdgeCaptureMock,
     getImageFile: vi.fn(),
     idParamSchema: z.coerce.number().int().positive(),
     imageSearchSchema: z.object({}).passthrough(),
     initializeApplication: vi.fn(),
-    NotFoundError: class MockNotFoundError extends Error {},
+    listEdgeCaptures: listEdgeCapturesMock,
+    NotFoundError: MockNotFoundError,
     saveEdgeCapture: saveEdgeCaptureMock,
     searchImages: vi.fn(),
     setImageStatus: vi.fn(),
@@ -81,7 +93,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   vi.doUnmock('../src/logic/index.js');
-  delete process.env.EDGE_CAPTURES_ALLOWED_ORIGINS;
 
   if (server === undefined) return;
 
@@ -95,6 +106,9 @@ afterAll(async () => {
 
 beforeEach(() => {
   saveEdgeCaptureMock.mockReset();
+  listEdgeCapturesMock.mockReset();
+  getEdgeCaptureMock.mockReset();
+  checkEdgeDeviceKeyMock.mockClear();
 });
 
 function captureForm(withImage = true): FormData {
@@ -113,43 +127,78 @@ function captureForm(withImage = true): FormData {
   form.append('predicted_class', capture.predicted_class);
   form.append('confidence', String(capture.confidence));
   form.append('latency_ms', String(capture.latency_ms));
+  form.append('crop', JSON.stringify(capture.crop));
   return form;
 }
+
+function post(headers: Record<string, string> = { 'X-Device-Key': DEVICE_KEY }, withImage = true) {
+  return fetch(`${baseUrl}/edge-captures`, {
+    method: 'POST',
+    headers,
+    body: captureForm(withImage),
+  });
+}
+
+describe('AWS-2 - clave del dispositivo en POST /edge-captures', () => {
+  it('sin clave responde 401 y no procesa la captura', async () => {
+    const response = await post({});
+
+    expect(response.status).toBe(401);
+    expect(saveEdgeCaptureMock).not.toHaveBeenCalled();
+  });
+
+  it('con clave incorrecta responde 401 y no procesa la captura', async () => {
+    const response = await post({ 'X-Device-Key': 'clave-equivocada' });
+
+    expect(response.status).toBe(401);
+    expect(saveEdgeCaptureMock).not.toHaveBeenCalled();
+  });
+
+  it('si el servidor no tiene clave configurada responde 503, no queda abierto', async () => {
+    checkEdgeDeviceKeyMock.mockReturnValueOnce('not-configured');
+
+    const response = await post();
+
+    expect(response.status).toBe(503);
+    expect(saveEdgeCaptureMock).not.toHaveBeenCalled();
+  });
+
+  it('la respuesta de error no repite la clave recibida', async () => {
+    const response = await post({ 'X-Device-Key': 'clave-secreta-que-no-debe-salir' });
+
+    expect(await response.text()).not.toContain('clave-secreta-que-no-debe-salir');
+  });
+});
 
 describe('AWS-1 - POST /edge-captures', () => {
   it('una captura nueva responde 201 con el registro y entrega los campos a Logic', async () => {
     saveEdgeCaptureMock.mockResolvedValueOnce({ created: true, capture });
 
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'POST',
-      body: captureForm(),
-    });
+    const response = await post();
 
     expect(response.status).toBe(201);
     expect(await response.json()).toEqual(capture);
 
     const input = saveEdgeCaptureMock.mock.calls[0]?.[0];
     expect(input.image.mimeType).toBe('image/jpeg');
-    expect(input.fields).toMatchObject({ capture_id: 'cap-0001', confidence: '0.93' });
+    expect(input.fields).toMatchObject({
+      capture_id: 'cap-0001',
+      confidence: '0.93',
+      crop: '{"x":8,"y":4,"width":40,"height":30}',
+    });
   });
 
   it('un capture_id repetido responde 200 con el registro existente', async () => {
     saveEdgeCaptureMock.mockResolvedValueOnce({ created: false, capture });
 
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'POST',
-      body: captureForm(),
-    });
+    const response = await post();
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(capture);
   });
 
   it('sin imagen responde 400 sin llamar a Logic', async () => {
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'POST',
-      body: captureForm(false),
-    });
+    const response = await post(undefined, false);
 
     expect(response.status).toBe(400);
     expect(saveEdgeCaptureMock).not.toHaveBeenCalled();
@@ -158,59 +207,77 @@ describe('AWS-1 - POST /edge-captures', () => {
   it('una captura inválida (ValidationError) responde 400', async () => {
     saveEdgeCaptureMock.mockRejectedValueOnce(new MockValidationError('confidence fuera de rango'));
 
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'POST',
-      body: captureForm(),
-    });
+    const response = await post();
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: 'confidence fuera de rango' });
   });
+
+  it('no responde con cabeceras CORS: lo llama un programa, no una página de otro origen', async () => {
+    saveEdgeCaptureMock.mockResolvedValueOnce({ created: true, capture });
+
+    const response = await post({
+      'X-Device-Key': DEVICE_KEY,
+      Origin: 'https://cualquier-sitio.example.com',
+    });
+
+    expect(response.headers.get('access-control-allow-origin')).toBeNull();
+  });
 });
 
-describe('AWS-1 - CORS de /edge-captures', () => {
-  it('responde la preflight de un origen permitido', async () => {
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'OPTIONS',
-      headers: {
-        Origin: 'https://celular.example.com',
-        'Access-Control-Request-Method': 'POST',
-      },
-    });
+describe('AWS-2 - GET /edge-captures (abierto para el portal)', () => {
+  it('devuelve las capturas tal como las ordena Logic, sin pedir clave', async () => {
+    const page = {
+      items: [
+        { ...capture, capture_id: 'nueva', image_url: 'https://s3.example/nueva' },
+        { ...capture, capture_id: 'vieja', image_url: 'https://s3.example/vieja' },
+      ],
+      page: 1,
+      pageSize: 20,
+      total: 2,
+    };
+    listEdgeCapturesMock.mockResolvedValueOnce(page);
 
-    expect(response.status).toBe(204);
-    expect(response.headers.get('access-control-allow-origin')).toBe('https://celular.example.com');
-    expect(response.headers.get('access-control-allow-methods')).toContain('POST');
+    const response = await fetch(`${baseUrl}/edge-captures?page=1&pageSize=20`);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(page);
+    expect(listEdgeCapturesMock.mock.calls[0]?.[0]).toMatchObject({ page: '1', pageSize: '20' });
+    expect(checkEdgeDeviceKeyMock).not.toHaveBeenCalled();
   });
 
-  it('agrega la cabecera también a la respuesta del POST (y a los errores)', async () => {
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'POST',
-      headers: { Origin: 'https://celular.example.com' },
-      body: captureForm(false),
-    });
+  it('sin capturas responde 200 con la lista vacía', async () => {
+    listEdgeCapturesMock.mockResolvedValueOnce({ items: [], page: 1, pageSize: 20, total: 0 });
+
+    const response = await fetch(`${baseUrl}/edge-captures`);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ items: [], page: 1, pageSize: 20, total: 0 });
+  });
+
+  it('una paginación inválida responde 400', async () => {
+    listEdgeCapturesMock.mockRejectedValueOnce(new MockValidationError('pageSize fuera de rango'));
+
+    const response = await fetch(`${baseUrl}/edge-captures?pageSize=500`);
 
     expect(response.status).toBe(400);
-    expect(response.headers.get('access-control-allow-origin')).toBe('https://celular.example.com');
   });
 
-  it('no permite un origen que no está en la lista', async () => {
-    const response = await fetch(`${baseUrl}/edge-captures`, {
-      method: 'OPTIONS',
-      headers: {
-        Origin: 'https://otro-sitio.example.com',
-        'Access-Control-Request-Method': 'POST',
-      },
-    });
+  it('GET /edge-captures/:id devuelve una captura', async () => {
+    getEdgeCaptureMock.mockResolvedValueOnce({ ...capture, image_url: 'https://s3.example/x' });
 
-    expect(response.headers.get('access-control-allow-origin')).toBeNull();
+    const response = await fetch(`${baseUrl}/edge-captures/cap-0001`);
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).crop).toEqual(capture.crop);
+    expect(getEdgeCaptureMock).toHaveBeenCalledWith('cap-0001');
   });
 
-  it('el resto de la API no expone CORS', async () => {
-    const response = await fetch(`${baseUrl}/`, {
-      headers: { Origin: 'https://celular.example.com' },
-    });
+  it('GET /edge-captures/:id de una captura que no existe responde 404', async () => {
+    getEdgeCaptureMock.mockRejectedValueOnce(new MockNotFoundError('Captura no encontrada.'));
 
-    expect(response.headers.get('access-control-allow-origin')).toBeNull();
+    const response = await fetch(`${baseUrl}/edge-captures/no-existe`);
+
+    expect(response.status).toBe(404);
   });
 });

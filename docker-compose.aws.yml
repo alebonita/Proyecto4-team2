@@ -18,11 +18,11 @@
 # tome las credenciales del rol y Models confirme la publicación en S3. Requiere
 # `HttpPutResponseHopLimit=2` en la instancia (un salto más por la red de Docker).
 # `backend` no define esa variable, así que también usa el rol: AWS-1 guarda ahí las
-# fotos de Capturas Edge (POST /edge-captures). Ver "Datos del proyecto" en el README.
+# fotos de Capturas Edge (POST /edge-captures) y AWS-2 firma las URL para verlas.
+# Ver "Datos del proyecto" en el README.
 #
-# EDGE_CAPTURES_ALLOWED_ORIGINS queda en `*` (cualquier origen) mientras no se conozca
-# la URL de la página del celular. Para restringirlo, ponla en el .env del servidor,
-# por ejemplo `EDGE_CAPTURES_ALLOWED_ORIGINS=https://celular.example.com`.
+# AWS-2: la clave del dispositivo edge (EDGE_DEVICE_KEY) no va aquí: el backend la toma
+# del .env del servidor (docker-compose.yml la pasa), que nunca entra al repo.
 
 services:
   frontend:
@@ -36,7 +36,6 @@ services:
     environment:
       EDGE_CAPTURES_BUCKET: mlops-p4-equipo-452857281704
       EDGE_CAPTURES_REGION: us-east-2
-      EDGE_CAPTURES_ALLOWED_ORIGINS: ${EDGE_CAPTURES_ALLOWED_ORIGINS:-*}
     restart: unless-stopped
 
   mariadb:

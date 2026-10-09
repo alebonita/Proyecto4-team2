@@ -40,19 +40,34 @@ export type {
 } from './dashboard.builder.js';
 export { buildDashboardSummary, buildThumbnailUrl } from './dashboard.builder.js';
 export { getDashboardSummary } from './dashboard.service.js';
-// Capturas Edge (AWS-1)
+// Capturas Edge (AWS-1, AWS-2)
 export type {
   EdgeCaptureRecord,
+  EdgeCaptureView,
+  ListEdgeCapturesResult,
   SaveEdgeCaptureInput,
   SaveEdgeCaptureResult,
 } from './edge-capture.service.js';
-export { saveEdgeCapture } from './edge-capture.service.js';
-export type { EdgeCaptureFields } from './edge-capture.validation.js';
+export {
+  checkEdgeDeviceKey,
+  EDGE_CAPTURE_URL_TTL_SECONDS,
+  getEdgeCapture,
+  listEdgeCaptures,
+  saveEdgeCapture,
+} from './edge-capture.service.js';
+export type {
+  EdgeCaptureCrop,
+  EdgeCaptureFields,
+  EdgeCaptureListQuery,
+} from './edge-capture.validation.js';
 export {
   buildEdgeCaptureKey,
+  captureIdSchema,
   EDGE_CAPTURES_PREFIX,
   EDGE_MODEL_CLASSES,
+  edgeCaptureCropSchema,
   edgeCaptureFieldsSchema,
+  edgeCaptureListQuerySchema,
 } from './edge-capture.validation.js';
 // Errores tipados: la capa UI los mapea a códigos HTTP (SPEC-VALID-001).
 export { NotFoundError, TraceabilityUnavailableError, ValidationError } from './errors.js';
