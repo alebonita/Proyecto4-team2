@@ -1,0 +1,8 @@
+# Falsos positivos conocidos de gitleaks (regla generic-api-key), por huella exacta:
+# <commit>:<archivo>:<regla>:<línea>. No es una lista para callar hallazgos nuevos.
+#
+# AWS-2 (commit f4299a8): los tests usaban una clave de dispositivo ficticia escrita
+# como literal. Desde el commit siguiente la generan en cada corrida con randomBytes,
+# pero el CI escanea todo el historial (`gitleaks git`) y ese commit no se reescribe.
+f4299a81dc074f430dfb49a053f99e7eaf5a46d1:backend/tests/edge-capture-http.test.ts:generic-api-key:14
+f4299a81dc074f430dfb49a053f99e7eaf5a46d1:backend/tests/edge-capture-service.test.ts:generic-api-key:26

@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,7 +25,8 @@ let NotFoundError: typeof import('../src/logic/errors.js').NotFoundError;
 let jpeg: Buffer;
 let png: Buffer;
 
-const DEVICE_KEY = 'clave-de-prueba-0123456789abcdef';
+// Se genera en cada corrida: ningún valor con forma de clave queda escrito en el repo.
+const DEVICE_KEY = randomBytes(16).toString('hex');
 
 beforeAll(async () => {
   process.env.DATABASE_URL = 'mysql://root:ci@127.0.0.1:3306/image_repo';

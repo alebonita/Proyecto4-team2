@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { Server } from 'node:http';
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,7 +12,8 @@ import { z } from 'zod';
 class MockValidationError extends Error {}
 class MockNotFoundError extends Error {}
 
-const DEVICE_KEY = 'clave-de-prueba-0123456789abcdef';
+// Se genera en cada corrida: ningún valor con forma de clave queda escrito en el repo.
+const DEVICE_KEY = randomBytes(16).toString('hex');
 
 const capture = {
   capture_id: 'cap-0001',
