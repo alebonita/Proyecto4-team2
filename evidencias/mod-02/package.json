@@ -1,0 +1,8 @@
+{
+  "name": "mod-02-verify-web",
+  "private": true,
+  "type": "module",
+  "description": "MOD-2: carga el ONNX con onnxruntime-web y compara con el original",
+  "scripts": { "verify": "node verify_web.mjs" },
+  "dependencies": { "onnxruntime-web": "1.22.0" }
+}

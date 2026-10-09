@@ -1,0 +1,3 @@
+# MOD-2: el .onnx (45 MB) vive en el bucket del equipo, igual que best.pt en MOD-1.
+*.onnx
+node_modules/
