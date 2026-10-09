@@ -44,6 +44,28 @@ const envSchema = z.object({
     .int()
     .positive()
     .default(10 * 1024 * 1024),
+
+  // AWS-1: bucket de S3 del equipo donde se guardan las fotos de Capturas Edge
+  // (prefijo edge-captures/). En AWS las credenciales salen del rol de la instancia.
+  // Sin valor (desarrollo local), las fotos van a MinIO, al mismo bucket del portal.
+  EDGE_CAPTURES_BUCKET: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.string().trim().min(3).optional(),
+  ),
+
+  EDGE_CAPTURES_REGION: z.string().min(1).default('us-east-2'),
+
+  // AWS-1: orígenes que pueden llamar a POST /edge-captures desde el navegador
+  // (la página del celular vive en otro origen). Lista separada por comas, o `*`.
+  EDGE_CAPTURES_ALLOWED_ORIGINS: z
+    .string()
+    .default('*')
+    .transform((value) =>
+      value
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter((origin) => origin.length > 0),
+    ),
 });
 
 /**

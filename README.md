@@ -1189,6 +1189,9 @@ ignora todo `.env*` salvo las plantillas de ejemplo.
 | `MAX_UPLOAD_SIZE_BYTES` | Tamaño máximo por imagen (10 MiB por defecto)   |
 | `MLFLOW_TRACKING_URI`   | Servidor MLflow (`http://mlflow:5000` dentro de Compose, `http://localhost:5000` desde el host) |
 | `MLFLOW_PORT`           | Puerto del host para la UI de MLflow (opcional, 5000 por defecto) |
+| `EDGE_CAPTURES_BUCKET`  | Bucket de S3 para las fotos de Capturas Edge (AWS-1). Vacío en local: se usa MinIO |
+| `EDGE_CAPTURES_REGION`  | Región de ese bucket (`us-east-2` por defecto) |
+| `EDGE_CAPTURES_ALLOWED_ORIGINS` | Orígenes permitidos por CORS en `/edge-captures`, separados por coma, o `*` (por defecto) |
 
 Los `.env` son configuración local de Compose/backend/MinIO/Copilot. Las
 credenciales AWS se obtienen mediante el perfil SSO `mlops-p2`; nunca las
@@ -1211,6 +1214,24 @@ copies a un `.env`.
 | GET    | `/categories`               | Categorías disponibles con su color         |
 | GET    | `/dashboard/summary`        | Métricas calculadas en SQL                  |
 | GET    | `/export/coco`              | Descarga el dataset en formato COCO         |
+| POST   | `/edge-captures`            | Capturas Edge: foto JPEG y evento del celular, idempotente por `capture_id` (AWS-1) |
+
+### Capturas Edge (AWS-1)
+
+`POST /edge-captures` (desde fuera, `POST /api/edge-captures`) recibe en
+`multipart/form-data` la foto (`image`, JPEG) y los campos `capture_id`,
+`captured_at`, `device_id`, `model_version`, `predicted_class` (`dog` o `cat`),
+`confidence` (0 a 1) y `latency_ms`.
+
+- La foto va a `s3://mlops-p4-equipo-452857281704/edge-captures/<capture_id>.jpg`,
+  con el rol del servidor. En local, sin `EDGE_CAPTURES_BUCKET`, va a MinIO.
+- El evento va a la tabla `edge_captures` de MariaDB, con `received_at` e
+  `image_key`.
+- Responde `201` con el registro; si el `capture_id` ya existía, `200` con el
+  registro existente, sin crear otro registro ni otra foto.
+- CORS solo en esta ruta, con los orígenes de `EDGE_CAPTURES_ALLOWED_ORIGINS`.
+
+Reglas completas: [backend/specs/edge-captures.spec.md](backend/specs/edge-captures.spec.md).
 
 ### Búsqueda
 

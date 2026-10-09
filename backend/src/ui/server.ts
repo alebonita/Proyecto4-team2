@@ -17,6 +17,7 @@ import {
   imageSearchSchema,
   initializeApplication,
   NotFoundError,
+  saveEdgeCapture,
   searchImages,
   setImageStatus,
   TraceabilityUnavailableError,
@@ -196,6 +197,74 @@ app.post('/images/from-inference', upload.single('image'), async (req, res) => {
     });
   } catch (error) {
     sendError(res, error, 'No se pudo enviar la inferencia a la cola de anotación.');
+  }
+});
+
+/**
+ * AWS-1 — CORS de Capturas Edge: la página del celular vive en otro origen.
+ *
+ * Solo aplica a /edge-captures. Los orígenes salen de EDGE_CAPTURES_ALLOWED_ORIGINS
+ * (`*` o una lista). Va antes de multer para que el navegador también pueda leer
+ * los errores (400, 413) y no solo las respuestas exitosas.
+ */
+function allowEdgeCaptureOrigin(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+): void {
+  const origin = req.get('Origin');
+  const allowed = env.EDGE_CAPTURES_ALLOWED_ORIGINS;
+  const allowAll = allowed.includes('*');
+
+  if (origin && (allowAll || allowed.includes(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', allowAll ? '*' : origin);
+    if (!allowAll) res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '600');
+  }
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
+}
+
+app.options('/edge-captures', allowEdgeCaptureOrigin);
+
+/**
+ * AWS-1 — recibe la foto y el evento de una captura del celular.
+ *
+ * multipart/form-data:
+ * - image: foto JPEG
+ * - capture_id, captured_at, device_id, model_version, predicted_class,
+ *   confidence, latency_ms
+ *
+ * 201 si se guardó; 200 con el registro existente si el capture_id ya estaba.
+ */
+app.post('/edge-captures', allowEdgeCaptureOrigin, upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({
+      error: 'Debe enviarse una imagen.',
+    });
+    return;
+  }
+
+  try {
+    const result = await saveEdgeCapture({
+      image: {
+        mimeType: req.file.mimetype,
+        sizeBytes: req.file.size,
+        buffer: req.file.buffer,
+      },
+      fields: req.body,
+    });
+
+    res.status(result.created ? 201 : 200).json(result.capture);
+  } catch (error) {
+    sendError(res, error, 'No se pudo guardar la captura.');
   }
 });
 
