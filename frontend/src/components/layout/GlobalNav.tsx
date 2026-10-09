@@ -1,6 +1,7 @@
 import {
   Bot,
   Boxes,
+  Camera,
   ChartScatter,
   ClipboardCheck,
   Dumbbell,
@@ -47,6 +48,9 @@ const ML_NAV_ITEMS: NavItem[] = [
   { label: "Models", to: "/ml/models", icon: Boxes },
   { label: "Inference", to: "/ml/inference", icon: Zap },
 ];
+
+/** POR-1 (Proyecto 4): capturas que clasifica el dispositivo edge y llegan a AWS. */
+const EDGE_NAV_ITEMS: NavItem[] = [{ label: "Capturas Edge", to: "/edge/captures", icon: Camera }];
 
 function NavLinkList({ items }: { items: NavItem[] }) {
   return (
@@ -102,6 +106,8 @@ export function GlobalNav({ children }: { children?: ReactNode }) {
         <NavLinkList items={PIPELINE_NAV_ITEMS} />
         <div className="my-2 h-px w-full shrink-0 bg-border lg:my-2" aria-hidden />
         <NavLinkList items={ML_NAV_ITEMS} />
+        <div className="my-2 h-px w-full shrink-0 bg-border lg:my-2" aria-hidden />
+        <NavLinkList items={EDGE_NAV_ITEMS} />
       </nav>
 
       {children && <div className="border-t border-border px-5 py-5">{children}</div>}

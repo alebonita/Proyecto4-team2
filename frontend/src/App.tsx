@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AnnotateScreen } from "@/components/annotate/AnnotateScreen";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { UploadScreen } from "@/components/upload/UploadScreen";
+import { EdgeCapturesPage } from "@/edge/pages/EdgeCaptures";
 import { EvaluationPage } from "@/ml/pages/Evaluation";
 import { ExperimentsPage } from "@/ml/pages/Experiments";
 import { InferencePage } from "@/ml/pages/Inference";
@@ -146,6 +147,17 @@ export function App(): JSX.Element {
         element={
           <AppLayout>
             <InferencePage />
+          </AppLayout>
+        }
+      />
+
+      {/* POR-1 (Proyecto 4): Capturas Edge — mismo portal y mismo AppLayout/GlobalNav. */}
+      <Route path="/edge" element={<Navigate to="/edge/captures" replace />} />
+      <Route
+        path="/edge/captures"
+        element={
+          <AppLayout>
+            <EdgeCapturesPage />
           </AppLayout>
         }
       />
