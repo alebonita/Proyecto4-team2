@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MOD-2 · ONNX en el navegador</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; margin: 24px; color: #1c1b1a; background: #fafaf9; }
+    h1 { font-size: 20px; margin: 0 0 4px; }
+    .meta { color: #6b6863; font-size: 13px; margin: 2px 0; word-break: break-all; }
+    table { border-collapse: collapse; margin-top: 16px; background: #fff; }
+    th, td { border: 1px solid #e7e5e1; padding: 6px 10px; text-align: left; font-size: 13px; }
+    th { background: #f5f4f1; }
+    td.mono { font-family: ui-monospace, monospace; }
+    .ok { color: #1e7a3c; font-weight: 600; }
+    .no { color: #b42318; font-weight: 600; }
+    #summary { margin-top: 16px; font-size: 18px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <!--
+    MOD-2 — carga el ONNX con onnxruntime-web DENTRO DEL NAVEGADOR (backend WASM) y lo
+    compara con el original en las mismas 5 entradas que verify_web.mjs.
+    Abrir con un servidor local (los navegadores bloquean fetch en file://):
+      npm install
+      python -m http.server 8000      # desde evidencias/mod-02
+      http://localhost:8000/verify_browser.html
+  -->
+  <h1>MOD-2 · ONNX original en el runtime web (navegador)</h1>
+  <p class="meta" id="env">Cargando…</p>
+  <p class="meta" id="model"></p>
+  <table>
+    <thead>
+      <tr><th>Recorte</th><th>Caso</th><th>Real</th><th>Original (PyTorch)</th><th>ONNX en navegador</th><th>Prob. web</th><th>Δ máx. logits</th><th></th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p id="summary"></p>
+
+  <script src="node_modules/onnxruntime-web/dist/ort.wasm.min.js"></script>
+  <script>
+    const MODEL = "model/dog-cat-resnet18-1.0.0-fp32.onnx";
+
+    async function sha256Hex(buffer) {
+      const digest = await crypto.subtle.digest("SHA-256", buffer);
+      return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    const softmax = (xs) => {
+      const m = Math.max(...xs);
+      const e = xs.map((x) => Math.exp(x - m));
+      const s = e.reduce((a, b) => a + b, 0);
+      return e.map((x) => x / s);
+    };
+    const cell = (text, cls) => {
+      const td = document.createElement("td");
+      td.textContent = text;
+      if (cls) td.className = cls;
+      return td;
+    };
+
+    async function main() {
+      ort.env.wasm.wasmPaths = new URL("node_modules/onnxruntime-web/dist/", location.href).href;
+      ort.env.wasm.numThreads = 1;
+
+      const expected = await (await fetch("inputs/expected.json")).json();
+      const modelResponse = await fetch(MODEL);
+      if (!modelResponse.ok) throw new Error(`No se pudo leer ${MODEL} (${modelResponse.status}). Bájalo del bucket o corre export_onnx.py.`);
+      const modelBytes = await modelResponse.arrayBuffer();
+      const modelHash = await sha256Hex(modelBytes);
+      const session = await ort.InferenceSession.create(modelBytes, { executionProviders: ["wasm"] });
+
+      document.getElementById("env").textContent =
+        `onnxruntime-web ${ort.env.versions.web} (backend wasm) · ${navigator.userAgent}`;
+      document.getElementById("model").textContent =
+        `modelo: ${MODEL} · SHA-256 ${modelHash} · entrada ${session.inputNames} · salida ${session.outputNames}`;
+
+      const results = [];
+      const tbody = document.getElementById("rows");
+      for (const sample of expected.samples) {
+        const raw = await (await fetch(`inputs/${sample.crop_id}.bin`)).arrayBuffer();
+        const input = new ort.Tensor("float32", new Float32Array(raw), expected.input_shape);
+        const out = await session.run({ [expected.input_name]: input });
+        const logits = Array.from(out[expected.output_name].data);
+        const probs = softmax(logits);
+        const webClass = expected.classes[logits.indexOf(Math.max(...logits))];
+        const maxDiff = Math.max(...logits.map((v, i) => Math.abs(v - sample.original_logits[i])));
+        const match = webClass === sample.original_class;
+        results.push({
+          crop_id: sample.crop_id,
+          caso: sample.why,
+          clase_real: sample.true_class,
+          clase_original: sample.original_class,
+          clase_web: webClass,
+          coincide: match,
+          prob_web: Object.fromEntries(expected.classes.map((c, i) => [c, probs[i]])),
+          max_abs_diff_logits: maxDiff,
+        });
+
+        const tr = document.createElement("tr");
+        tr.append(
+          cell(sample.crop_id, "mono"),
+          cell(sample.why),
+          cell(sample.true_class),
+          cell(sample.original_class),
+          cell(webClass, match ? "ok" : "no"),
+          cell(probs[expected.classes.indexOf(webClass)].toFixed(6), "mono"),
+          cell(maxDiff.toExponential(2), "mono"),
+          cell(match ? "✓ coincide" : "✗ distinta", match ? "ok" : "no"),
+        );
+        tbody.append(tr);
+      }
+
+      const okCount = results.filter((r) => r.coincide).length;
+      const summary = document.getElementById("summary");
+      summary.textContent = `${okCount === results.length ? "OK" : "FALLA"}: ${okCount}/${results.length} con la misma clase que el original`;
+      summary.className = okCount === results.length ? "ok" : "no";
+
+      window.__mod2 = {
+        runtime: `onnxruntime-web ${ort.env.versions.web} (wasm, navegador)`,
+        user_agent: navigator.userAgent,
+        modelo: MODEL,
+        modelo_sha256: modelHash,
+        coinciden: `${okCount}/${results.length}`,
+        resultados: results,
+      };
+    }
+
+    main().catch((error) => {
+      document.getElementById("summary").textContent = `Error: ${error.message}`;
+      document.getElementById("summary").className = "no";
+      window.__mod2 = { error: error.message };
+    });
+  </script>
+</body>
+</html>

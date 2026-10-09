@@ -21,7 +21,10 @@ Como `best.pt`, el `.onnx` **no está en git** por su tamaño: está en el bucke
 
 ## Resultado en el runtime web
 
-`onnxruntime-web` 1.22.0 (backend WASM), Node 22.22.0, con las mismas entradas que recibe el original:
+`onnxruntime-web` 1.22.0 (backend WASM), con las mismas entradas que recibe el original. Se probó de dos formas y las dos dan el mismo resultado:
+
+- **En un navegador** (Chromium 141, `verify_browser.html`). Captura: `verify_browser.png`; datos: `resultados_navegador.json`.
+- **En Node 22.22.0** (`verify_web.mjs`), que sirve para repetir la prueba desde la terminal. Datos: `resultados_web.json`.
 
 | Recorte | Caso | Real | Original (PyTorch) | ONNX en runtime web | Prob. web | Δ máx. logits |
 |---|---|---|---|---|---|---|
@@ -33,7 +36,9 @@ Como `best.pt`, el `.onnx` **no está en git** por su tamaño: está en el bucke
 
 **5/5 con la misma clase que el original.** Las 5 se eligieron de antemano para cubrir casos distintos: dos predicciones seguras, una media, una dudosa y un error del original con probabilidad cercana a 0.5. En ese último el ONNX repite el mismo error, que es lo esperado en una conversión fiel: la clase debe coincidir con el original, no con la etiqueta real. Las diferencias de logits son del orden de 1e-6, error de redondeo de float32.
 
-Salidas completas: `verify_web_output.txt` y `resultados_web.json` (runtime web), y `export_output.txt` y `export_log.json` (exportación, con versiones). `inputs/expected.json` contiene las probabilidades y logits del original.
+![ONNX en el navegador: 5/5](verify_browser.png)
+
+Salidas completas: `verify_browser.png` y `resultados_navegador.json` (navegador), `verify_web_output.txt` y `resultados_web.json` (Node), y `export_output.txt` y `export_log.json` (exportación, con versiones). `inputs/expected.json` contiene las probabilidades y logits del original.
 
 ## Comandos usados
 
@@ -50,6 +55,10 @@ sha256sum -c model/SHA256SUMS  # (macOS: shasum -a 256 -c model/SHA256SUMS)
 # 3. Cargar en el runtime web y comparar con el original
 npm install                    # onnxruntime-web 1.22.0 (package.json / package-lock.json)
 node verify_web.mjs            # 5/5 -> resultados_web.json; sale con código 1 si alguna no coincide
+
+# 4. Lo mismo dentro de un navegador
+python -m http.server 8000     # desde esta carpeta (fetch no funciona con file://)
+# abrir http://localhost:8000/verify_browser.html  -> tabla 5/5 y "OK"
 ```
 
 Para usar la copia del bucket en lugar de exportar:
