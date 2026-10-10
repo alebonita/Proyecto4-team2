@@ -14,8 +14,9 @@ uso: [`edge/README.md`](../../edge/README.md).
 | Variante INT8 oficial de MOD-3 cargada en la laptop edge (SHA-256 `9c28368a…`) | ✅ |
 | Prueba con imágenes de validación conocidas y accuracy en las 128 | ✅ 5/5 pruebas |
 | Captura → clase, confianza y ms en la terminal | ✅ por SSH |
-| Captura → clase, confianza y ms en la **ventana** | ⏳ pendiente: consola física |
-| Clasificación con la **red desconectada** | ⏳ pendiente: consola física |
+| Captura → clase, confianza y ms en la **ventana** | ✅ consola física (`run_display.sh`) |
+| Clasificación con la **red desconectada** | ✅ 4 capturas sin red, verificadas con el registro del sistema |
+| Predicción que cambia con objetos de distintas clases | ✅ 8/8 correctas (4 perros, 4 gatos) |
 
 ## Modelo en la laptop edge
 
@@ -28,7 +29,35 @@ uso: [`edge/README.md`](../../edge/README.md).
 
 `config.yaml` trae ese SHA-256: con otro archivo, el programa no arranca.
 
-## Arranque y capturas (2026-10-10)
+## Prueba física con y sin red (2026-10-10)
+
+En la consola física de la laptop (`run_display.sh`, vista previa en su pantalla) se presentaron
+fotos de perros y gatos en la pantalla de un celular dentro del recuadro verde. A mitad de la
+prueba se desconectó el adaptador de red USB, la única conexión del equipo (no tiene wifi).
+
+**Red desconectada de 19:44:06 a 19:46:08 UTC**, según el registro del sistema
+(`journalctl`): el kernel registra la desconexión del adaptador, `systemd-networkd` reporta
+`Lost carrier` y `DHCP lease lost`, no hay ningún `Gained carrier` ni dirección DHCP en ese
+intervalo, y `tailscaled` falla con `network is unreachable` hasta las 19:46:22.
+
+| Foto | Hora (UTC) | Red | Se ve | Clase | Confianza |
+|---|---|---|---|---|---|
+| [`capture_20261010_194112_397.jpg`](capturas/capture_20261010_194112_397.jpg) | 19:41:12 | con red | perro | dog | 1.0000 |
+| [`capture_20261010_194233_417.jpg`](capturas/capture_20261010_194233_417.jpg) | 19:42:33 | con red | perro | dog | 0.9997 |
+| [`capture_20261010_194325_916.jpg`](capturas/capture_20261010_194325_916.jpg) | 19:43:25 | con red | gato | cat | 0.9501 |
+| [`capture_20261010_194348_901.jpg`](capturas/capture_20261010_194348_901.jpg) | 19:43:48 | con red | gato | cat | 0.7399 |
+| [`capture_20261010_194433_016.jpg`](capturas/capture_20261010_194433_016.jpg) | 19:44:33 | **sin red** | gato | cat | 0.9992 |
+| [`capture_20261010_194501_329.jpg`](capturas/capture_20261010_194501_329.jpg) | 19:45:01 | **sin red** | gato | cat | 0.9941 |
+| [`capture_20261010_194523_024.jpg`](capturas/capture_20261010_194523_024.jpg) | 19:45:23 | **sin red** | perro | dog | 0.9979 |
+| [`capture_20261010_194538_264.jpg`](capturas/capture_20261010_194538_264.jpg) | 19:45:38 | **sin red** | perro | dog | 0.7212 |
+
+**8/8 correctas** y la clase cambia con el animal presentado. La salida de la terminal no se
+guarda (eso llega con el historial de EDG-3), así que clase y confianza se reprodujeron después
+sobre las mismas fotos con el mismo modelo, el mismo recorte (`crop_fraction: 0.8`) y el mismo
+código; la inferencia es determinista. Las fotos guardadas son el cuadro completo, sin el
+recuadro dibujado.
+
+## Arranque y capturas por SSH (2026-10-10)
 
 ```
 Modelo:      dog-cat-resnet18-1.0.0-int8.onnx
