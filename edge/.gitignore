@@ -1,3 +1,6 @@
 .venv/
 captures/
 __pycache__/
+# Modelos ONNX: se bajan del bucket del equipo (ver README), no van en git.
+models/
+*.onnx

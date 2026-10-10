@@ -1,9 +1,14 @@
-"""EDG-1: programa base de captura del dispositivo edge.
+"""EDG-1 y EDG-2: captura y clasificacion local en el dispositivo edge.
 
-Abre la webcam con OpenCV y guarda el cuadro actual como JPEG:
+Abre la webcam con OpenCV. Al presionar una tecla guarda el cuadro actual como JPEG y
+clasifica el recorte fijo marcado en la vista previa con el modelo ONNX local
+(classifier.py), sin ninguna llamada de red:
 
-- Barra espaciadora: guarda una foto en la carpeta de capturas.
+- Barra espaciadora: guarda la foto y muestra clase, confianza y milisegundos.
 - q: cierra el programa.
+
+Al arrancar imprime el archivo del modelo, su SHA-256, la version, la version de
+onnxruntime y el proveedor de ejecucion.
 
 Hay dos modos, y se elige solo:
 
@@ -12,9 +17,10 @@ Hay dos modos, y se elige solo:
   ventana, asi que las teclas se leen de la terminal y la camara sigue
   capturando cuadros en segundo plano. Se puede forzar con --headless.
 
-El indice de la camara y la carpeta de salida salen de config.yaml.
+Camara, carpeta de salida, modelo, clases, preprocesamiento y recorte salen de
+config.yaml.
 
-Codigos de salida: 0 normal, 1 camara o ejecucion, 2 configuracion.
+Codigos de salida: 0 normal, 1 camara, modelo o ejecucion, 2 configuracion.
 """
 
 from __future__ import annotations
@@ -76,6 +82,7 @@ def load_config(path: Path) -> dict:
         "warmup_frames": raw.get("warmup_frames", 5),
         "width": raw.get("width"),
         "height": raw.get("height"),
+        "crop_fraction": raw.get("crop_fraction", 0.8),
     }
     if not _is_int(config["camera_index"], 0):
         raise ConfigError("camera_index debe ser un entero mayor o igual a 0 (ej. 0).")
@@ -92,6 +99,25 @@ def load_config(path: Path) -> dict:
             raise ConfigError(f"{key} debe ser un entero positivo o quedar vacio.")
     if (config["width"] is None) != (config["height"] is None):
         raise ConfigError("width y height se definen juntos, o ninguno de los dos.")
+    fraction = config["crop_fraction"]
+    if (
+        isinstance(fraction, bool)
+        or not isinstance(fraction, (int, float))
+        or not 0 < fraction <= 1
+    ):
+        raise ConfigError("crop_fraction debe ser un numero mayor que 0 y hasta 1 (ej. 0.8).")
+
+    try:
+        from classifier import parse_model_config
+    except ImportError as exc:
+        raise ConfigError(
+            f"Falta una dependencia ({exc}). Activa el entorno virtual e instala las "
+            "dependencias: pip install -r requirements.txt"
+        ) from exc
+    try:
+        config["model"] = parse_model_config(raw.get("model"), raw.get("preprocess"), path.parent)
+    except ValueError as exc:
+        raise ConfigError(str(exc)) from exc
 
     output_dir = Path(config["output_dir"]).expanduser()
     config["output_dir"] = output_dir if output_dir.is_absolute() else path.parent / output_dir
@@ -189,6 +215,52 @@ class FrameSaver:
         return path
 
 
+class Capturer:
+    """Guarda la foto, clasifica el recorte en local y recuerda el ultimo resultado."""
+
+    def __init__(self, saver: FrameSaver, classifier, crop_fraction: float):
+        self._saver = saver
+        self._classifier = classifier
+        self._crop_fraction = crop_fraction
+        self.last_text: str | None = None
+        self.last_failed = False
+
+    def crop_for(self, frame) -> tuple[int, int, int, int]:
+        from classifier import center_crop
+
+        height, width = frame.shape[:2]
+        return center_crop(width, height, self._crop_fraction)
+
+    def capture(self, frame) -> None:
+        path = self._saver.save(frame)
+        print(f"Foto guardada: {path}")
+        try:
+            pred = self._classifier.classify(frame, self.crop_for(frame))
+        except Exception as exc:  # la inferencia falla: se avisa y el programa sigue
+            self.last_text, self.last_failed = f"Error de inferencia: {exc}", True
+            print(f"  {self.last_text}", file=sys.stderr)
+            return
+        print(
+            f"  Clase: {pred.label}  confianza: {pred.confidence:.4f}  "
+            f"tiempo: {pred.latency_ms:.1f} ms (preprocesamiento + inferencia)"
+        )
+        self.last_text = f"{pred.label}  {pred.confidence:.2f}  {pred.latency_ms:.0f} ms"
+        self.last_failed = False
+
+
+def draw_overlay(cv2, frame, crop, text: str | None, failed: bool):
+    """Copia del cuadro con el recorte y el ultimo resultado; la foto guardada va limpia."""
+    shown = frame.copy()
+    x, y, w, h = crop
+    cv2.rectangle(shown, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    if text:
+        color = (0, 0, 255) if failed else (255, 255, 255)
+        (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
+        cv2.rectangle(shown, (0, 0), (tw + 16, th + 16), (0, 0, 0), -1)
+        cv2.putText(shown, text, (8, th + 8), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+    return shown
+
+
 def has_display() -> bool:
     if sys.platform.startswith("linux"):
         return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
@@ -230,18 +302,20 @@ class TerminalKeys:
         return os.read(self._fd, 1).decode("utf-8", "ignore") if ready else ""
 
 
-def run_with_window(cv2, cap, saver: FrameSaver) -> None:
+def run_with_window(cv2, cap, capturer: Capturer) -> None:
     cv2.namedWindow(WINDOW_TITLE)
     failures = [0]
-    print("Vista previa abierta. Espacio: guardar foto. q: salir.")
+    print("Vista previa abierta. Espacio: foto y clasificacion. q: salir.")
     try:
         while True:
             frame = read_frame(cap, failures)
             if frame is not None:
-                cv2.imshow(WINDOW_TITLE, frame)
+                crop = capturer.crop_for(frame)
+                shown = draw_overlay(cv2, frame, crop, capturer.last_text, capturer.last_failed)
+                cv2.imshow(WINDOW_TITLE, shown)
             key = cv2.waitKey(int(POLL_SECONDS * 1000)) & 0xFF
             if frame is not None and key == ord(KEY_SPACE):
-                print(f"Foto guardada: {saver.save(frame)}")
+                capturer.capture(frame)
             elif key == ord(KEY_QUIT):
                 break
             if cv2.getWindowProperty(WINDOW_TITLE, cv2.WND_PROP_VISIBLE) < 1:
@@ -250,10 +324,10 @@ def run_with_window(cv2, cap, saver: FrameSaver) -> None:
         cv2.destroyAllWindows()
 
 
-def run_in_terminal(cap, saver: FrameSaver, keys: TerminalKeys) -> None:
+def run_in_terminal(cap, capturer: Capturer, keys: TerminalKeys) -> None:
     failures = [0]
     last_frame = None
-    print("Modo sin ventana (no hay pantalla). Espacio: guardar foto. q: salir.")
+    print("Modo sin ventana (no hay pantalla). Espacio: foto y clasificacion. q: salir.")
     with keys:
         while True:
             frame = read_frame(cap, failures)  # consume cuadros para no guardar uno viejo
@@ -261,7 +335,7 @@ def run_in_terminal(cap, saver: FrameSaver, keys: TerminalKeys) -> None:
                 last_frame = frame
             key = keys.poll(POLL_SECONDS)
             if key == KEY_SPACE and last_frame is not None:
-                print(f"Foto guardada: {saver.save(last_frame)}")
+                capturer.capture(last_frame)
             elif key.lower() == KEY_QUIT:
                 break
 
@@ -302,6 +376,16 @@ def main(argv: list[str] | None = None) -> int:
         print("Aviso: preview esta activado pero no hay pantalla; se usa el modo sin ventana.")
         use_window = False
 
+    from classifier import Classifier, ModelError
+
+    try:
+        classifier = Classifier(config["model"])
+    except ModelError as exc:
+        print(f"Error del modelo: {exc}", file=sys.stderr)
+        return 1
+    for label, value in classifier.describe():
+        print(f"{label + ':':<13}{value}")
+
     cap = None
     try:
         cap = open_camera(
@@ -311,10 +395,11 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"Camara {config['camera_index']} lista. Las fotos se guardan en {config['output_dir']}"
         )
+        capturer = Capturer(saver, classifier, config["crop_fraction"])
         if use_window:
-            run_with_window(cv2, cap, saver)
+            run_with_window(cv2, cap, capturer)
         else:
-            run_in_terminal(cap, saver, TerminalKeys())
+            run_in_terminal(cap, capturer, TerminalKeys())
     except CameraError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
