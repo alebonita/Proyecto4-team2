@@ -1,0 +1,8 @@
+validación: 128 recortes (dog=61, cat=67)
+runtime: onnxruntime 1.30.0 (Python, CPUExecutionProvider)
+original   accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
+optimizada accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
+caída de accuracy: 0.00 pp   caída de F1 macro: 0.00 pp
+misma clase que el original: 128/128   max |Δ prob|: 0.0573
+control ONNX fp32 (MOD-2): 128/128
+-> predictions_validation.csv, metrics.json

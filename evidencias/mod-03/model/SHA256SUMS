@@ -1,0 +1,2 @@
+9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd  dog-cat-resnet18-1.0.0-int8.onnx
+6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f  ../../mod-02/model/dog-cat-resnet18-1.0.0-fp32.onnx
