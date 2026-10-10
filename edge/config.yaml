@@ -19,3 +19,23 @@ warmup_frames: 5
 # Resolucion opcional. Defínelas las dos o deja las dos vacías.
 width:
 height:
+
+# Recorte fijo que se clasifica: cuadrado centrado con esta fraccion del lado corto
+# del cuadro. Se dibuja en la vista previa; el objeto se presenta dentro del recuadro.
+crop_fraction: 0.8
+
+# Modelo ONNX (EDG-2). El archivo no esta en git: ver "Modelo" en el README.
+model:
+  path: models/dog-cat-resnet18-1.0.0-int8.onnx
+  version: dog-cat-resnet18-1.0.0-int8
+  # Si el archivo no tiene este SHA-256, el programa no arranca. Vacio: no se comprueba.
+  sha256: 9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
+  # Orden de salida del modelo: dog es el indice 0 (evidencias/mod-01/README.md).
+  classes: [dog, cat]
+
+# Preprocesamiento: el mismo del modelo original (evidencias/mod-01/README.md).
+preprocess:
+  input_size: 128            # 128 x 128, sin conservar proporcion
+  channel_order: RGB         # OpenCV entrega BGR y se convierte a RGB
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
