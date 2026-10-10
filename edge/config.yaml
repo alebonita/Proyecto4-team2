@@ -20,6 +20,12 @@ warmup_frames: 5
 width:
 height:
 
+# Identidad del dispositivo: se registra en cada evento y se envia a AWS (EDG-3/EDG-4).
+device_id: edge-macbookair-01
+
+# Historial local de capturas (SQLite). Se conserva al cerrar el programa.
+events_db: events.db
+
 # Recorte fijo que se clasifica: cuadrado centrado con esta fraccion del lado corto
 # del cuadro. Se dibuja en la vista previa; el objeto se presenta dentro del recuadro.
 crop_fraction: 0.8

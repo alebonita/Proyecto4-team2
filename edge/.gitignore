@@ -4,3 +4,6 @@ __pycache__/
 # Modelos ONNX: se bajan del bucket del equipo (ver README), no van en git.
 models/
 *.onnx
+# Historial local de capturas (EDG-3): datos del equipo, no van en git.
+events.db
+events.db-journal
