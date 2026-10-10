@@ -1,4 +1,4 @@
-"""EDG-1, EDG-2 y EDG-3: captura, clasificacion local e historial en el dispositivo edge.
+"""EDG-1 a EDG-4: captura, clasificacion local, historial y envio a AWS desde el edge.
 
 Abre la webcam con OpenCV. Al presionar una tecla guarda el cuadro actual como JPEG y
 clasifica el recorte fijo marcado en la vista previa con el modelo ONNX local
@@ -13,6 +13,11 @@ onnxruntime y el proveedor de ejecucion.
 Cada captura clasificada queda como evento en el historial SQLite (events.py): ID unico,
 fecha con zona horaria, dispositivo, version del modelo, clase, confianza, ms, recorte,
 foto y estado de envio. export_events.py y list_events.py lo consultan.
+
+Cada evento se envia a AWS en un hilo aparte (sender.py): la captura y la clasificacion
+no esperan a la red y siguen funcionando sin ella. Si el envio falla, el evento queda en
+error y se reenvia con el mismo capture_id con retry.py. --simular-fallo manda los
+envios a una URL donde nada escucha, para demostrar el fallo y el reintento.
 
 Hay dos modos, y se elige solo:
 
@@ -132,6 +137,13 @@ def load_config(path: Path) -> dict:
     except ValueError as exc:
         raise ConfigError(str(exc)) from exc
 
+    from sender import parse_upload_config
+
+    try:
+        config["upload"] = parse_upload_config(raw.get("upload"))
+    except ValueError as exc:
+        raise ConfigError(str(exc)) from exc
+
     output_dir = Path(config["output_dir"]).expanduser()
     config["output_dir"] = output_dir if output_dir.is_absolute() else path.parent / output_dir
     return config
@@ -230,14 +242,24 @@ class FrameSaver:
 class Capturer:
     """Guarda la foto, la clasifica en local, registra el evento y recuerda el resultado."""
 
-    def __init__(self, saver: FrameSaver, classifier, crop_fraction: float, store, device_id):
+    def __init__(
+        self, saver: FrameSaver, classifier, crop_fraction: float, store, device_id, uploader=None
+    ):
         self._saver = saver
         self._classifier = classifier
         self._crop_fraction = crop_fraction
         self._store = store
         self._device_id = device_id
+        self._uploader = uploader
         self.last_text: str | None = None
         self.last_failed = False
+
+    def status_lines(self) -> list[tuple[str, bool]]:
+        """Lineas de la ventana: ultimo resultado local y ultimo envio, con su estado."""
+        lines = [(self.last_text, self.last_failed)]
+        if self._uploader is not None:
+            lines.append((self._uploader.last_text, self._uploader.last_failed))
+        return [(text, failed) for text, failed in lines if text]
 
     def crop_for(self, frame) -> tuple[int, int, int, int]:
         from classifier import center_crop
@@ -287,6 +309,52 @@ class Capturer:
             print(f"  {self.last_text}", file=sys.stderr)
             return
         print(f"  Evento: {capture_id}  {captured_at}  estado: {event.status}")
+        if self._uploader is not None:
+            self._uploader.submit(capture_id)
+
+
+class Uploader:
+    """Envia los eventos en un hilo aparte: captura y clasificacion no esperan a la red."""
+
+    def __init__(self, cfg, db_path: Path, key: str | None):
+        import queue
+        import threading
+
+        self._cfg = cfg
+        self._db_path = db_path
+        self._key = key
+        self._queue: queue.Queue[str | None] = queue.Queue()
+        self.last_text: str | None = None
+        self.last_failed = False
+        self._thread = threading.Thread(target=self._run, name="envio-aws", daemon=True)
+        self._thread.start()
+
+    def submit(self, capture_id: str) -> None:
+        self._queue.put(capture_id)
+
+    def close(self, timeout: float) -> None:
+        """Espera los envios en curso hasta `timeout` s; los que no salgan quedan pendientes."""
+        if not self._queue.empty():
+            print("Esperando los envios en curso...")
+        self._queue.put(None)
+        self._thread.join(timeout)
+
+    def _run(self) -> None:
+        from events import EventStore
+        from sender import describe, send_and_record, short_status
+
+        with EventStore(self._db_path) as store:  # conexion propia de este hilo
+            while (capture_id := self._queue.get()) is not None:
+                try:
+                    event = store.get(capture_id)
+                    result = send_and_record(store, event, self._cfg, self._key, EDGE_DIR)
+                except Exception as exc:  # un fallo inesperado no debe matar el hilo
+                    self.last_text, self.last_failed = f"AWS: error - {exc}"[:70], True
+                    print(f"  Envio {capture_id}: error inesperado: {exc}", file=sys.stderr)
+                    continue
+                self.last_text, self.last_failed = short_status(result), not result.ok
+                stream = sys.stdout if result.ok else sys.stderr
+                print(f"  Envio {capture_id}: {describe(result)}", file=stream)
 
 
 def _relative_to_edge(path: Path) -> str:
@@ -296,16 +364,19 @@ def _relative_to_edge(path: Path) -> str:
         return str(path.resolve())
 
 
-def draw_overlay(cv2, frame, crop, text: str | None, failed: bool):
-    """Copia del cuadro con el recorte y el ultimo resultado; la foto guardada va limpia."""
+def draw_overlay(cv2, frame, crop, lines: list[tuple[str, bool]]):
+    """Copia del cuadro con el recorte y las lineas de estado; la foto guardada va limpia."""
     shown = frame.copy()
     x, y, w, h = crop
     cv2.rectangle(shown, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    if text:
+    top = 0
+    for text, failed in lines:
         color = (0, 0, 255) if failed else (255, 255, 255)
-        (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
-        cv2.rectangle(shown, (0, 0), (tw + 16, th + 16), (0, 0, 0), -1)
-        cv2.putText(shown, text, (8, th + 8), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+        scale = 0.7 if top == 0 else 0.5
+        (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, scale, 2)
+        cv2.rectangle(shown, (0, top), (tw + 16, top + th + 16), (0, 0, 0), -1)
+        cv2.putText(shown, text, (8, top + th + 8), cv2.FONT_HERSHEY_SIMPLEX, scale, color, 2)
+        top += th + 16
     return shown
 
 
@@ -359,7 +430,7 @@ def run_with_window(cv2, cap, capturer: Capturer) -> None:
             frame = read_frame(cap, failures)
             if frame is not None:
                 crop = capturer.crop_for(frame)
-                shown = draw_overlay(cv2, frame, crop, capturer.last_text, capturer.last_failed)
+                shown = draw_overlay(cv2, frame, crop, capturer.status_lines())
                 cv2.imshow(WINDOW_TITLE, shown)
             key = cv2.waitKey(int(POLL_SECONDS * 1000)) & 0xFF
             if frame is not None and key == ord(KEY_SPACE):
@@ -394,6 +465,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="ruta de config.yaml")
     parser.add_argument("--headless", action="store_true", help="forzar el modo sin ventana")
+    parser.add_argument(
+        "--simular-fallo",
+        action="store_true",
+        help="enviar a una URL donde nada escucha, para demostrar el fallo y el reintento",
+    )
     return parser.parse_args(argv)
 
 
@@ -445,6 +521,21 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{'Historial:':<13}{config['events_db']} ({total} eventos)")
     print(f"{'Dispositivo:':<13}{config['device_id']}")
 
+    from dataclasses import replace
+
+    from sender import SIMULATED_FAILURE_URL, describe_key_source, read_device_key
+
+    upload = config["upload"]
+    uploader = None
+    if args.simular_fallo:
+        upload = replace(upload, api_url=SIMULATED_FAILURE_URL)
+        print(f"SIMULANDO FALLO: los envios van a {SIMULATED_FAILURE_URL} y van a fallar.")
+    if upload.auto_send:
+        uploader = Uploader(upload, config["events_db"], read_device_key(upload))
+        print(f"{'Envio:':<13}{upload.api_url} (clave: {describe_key_source(upload)})")
+    else:
+        print(f"{'Envio:':<13}desactivado (upload.auto_send: false); usa retry.py")
+
     cap = None
     try:
         cap = open_camera(
@@ -454,7 +545,9 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"Camara {config['camera_index']} lista. Las fotos se guardan en {config['output_dir']}"
         )
-        capturer = Capturer(saver, classifier, config["crop_fraction"], store, config["device_id"])
+        capturer = Capturer(
+            saver, classifier, config["crop_fraction"], store, config["device_id"], uploader
+        )
         if use_window:
             run_with_window(cv2, cap, capturer)
         else:
@@ -467,6 +560,8 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         if cap is not None:
             cap.release()
+        if uploader is not None:
+            uploader.close(timeout=upload.timeout_s + 2)
         store.close()
     return 0
 

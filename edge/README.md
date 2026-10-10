@@ -1,4 +1,4 @@
-# Dispositivo edge: captura, clasificación local e historial (EDG-1, EDG-2, EDG-3)
+# Dispositivo edge: captura, clasificación local, historial y envío a AWS (EDG-1 a EDG-4)
 
 Programa que abre la webcam y, al presionar la barra espaciadora, guarda una foto JPEG
 y clasifica el objeto en la propia laptop con el modelo optimizado (ONNX INT8) y
@@ -18,7 +18,10 @@ Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
 | `events.py` | Historial local de capturas en SQLite |
 | `export_events.py` | Exporta el historial a JSON |
 | `list_events.py` | Lista en la terminal los últimos eventos |
-| `tests/` | Pruebas del clasificador (imágenes de validación conocidas) y del historial |
+| `sender.py` | Envío de cada evento y su foto al endpoint de Capturas Edge |
+| `retry.py` | Reenvía eventos con su mismo `capture_id` |
+| `config.example.yaml` | Plantilla de configuración sin secretos |
+| `tests/` | Pruebas del clasificador, del historial y del envío (con un servidor local de prueba) |
 | `run_display.sh` | Arranca `capture.py` con vista previa en la pantalla del equipo (consola física) |
 | `config.yaml` | Cámara, carpeta de salida, recorte, modelo y preprocesamiento |
 | `device_info.py` | Imprime marca y modelo, procesador, RAM, sistema operativo y cámaras |
@@ -102,21 +105,35 @@ con la del modelo original; mide la accuracy en las 128 de validación (no puede
 python -m unittest discover -s tests -v
 ```
 
-Deben pasar las 11 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
+Deben pasar las 18 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
 
-**8. Datos del equipo (para la ficha de entrega):**
+**8. Clave del dispositivo.** El endpoint pide una clave en el encabezado `X-Device-Key`
+(la entrega quien administra el servidor). Nunca va en git ni en `config.yaml`: se guarda en
+un archivo que solo tu usuario puede leer. Corre esta línea, pega la clave cuando la pida
+(no se ve al escribir) y presiona Enter:
+
+```bash
+mkdir -p ~/.config/edge && chmod 700 ~/.config/edge
+read -rsp "Clave de dispositivo: " KEY && echo && printf 'EDGE_DEVICE_KEY=%s\n' "$KEY" > ~/.config/edge/device.env && unset KEY
+chmod 600 ~/.config/edge/device.env
+awk -F= '{print "largo de la clave:", length($2)}' ~/.config/edge/device.env   # mayor que 0
+```
+
+También se puede definir la variable de entorno `EDGE_DEVICE_KEY`, que tiene prioridad.
+
+**9. Datos del equipo (para la ficha de entrega):**
 
 ```bash
 python device_info.py
 ```
 
-**9. Arranque por SSH (sin ventana):**
+**10. Arranque por SSH (sin ventana):**
 
 ```bash
 python capture.py
 ```
 
-**10. Vista previa en la pantalla del equipo.** Ubuntu Server no tiene escritorio, así
+**11. Vista previa en la pantalla del equipo.** Ubuntu Server no tiene escritorio, así
 que para ver la cámara en vivo se instala un servidor gráfico mínimo (Xorg y el gestor
 de ventanas openbox, sin escritorio ni inicio de sesión gráfico). No arranca solo con el
 sistema ni consume recursos mientras no se use:
@@ -206,6 +223,44 @@ python list_events.py -n 25
 python export_events.py -o eventos.json   # todos los eventos en JSON (sin -o, a la terminal)
 ```
 
+### Envío a AWS
+
+Cada evento se envía al endpoint de Capturas Edge (`upload.api_url`) en un hilo aparte:
+la captura y la clasificación **no esperan a la red** y siguen funcionando sin ella. Va un
+`POST` multipart con la foto JPEG en `image`, los campos del evento, `crop` como JSON y la
+clave en `X-Device-Key`. Al arrancar se imprime el destino y de dónde sale la clave (sin
+mostrarla):
+
+```
+Envio:       http://18.216.36.30/api/edge-captures (clave: /home/steph/.config/edge/device.env)
+```
+
+| Respuesta | Qué hace el programa |
+|---|---|
+| **201** captura nueva / **200** ese `capture_id` ya existía | Marca el evento `enviado` y guarda `received_at` e `image_key` |
+| Red caída, tiempo de espera, 5xx | Marca `error`, lo muestra en la ventana y en la terminal, y sigue; se reintenta con `retry.py` |
+| **400** dato inválido / **401** clave ausente o incorrecta | Marca `error` con el motivo del servidor; no se reintenta solo |
+
+El tiempo de envío se guarda aparte (`send_ms`) y nunca se suma a `latency_ms`.
+
+**Reintento con el mismo ID** (el servidor guarda cada `capture_id` una sola vez, así que
+reenviar nunca duplica):
+
+```bash
+python retry.py <capture_id>        # reenvía ese evento y muestra su registro en AWS
+python retry.py --todos             # todos los que están en error o pendientes
+```
+
+**Demostrar el fallo de forma reversible:** `--simular-fallo` manda los envíos a
+`http://127.0.0.1:9/...`, donde nada escucha. No cambia `config.yaml` ni toca el servidor:
+
+```bash
+python capture.py --simular-fallo   # captura: el envío falla y el evento queda en error
+python list_events.py -n 1          # estado: error
+python retry.py <capture_id>        # sin la opción: llega con el mismo ID (201)
+python retry.py <capture_id>        # otra vez: 200, ya existía; sigue habiendo un registro
+```
+
 El programa elige el modo según el equipo:
 
 - **Con pantalla** (`run_display.sh` en la consola física, o un equipo con escritorio):
@@ -234,6 +289,11 @@ scp 'usuario@equipo-edge:ruta/al/repo/edge/captures/*.jpg' .
 | `width`, `height` | vacío | Resolución opcional; se definen las dos o ninguna |
 | `device_id` | `edge-macbookair-01` | Identidad del dispositivo en cada evento (1 a 128 caracteres) |
 | `events_db` | `events.db` | Archivo SQLite del historial. Una ruta relativa se toma desde `edge/` |
+| `upload.api_url` | `http://18.216.36.30/api/edge-captures` | Endpoint de Capturas Edge (la variable `EDGE_API_URL` lo pisa) |
+| `upload.key_header` | `X-Device-Key` | Encabezado de la clave (`EDGE_KEY_HEADER` lo pisa) |
+| `upload.key_env`, `upload.key_file` | `EDGE_DEVICE_KEY`, `~/.config/edge/device.env` | De dónde se lee la clave; nunca va en este archivo |
+| `upload.timeout_s` | `10` | Tiempo de espera de cada envío |
+| `upload.auto_send` | `true` | `false`: no se envía al capturar; se envía con `retry.py --todos` |
 | `crop_fraction` | `0.8` | Lado del recorte que se clasifica, como fracción del lado corto del cuadro |
 | `model.path` | `models/dog-cat-resnet18-1.0.0-int8.onnx` | Archivo ONNX. Una ruta relativa se toma desde `edge/` |
 | `model.version` | `dog-cat-resnet18-1.0.0-int8` | Versión que se imprime y se registra con cada captura |
@@ -254,10 +314,13 @@ arranca con `python capture.py --config otra-config.yaml`.
 | `No se pudo importar OpenCV ... libGL.so.1` | Falta `libgl1`: paso 1 |
 | `No existe el modelo .../models/...onnx` | Falta el paso 6: copia el `.onnx` a `edge/models/` |
 | `... no es el modelo esperado: SHA-256 ...` | El archivo no es la variante INT8 de MOD-3. Vuelve a bajarlo y comprueba su SHA-256 |
+| `Envio ... error: Falta la clave de dispositivo` | Falta el paso 8, o la clave quedó vacía (`largo de la clave: 0`) |
+| `HTTP 401: Clave de dispositivo ausente o incorrecta` | La clave no es la del servidor. Corrígela (paso 8) y reenvía con `retry.py --todos --incluir-rechazados` |
+| `Sin conexion con el servidor` o `Tiempo de espera agotado` | Sin red o servidor caído. La clasificación sigue; reenvía con `retry.py --todos` |
 | `Falta onnxruntime` | El entorno virtual no está activo o faltan dependencias: paso 5 |
 | `ModuleNotFoundError` o `Falta PyYAML` | El entorno virtual no está activo: `source .venv/bin/activate` |
 | `Ejecuta este script desde la consola fisica` | `run_display.sh` se corrió por SSH. Córrelo con el teclado del equipo, o usa `python capture.py` por SSH |
-| `Faltan xinit u openbox` | Falta el paso 10 |
+| `Faltan xinit u openbox` | Falta el paso 11 |
 | La pantalla del equipo está en negro | La consola se apaga sola: presiona una tecla. Si sigue en negro, el brillo está en 0 (ver abajo) |
 | `El modo sin ventana necesita una terminal interactiva` | Se ejecutó sin terminal (por ejemplo con `nohup` o redirecciones). Ejecútalo directo en la sesión SSH |
 
