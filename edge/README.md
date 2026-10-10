@@ -91,9 +91,9 @@ Cópialo a `edge/models/` en la laptop edge (por ejemplo con
 `config.yaml` trae ese SHA-256: si el archivo es otro, el programa no arranca. También se
 puede regenerar idéntico con el script de MOD-3 (`evidencias/mod-03/README.md`).
 
-**7. Prueba del modelo.** Clasifica recortes de validación conocidos y compara con las
-predicciones de MOD-4; incluye las 128 imágenes de validación y una corrida con la red
-bloqueada:
+**7. Prueba del modelo.** Clasifica 5 recortes de validación conocidos y compara su clase
+con la del modelo original; mide la accuracy en las 128 de validación (no puede caer más de
+2 puntos respecto al original) y clasifica con la red bloqueada:
 
 ```bash
 python -m unittest discover -s tests -v
