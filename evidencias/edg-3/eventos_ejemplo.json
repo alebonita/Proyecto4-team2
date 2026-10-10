@@ -1,0 +1,78 @@
+{
+  "exported_at": "2026-10-10T20:11:38.751+00:00",
+  "device_id": "edge-macbookair-01",
+  "total": 3,
+  "by_status": {
+    "pendiente": 3,
+    "enviado": 0,
+    "error": 0
+  },
+  "events": [
+    {
+      "capture_id": "d5b5e774-14cf-47bf-9454-4142f3070479",
+      "captured_at": "2026-10-10T20:11:19.515+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "cat",
+      "confidence": 0.9346661047309166,
+      "latency_ms": 26.93435098626651,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_201119_515_d5b5e774-14cf-47bf-9454-4142f3070479.jpg",
+      "photo_sha256": "5b78d96f016a4c60a2b5765ff805ca1116d1e7fde5929976b6ea91cf9d02cce3",
+      "status": "pendiente",
+      "received_at": null,
+      "image_key": null,
+      "send_error": null,
+      "send_ms": null
+    },
+    {
+      "capture_id": "d8d1c0d5-7e14-43b3-8636-dae8b21b985a",
+      "captured_at": "2026-10-10T20:11:22.543+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "cat",
+      "confidence": 0.922057048657533,
+      "latency_ms": 20.698250009445474,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_201122_543_d8d1c0d5-7e14-43b3-8636-dae8b21b985a.jpg",
+      "photo_sha256": "cabf8629c803c071da18013fb31debdc6bcd8ace72454927bbdec0d2f1eb0220",
+      "status": "pendiente",
+      "received_at": null,
+      "image_key": null,
+      "send_error": null,
+      "send_ms": null
+    },
+    {
+      "capture_id": "234dfe99-9e2e-449b-8929-04a1d2635113",
+      "captured_at": "2026-10-10T20:11:34.737+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "cat",
+      "confidence": 0.9286181614672365,
+      "latency_ms": 20.164161978755146,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_201134_737_234dfe99-9e2e-449b-8929-04a1d2635113.jpg",
+      "photo_sha256": "1d0dde7d4d8dbfe6269e2ac88d5d7c50e195fd36fcaca69a38383664be53579e",
+      "status": "pendiente",
+      "received_at": null,
+      "image_key": null,
+      "send_error": null,
+      "send_ms": null
+    }
+  ]
+}
