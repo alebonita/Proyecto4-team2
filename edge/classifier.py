@@ -21,7 +21,9 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+import cv2
 import numpy as np
+from PIL import Image
 
 PROVIDER = "CPUExecutionProvider"
 
@@ -128,9 +130,6 @@ def center_crop(width: int, height: int, fraction: float) -> tuple[int, int, int
 
 def preprocess(frame_bgr: np.ndarray, crop: tuple[int, int, int, int], cfg: ModelConfig):
     """Recorte BGR de OpenCV -> tensor 1 x 3 x S x S listo para el modelo."""
-    import cv2
-    from PIL import Image
-
     x, y, w, h = crop
     region = np.ascontiguousarray(frame_bgr[y : y + h, x : x + w])
     if cfg.channel_order == "RGB":
@@ -197,6 +196,9 @@ class Classifier:
         self.onnxruntime_version = ort.__version__
         self.provider = self._session.get_providers()[0]
         self._input_name = inputs[0].name
+        # La primera clasificacion es mas lenta (onnxruntime y Pillow preparan memoria y
+        # kernels): se hace aqui para que el tiempo de la primera captura sea representativo.
+        self.classify(np.zeros((64, 64, 3), np.uint8), (0, 0, 64, 64))
 
     def describe(self) -> list[tuple[str, str]]:
         return [

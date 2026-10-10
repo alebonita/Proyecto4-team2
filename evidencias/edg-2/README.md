@@ -60,13 +60,18 @@ onnxruntime: 1.30.0
 Proveedor:   CPUExecutionProvider
 Camara 0 lista. Las fotos se guardan en /home/steph/Proyecto4-team2/edge/captures
 Modo sin ventana (no hay pantalla). Espacio: foto y clasificacion. q: salir.
-Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261010_011007_230.jpg
-  Clase: cat  confianza: 0.9234  tiempo: 71.5 ms (preprocesamiento + inferencia)
-Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261010_011010_237.jpg
-  Clase: cat  confianza: 0.9133  tiempo: 23.6 ms (preprocesamiento + inferencia)
+Foto guardada: ...
+  Clase: cat  confianza: 0.9217  tiempo: 21.9 ms (preprocesamiento + inferencia)
+Foto guardada: ...
+  Clase: cat  confianza: 0.9073  tiempo: 15.3 ms (preprocesamiento + inferencia)
+Foto guardada: ...
+  Clase: cat  confianza: 0.9144  tiempo: 26.4 ms (preprocesamiento + inferencia)
 ```
 
-La primera inferencia tarda más porque onnxruntime se calienta; la latencia se mide en EDG-5.
+La cámara apuntaba al techo, así que la clase no significa nada aquí; lo que se comprueba es
+que cada captura imprime clase, confianza y tiempo. Al cargar el modelo se hace una
+clasificación de calentamiento: sin ella, la primera captura marcaba 71–84 ms porque incluía
+la preparación de onnxruntime y de Pillow. La latencia se mide formalmente en EDG-5.
 
 ## Preprocesamiento: por qué Pillow y no el resize de OpenCV
 
