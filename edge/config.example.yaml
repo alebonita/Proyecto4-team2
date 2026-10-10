@@ -1,5 +1,6 @@
-# Configuracion del dispositivo edge. Las rutas relativas se resuelven
-# desde la carpeta de este archivo, no desde donde ejecutes el programa.
+# Plantilla de configuracion del dispositivo edge, sin secretos. Copiala a config.yaml
+# y ajusta device_id y, si cambia el servidor, upload.api_url. Las rutas relativas se
+# resuelven desde la carpeta de este archivo.
 
 # Indice de la camara: 0 es /dev/video0. Si hay varias, prueba 1, 2...
 camera_index: 0
@@ -21,7 +22,7 @@ width:
 height:
 
 # Identidad del dispositivo: se registra en cada evento y se envia a AWS (EDG-3/EDG-4).
-device_id: edge-macbookair-01
+device_id: edge-<equipo>-01
 
 # Historial local de capturas (SQLite). Se conserva al cerrar el programa.
 events_db: events.db
