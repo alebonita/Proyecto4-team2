@@ -52,10 +52,26 @@ intervalo, y `tailscaled` falla con `network is unreachable` hasta las 19:46:22.
 | [`capture_20261010_194538_264.jpg`](capturas/capture_20261010_194538_264.jpg) | 19:45:38 | **sin red** | perro | dog | 0.7212 |
 
 **8/8 correctas** y la clase cambia con el animal presentado. La salida de la terminal no se
-guarda (eso llega con el historial de EDG-3), así que clase y confianza se reprodujeron después
-sobre las mismas fotos con el mismo modelo, el mismo recorte (`crop_fraction: 0.8`) y el mismo
-código; la inferencia es determinista. Las fotos guardadas son el cuadro completo, sin el
-recuadro dibujado.
+guarda (eso llega con el historial de EDG-3), así que la tabla reclasifica después los JPEG
+guardados con el mismo modelo, el mismo recorte (`crop_fraction: 0.8`) y el mismo código. El
+programa clasificó el cuadro original y el JPEG pierde algo de detalle al comprimirse, así que
+la confianza puede diferir uno o dos centésimos de la que se vio en pantalla (0.96 en pantalla
+contra 0.95 del JPEG en el gato de 19:43:25); la clase es la misma. Las fotos guardadas son el
+cuadro completo, sin el recuadro dibujado.
+
+### La ventana en la pantalla de la laptop
+
+Fotos tomadas con un celular (sin metadatos ni ubicación), hora UTC. La ventana muestra el
+recuadro verde que se clasifica y, arriba a la izquierda, clase, confianza y milisegundos de la
+última captura:
+
+| Foto | Hora | Red | En la ventana | Captura que muestra |
+|---|---|---|---|---|
+| [`pantalla_194235_con-red_pug-dog-1.00.jpg`](pantalla/pantalla_194235_con-red_pug-dog-1.00.jpg) | 19:42:35 | con red | `dog 1.00 19 ms` | `capture_20261010_194233_417.jpg` |
+| [`montaje_194242_con-red_webcam-y-tablet.jpg`](pantalla/montaje_194242_con-red_webcam-y-tablet.jpg) | 19:42:42 | con red | montaje: webcam Acteck frente a la tablet | — |
+| [`pantalla_194329_con-red_gato-cat-0.96.jpg`](pantalla/pantalla_194329_con-red_gato-cat-0.96.jpg) | 19:43:29 | con red | `cat 0.96 27 ms` | `capture_20261010_194325_916.jpg` |
+| [`montaje_194334_con-red_webcam-y-tablet.jpg`](pantalla/montaje_194334_con-red_webcam-y-tablet.jpg) | 19:43:34 | con red | montaje | — |
+| [`pantalla_194351_con-red_gato-cat-0.76.jpg`](pantalla/pantalla_194351_con-red_gato-cat-0.76.jpg) | 19:43:51 | con red | `cat 0.76 18 ms` | `capture_20261010_194348_901.jpg` |
 
 ## Arranque y capturas por SSH (2026-10-10)
 
