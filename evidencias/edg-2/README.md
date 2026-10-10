@@ -14,7 +14,7 @@ uso: [`edge/README.md`](../../edge/README.md).
 | Variante INT8 oficial de MOD-3 cargada en la laptop edge (SHA-256 `9c28368a…`) | ✅ |
 | Prueba con imágenes de validación conocidas y accuracy en las 128 | ✅ 5/5 pruebas |
 | Captura → clase, confianza y ms en la terminal | ✅ por SSH |
-| Captura → clase, confianza y ms en la **ventana** | ✅ consola física (`run_display.sh`) |
+| Captura → clase, confianza y ms en la **ventana** | ✅ consola física (`run_display.sh`), fotos de la pantalla con y sin red |
 | Clasificación con la **red desconectada** | ✅ 4 capturas sin red, verificadas con el registro del sistema |
 | Predicción que cambia con objetos de distintas clases | ✅ 8/8 correctas (4 perros, 4 gatos) |
 
@@ -72,6 +72,11 @@ recuadro verde que se clasifica y, arriba a la izquierda, clase, confianza y mil
 | [`pantalla_194329_con-red_gato-cat-0.96.jpg`](pantalla/pantalla_194329_con-red_gato-cat-0.96.jpg) | 19:43:29 | con red | `cat 0.96 27 ms` | `capture_20261010_194325_916.jpg` |
 | [`montaje_194334_con-red_webcam-y-tablet.jpg`](pantalla/montaje_194334_con-red_webcam-y-tablet.jpg) | 19:43:34 | con red | montaje | — |
 | [`pantalla_194351_con-red_gato-cat-0.76.jpg`](pantalla/pantalla_194351_con-red_gato-cat-0.76.jpg) | 19:43:51 | con red | `cat 0.76 18 ms` | `capture_20261010_194348_901.jpg` |
+| [`cable_194415_sin-red_adaptador-desconectado.jpg`](pantalla/cable_194415_sin-red_adaptador-desconectado.jpg) | 19:44:15 | **sin red** | conector USB del adaptador de red suelto junto a la laptop, con la ventana abierta | — |
+| [`pantalla_194434_sin-red_gato-cat-1.00.jpg`](pantalla/pantalla_194434_sin-red_gato-cat-1.00.jpg) | 19:44:34 | **sin red** | `cat 1.00 27 ms` | `capture_20261010_194433_016.jpg` |
+| [`pantalla_194503_sin-red_gatito-cat-0.99.jpg`](pantalla/pantalla_194503_sin-red_gatito-cat-0.99.jpg) | 19:45:03 | **sin red** | `cat 0.99 27 ms` | `capture_20261010_194501_329.jpg` |
+| [`pantalla_194526_sin-red_san-bernardo-dog-1.00.jpg`](pantalla/pantalla_194526_sin-red_san-bernardo-dog-1.00.jpg) | 19:45:26 | **sin red** | `dog 1.00 29 ms` | `capture_20261010_194523_024.jpg` |
+| [`pantalla_194541_sin-red_border-collie-dog-0.72.jpg`](pantalla/pantalla_194541_sin-red_border-collie-dog-0.72.jpg) | 19:45:41 | **sin red** | `dog 0.72 20 ms` | `capture_20261010_194538_264.jpg` |
 
 ## Arranque y capturas por SSH (2026-10-10)
 
