@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -122,6 +123,16 @@ def event_fields(event) -> dict[str, str]:
     }
 
 
+def connection_error(url: str, exc: Exception) -> str:
+    """Mensaje corto con la causa (Connection refused, Network is unreachable, ...)."""
+    from urllib.parse import urlsplit
+
+    host = urlsplit(url).netloc
+    causes = re.findall(r"\[Errno -?\d+\] ([^'\")\]]+)", str(exc))
+    cause = causes[-1].strip() if causes else type(exc).__name__
+    return f"Sin conexion con el servidor {host}: {cause}"
+
+
 def send_event(event, photo: Path, cfg: UploadConfig, key: str | None) -> SendResult:
     """Un intento de envio. Nunca lanza excepciones: el resultado dice si llego o por que no."""
     import requests
@@ -153,7 +164,7 @@ def send_event(event, photo: Path, cfg: UploadConfig, key: str | None) -> SendRe
             False, None, elapsed(), error=f"Tiempo de espera agotado ({cfg.timeout_s:g} s)."
         )
     except requests.ConnectionError as exc:
-        return SendResult(False, None, elapsed(), error=f"Sin conexion con el servidor: {exc}")
+        return SendResult(False, None, elapsed(), error=connection_error(cfg.api_url, exc))
     except requests.RequestException as exc:
         return SendResult(False, None, elapsed(), error=f"Error de red: {exc}")
     send_ms = elapsed()

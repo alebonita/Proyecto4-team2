@@ -1,4 +1,4 @@
-"""EDG-1 a EDG-4: captura, clasificacion local, historial y envio a AWS desde el edge.
+"""EDG-1 a EDG-6: captura, clasificacion local, historial y envio a AWS desde el edge.
 
 Abre la webcam con OpenCV. Al presionar una tecla guarda el cuadro actual como JPEG y
 clasifica el recorte fijo marcado en la vista previa con el modelo ONNX local
@@ -18,6 +18,11 @@ Cada evento se envia a AWS en un hilo aparte (sender.py): la captura y la clasif
 no esperan a la red y siguen funcionando sin ella. Si el envio falla, el evento queda en
 error y se reenvia con el mismo capture_id con retry.py. --simular-fallo manda los
 envios a una URL donde nada escucha, para demostrar el fallo y el reintento.
+
+Para operar de forma continua (EDG-6): la tecla i activa o detiene una captura cada
+capture_interval_s segundos; si la camara se desconecta, el programa la reabre solo; un
+error de camara, inferencia, historial o envio se muestra y el programa sigue; y todo
+queda en el archivo de registro log_file (operation.py).
 
 Hay dos modos, y se elige solo:
 
@@ -39,13 +44,19 @@ import glob
 import os
 import select
 import sys
+import time
 from pathlib import Path
+
+from operation import Heartbeat, IntervalTrigger, log, report, setup_logging
 
 EDGE_DIR = Path(__file__).resolve().parent
 DEFAULT_CONFIG = EDGE_DIR / "config.yaml"
-WINDOW_TITLE = "Captura edge - espacio: foto, q: salir"
+WINDOW_TITLE = "Captura edge - espacio: foto, i: intervalo, q: salir"
 KEY_SPACE = " "
 KEY_QUIT = "q"
+KEY_INTERVAL = "i"
+RECONNECT_SECONDS = 2.0
+ERROR_PAUSE_SECONDS = 0.5
 MAX_CONSECUTIVE_READ_FAILURES = 30
 POLL_SECONDS = 0.03
 
@@ -93,6 +104,8 @@ def load_config(path: Path) -> dict:
         "crop_fraction": raw.get("crop_fraction", 0.8),
         "device_id": raw.get("device_id"),
         "events_db": raw.get("events_db", "events.db"),
+        "log_file": raw.get("log_file", "logs/edge.log"),
+        "capture_interval_s": raw.get("capture_interval_s", 10),
     }
     if not _is_int(config["camera_index"], 0):
         raise ConfigError("camera_index debe ser un entero mayor o igual a 0 (ej. 0).")
@@ -124,6 +137,15 @@ def load_config(path: Path) -> dict:
         raise ConfigError("events_db debe ser la ruta del historial (ej. events.db).")
     events_db = Path(config["events_db"]).expanduser()
     config["events_db"] = events_db if events_db.is_absolute() else path.parent / events_db
+    if not isinstance(config["log_file"], str) or not config["log_file"].strip():
+        raise ConfigError("log_file debe ser la ruta del archivo de registro (ej. logs/edge.log).")
+    log_file = Path(config["log_file"]).expanduser()
+    config["log_file"] = log_file if log_file.is_absolute() else path.parent / log_file
+    interval = config["capture_interval_s"]
+    if interval is not None and (
+        isinstance(interval, bool) or not isinstance(interval, (int, float)) or interval < 1
+    ):
+        raise ConfigError("capture_interval_s debe ser un numero de segundos >= 1 o quedar vacio.")
 
     try:
         from classifier import parse_model_config
@@ -253,6 +275,7 @@ class Capturer:
         self._uploader = uploader
         self.last_text: str | None = None
         self.last_failed = False
+        self.count = 0
 
     def status_lines(self) -> list[tuple[str, bool]]:
         """Lineas de la ventana: ultimo resultado local y ultimo envio, con su estado."""
@@ -274,16 +297,20 @@ class Capturer:
         # El ID y la fecha se generan una sola vez por captura y nombran la foto.
         capture_id, captured_at = new_capture_id(), now_iso()
         stamp = captured_at[:23].translate(str.maketrans("T.", "__", "-:"))
-        path = self._saver.save(frame, f"capture_{stamp}_{capture_id}.jpg")
-        print(f"Foto guardada: {path}")
+        try:
+            path = self._saver.save(frame, f"capture_{stamp}_{capture_id}.jpg")
+        except CameraError as exc:  # disco lleno o sin permiso: se avisa y el programa sigue
+            self._fail(f"Error al guardar la foto: {exc}")
+            return
+        self.count += 1
+        report(f"Foto guardada: {path}")
         crop = self.crop_for(frame)
         try:
             pred = self._classifier.classify(frame, crop)
         except Exception as exc:  # la inferencia falla: se avisa y el programa sigue
-            self.last_text, self.last_failed = f"Error de inferencia: {exc}", True
-            print(f"  {self.last_text}", file=sys.stderr)
+            self._fail(f"Error de inferencia: {exc}")
             return
-        print(
+        report(
             f"  Clase: {pred.label}  confianza: {pred.confidence:.4f}  "
             f"tiempo: {pred.latency_ms:.1f} ms (preprocesamiento + inferencia)"
         )
@@ -305,12 +332,60 @@ class Capturer:
         try:
             self._store.add(event)
         except Exception as exc:  # el historial falla: se avisa y el programa sigue
-            self.last_text, self.last_failed = f"Error del historial: {exc}", True
-            print(f"  {self.last_text}", file=sys.stderr)
+            self._fail(f"Error del historial: {exc}")
             return
-        print(f"  Evento: {capture_id}  {captured_at}  estado: {event.status}")
+        report(f"  Evento: {capture_id}  {captured_at}  estado: {event.status}")
         if self._uploader is not None:
             self._uploader.submit(capture_id)
+
+    def _fail(self, message: str) -> None:
+        self.last_text, self.last_failed = message, True
+        report(f"  {message}", error=True)
+
+
+class Camera:
+    """La camara del programa: si deja de entregar imagen, la libera y la reabre sola."""
+
+    def __init__(self, cv2, config: dict):
+        self._cv2 = cv2
+        self._config = config
+        self.cap = self._open()  # al arrancar, un error de camara si detiene el programa
+        self.error: str | None = None
+        self._failures = [0]
+        self._retry_at = 0.0
+
+    def _open(self):
+        c = self._config
+        return open_camera(
+            self._cv2, c["camera_index"], c["width"], c["height"], c["warmup_frames"]
+        )
+
+    def read(self):
+        """Un cuadro, o None mientras la camara esta desconectada (se reintenta sola)."""
+        now = time.monotonic()
+        if self.cap is None:
+            if now < self._retry_at:
+                return None
+            try:
+                self.cap = self._open()
+            except CameraError:
+                self._retry_at = now + RECONNECT_SECONDS
+                return None
+            self._failures, self.error = [0], None
+            report("Camara reconectada.")
+        try:
+            return read_frame(self.cap, self._failures)
+        except CameraError as exc:
+            self.error = "Error de camara: no entrega imagen. Reintentando..."
+            report(f"{self.error} ({exc})", error=True)
+            self.release()
+            self._retry_at = now + RECONNECT_SECONDS
+            return None
+
+    def release(self) -> None:
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
 
 
 class Uploader:
@@ -335,7 +410,7 @@ class Uploader:
     def close(self, timeout: float) -> None:
         """Espera los envios en curso hasta `timeout` s; los que no salgan quedan pendientes."""
         if not self._queue.empty():
-            print("Esperando los envios en curso...")
+            report("Esperando los envios en curso...")
         self._queue.put(None)
         self._thread.join(timeout)
 
@@ -350,11 +425,10 @@ class Uploader:
                     result = send_and_record(store, event, self._cfg, self._key, EDGE_DIR)
                 except Exception as exc:  # un fallo inesperado no debe matar el hilo
                     self.last_text, self.last_failed = f"AWS: error - {exc}"[:70], True
-                    print(f"  Envio {capture_id}: error inesperado: {exc}", file=sys.stderr)
+                    report(f"  Envio {capture_id}: error inesperado: {exc}", error=True)
                     continue
                 self.last_text, self.last_failed = short_status(result), not result.ok
-                stream = sys.stdout if result.ok else sys.stderr
-                print(f"  Envio {capture_id}: {describe(result)}", file=stream)
+                report(f"  Envio {capture_id}: {describe(result)}", error=not result.ok)
 
 
 def _relative_to_edge(path: Path) -> str:
@@ -367,8 +441,9 @@ def _relative_to_edge(path: Path) -> str:
 def draw_overlay(cv2, frame, crop, lines: list[tuple[str, bool]]):
     """Copia del cuadro con el recorte y las lineas de estado; la foto guardada va limpia."""
     shown = frame.copy()
-    x, y, w, h = crop
-    cv2.rectangle(shown, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    if crop is not None:
+        x, y, w, h = crop
+        cv2.rectangle(shown, (x, y), (x + w, y + h), (0, 255, 0), 2)
     top = 0
     for text, failed in lines:
         color = (0, 0, 255) if failed else (255, 255, 255)
@@ -421,42 +496,93 @@ class TerminalKeys:
         return os.read(self._fd, 1).decode("utf-8", "ignore") if ready else ""
 
 
-def run_with_window(cv2, cap, capturer: Capturer) -> None:
+def toggle_interval(interval: IntervalTrigger) -> None:
+    if not interval.seconds:
+        report("Captura por intervalo: capture_interval_s no esta configurado.", error=True)
+    elif interval.toggle():
+        report(f"Captura por intervalo ACTIVADA: cada {interval.seconds:g} s (i para detener).")
+    else:
+        report("Captura por intervalo detenida.")
+
+
+def screen_lines(capturer: Capturer, camera: Camera, interval: IntervalTrigger):
+    lines = capturer.status_lines()
+    if interval.active:
+        lines.append((interval.status(), False))
+    if camera.error:
+        lines.append((camera.error, True))
+    return lines
+
+
+def unexpected(capturer: Capturer, exc: Exception) -> None:
+    """Un error no previsto se registra con su traza y el programa sigue."""
+    log.exception("Error inesperado")
+    capturer.last_text, capturer.last_failed = f"Error inesperado: {exc}"[:70], True
+    report(f"Error inesperado (el programa sigue): {exc}", error=True)
+    time.sleep(ERROR_PAUSE_SECONDS)  # sin un ciclo de errores a toda velocidad
+
+
+def run_with_window(cv2, camera: Camera, capturer: Capturer, interval: IntervalTrigger) -> None:
+    import numpy as np
+
     cv2.namedWindow(WINDOW_TITLE)
-    failures = [0]
-    print("Vista previa abierta. Espacio: foto y clasificacion. q: salir.")
+    heartbeat = Heartbeat()
+    blank = np.zeros((480, 640, 3), dtype=np.uint8)
+    report("Vista previa abierta. Espacio: foto. i: captura por intervalo. q: salir.")
     try:
         while True:
-            frame = read_frame(cap, failures)
-            if frame is not None:
-                crop = capturer.crop_for(frame)
-                shown = draw_overlay(cv2, frame, crop, capturer.status_lines())
-                cv2.imshow(WINDOW_TITLE, shown)
-            key = cv2.waitKey(int(POLL_SECONDS * 1000)) & 0xFF
-            if frame is not None and key == ord(KEY_SPACE):
-                capturer.capture(frame)
-            elif key == ord(KEY_QUIT):
-                break
-            if cv2.getWindowProperty(WINDOW_TITLE, cv2.WND_PROP_VISIBLE) < 1:
-                break  # se cerro la ventana con la X
+            try:
+                frame = camera.read()
+                if frame is not None:
+                    blank = np.zeros_like(frame)
+                    crop = capturer.crop_for(frame)
+                else:
+                    crop = None  # camara desconectada: pantalla negra con el error
+                lines = screen_lines(capturer, camera, interval)
+                cv2.imshow(
+                    WINDOW_TITLE,
+                    draw_overlay(cv2, frame if frame is not None else blank, crop, lines),
+                )
+                key = cv2.waitKey(int(POLL_SECONDS * 1000)) & 0xFF
+                if key == ord(KEY_QUIT):
+                    break
+                if key == ord(KEY_INTERVAL):
+                    toggle_interval(interval)
+                if frame is not None and (key == ord(KEY_SPACE) or interval.due()):
+                    capturer.capture(frame)
+                heartbeat.tick(capturer.count)
+                if cv2.getWindowProperty(WINDOW_TITLE, cv2.WND_PROP_VISIBLE) < 1:
+                    break  # se cerro la ventana con la X
+            except Exception as exc:  # la demo no se cae por un error no previsto
+                unexpected(capturer, exc)
     finally:
         cv2.destroyAllWindows()
 
 
-def run_in_terminal(cap, capturer: Capturer, keys: TerminalKeys) -> None:
-    failures = [0]
+def run_in_terminal(
+    camera: Camera, capturer: Capturer, keys: TerminalKeys, interval: IntervalTrigger
+) -> None:
+    heartbeat = Heartbeat()
     last_frame = None
-    print("Modo sin ventana (no hay pantalla). Espacio: foto y clasificacion. q: salir.")
+    report("Modo sin ventana. Espacio: foto. i: captura por intervalo. q: salir.")
     with keys:
         while True:
-            frame = read_frame(cap, failures)  # consume cuadros para no guardar uno viejo
-            if frame is not None:
-                last_frame = frame
-            key = keys.poll(POLL_SECONDS)
-            if key == KEY_SPACE and last_frame is not None:
-                capturer.capture(last_frame)
-            elif key.lower() == KEY_QUIT:
-                break
+            try:
+                frame = camera.read()  # consume cuadros para no guardar uno viejo
+                if frame is not None:
+                    last_frame = frame
+                elif camera.cap is None:
+                    last_frame = None  # sin camara no se captura un cuadro viejo
+                key = keys.poll(POLL_SECONDS).lower()
+                if key == KEY_QUIT:
+                    break
+                if key == KEY_INTERVAL:
+                    toggle_interval(interval)
+                if last_frame is not None and (key == KEY_SPACE or interval.due()):
+                    capturer.capture(last_frame)
+                heartbeat.tick(capturer.count)
+            except Exception as exc:  # la demo no se cae por un error no previsto
+                unexpected(capturer, exc)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -480,6 +606,8 @@ def main(argv: list[str] | None = None) -> int:
     except ConfigError as exc:
         print(f"Error de configuracion: {exc}", file=sys.stderr)
         return 2
+    setup_logging(config["log_file"])
+    log.info("---- Inicio de capture.py ----")
 
     try:
         import cv2
@@ -497,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.headless:
         use_window = False
     if use_window and not has_display():
-        print("Aviso: preview esta activado pero no hay pantalla; se usa el modo sin ventana.")
+        report("Aviso: preview esta activado pero no hay pantalla; se usa el modo sin ventana.")
         use_window = False
 
     from classifier import Classifier, ModelError
@@ -505,21 +633,22 @@ def main(argv: list[str] | None = None) -> int:
     try:
         classifier = Classifier(config["model"])
     except ModelError as exc:
-        print(f"Error del modelo: {exc}", file=sys.stderr)
+        report(f"Error del modelo: {exc}", error=True)
         return 1
     for label, value in classifier.describe():
-        print(f"{label + ':':<13}{value}")
+        report(f"{label + ':':<13}{value}")
 
     from events import EventStore
 
     try:
         store = EventStore(config["events_db"])
     except Exception as exc:  # sqlite3.Error u OSError
-        print(f"No se pudo abrir el historial {config['events_db']}: {exc}", file=sys.stderr)
+        report(f"No se pudo abrir el historial {config['events_db']}: {exc}", error=True)
         return 1
     total = sum(store.count_by_status().values())
-    print(f"{'Historial:':<13}{config['events_db']} ({total} eventos)")
-    print(f"{'Dispositivo:':<13}{config['device_id']}")
+    report(f"{'Historial:':<13}{config['events_db']} ({total} eventos)")
+    report(f"{'Dispositivo:':<13}{config['device_id']}")
+    report(f"{'Registro:':<13}{config['log_file']}")
 
     from dataclasses import replace
 
@@ -529,40 +658,40 @@ def main(argv: list[str] | None = None) -> int:
     uploader = None
     if args.simular_fallo:
         upload = replace(upload, api_url=SIMULATED_FAILURE_URL)
-        print(f"SIMULANDO FALLO: los envios van a {SIMULATED_FAILURE_URL} y van a fallar.")
+        report(f"SIMULANDO FALLO: los envios van a {SIMULATED_FAILURE_URL} y van a fallar.")
     if upload.auto_send:
         uploader = Uploader(upload, config["events_db"], read_device_key(upload))
-        print(f"{'Envio:':<13}{upload.api_url} (clave: {describe_key_source(upload)})")
+        report(f"{'Envio:':<13}{upload.api_url} (clave: {describe_key_source(upload)})")
     else:
-        print(f"{'Envio:':<13}desactivado (upload.auto_send: false); usa retry.py")
+        report(f"{'Envio:':<13}desactivado (upload.auto_send: false); usa retry.py")
 
-    cap = None
+    camera = None
+    interval = IntervalTrigger(config["capture_interval_s"])
     try:
-        cap = open_camera(
-            cv2, config["camera_index"], config["width"], config["height"], config["warmup_frames"]
-        )
+        camera = Camera(cv2, config)
         saver = FrameSaver(cv2, config["output_dir"], config["jpeg_quality"])
-        print(
+        report(
             f"Camara {config['camera_index']} lista. Las fotos se guardan en {config['output_dir']}"
         )
         capturer = Capturer(
             saver, classifier, config["crop_fraction"], store, config["device_id"], uploader
         )
         if use_window:
-            run_with_window(cv2, cap, capturer)
+            run_with_window(cv2, camera, capturer, interval)
         else:
-            run_in_terminal(cap, capturer, TerminalKeys())
+            run_in_terminal(camera, capturer, TerminalKeys(), interval)
     except CameraError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        report(f"Error: {exc}", error=True)
         return 1
     except KeyboardInterrupt:
-        print("\nInterrumpido.")
+        report("\nInterrumpido.")
     finally:
-        if cap is not None:
-            cap.release()
+        if camera is not None:
+            camera.release()
         if uploader is not None:
             uploader.close(timeout=upload.timeout_s + 2)
         store.close()
+        log.info("---- Fin de capture.py ----")
     return 0
 
 

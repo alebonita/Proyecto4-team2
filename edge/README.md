@@ -1,4 +1,4 @@
-# Dispositivo edge: captura, clasificación local, historial y envío a AWS (EDG-1 a EDG-4)
+# Dispositivo edge: captura, clasificación local, historial y envío a AWS (EDG-1 a EDG-6)
 
 Programa que abre la webcam y, al presionar la barra espaciadora, guarda una foto JPEG
 y clasifica el objeto en la propia laptop con el modelo optimizado (ONNX INT8) y
@@ -20,8 +20,9 @@ Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
 | `list_events.py` | Lista en la terminal los últimos eventos |
 | `sender.py` | Envío de cada evento y su foto al endpoint de Capturas Edge |
 | `retry.py` | Reenvía eventos con su mismo `capture_id` |
+| `operation.py` | Registro local, captura por intervalo y estado periódico (memoria) |
 | `config.example.yaml` | Plantilla de configuración sin secretos |
-| `tests/` | Pruebas del clasificador, del historial y del envío (con un servidor local de prueba) |
+| `tests/` | Pruebas del clasificador, del historial, del envío (con un servidor local de prueba) y de la operación continua |
 | `run_display.sh` | Arranca `capture.py` con vista previa en la pantalla del equipo (consola física) |
 | `config.yaml` | Cámara, carpeta de salida, recorte, modelo y preprocesamiento |
 | `device_info.py` | Imprime marca y modelo, procesador, RAM, sistema operativo y cámaras |
@@ -105,7 +106,7 @@ con la del modelo original; mide la accuracy en las 128 de validación (no puede
 python -m unittest discover -s tests -v
 ```
 
-Deben pasar las 18 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
+Deben pasar las 25 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
 
 **8. Clave del dispositivo.** El endpoint pide una clave en el encabezado `X-Device-Key`
 (la entrega quien administra el servidor). Nunca va en git ni en `config.yaml`: se guarda en
@@ -156,8 +157,25 @@ al desconectar el cable de red, mientras que una sesión SSH se corta.
 
 | Tecla | Acción |
 |---|---|
-| Barra espaciadora | Guarda el cuadro actual en `captures/capture_AAAAMMDD_HHMMSS_mmm.jpg` y clasifica el recorte |
+| Barra espaciadora | Guarda el cuadro actual en `captures/` y clasifica el recorte |
+| `i` | Activa o detiene la captura automática cada `capture_interval_s` segundos (10 por defecto) |
 | `q` | Cierra el programa |
+
+### Operación continua
+
+Para la demo, el programa está pensado para correr sin caerse
+([pruebas manuales](../docs/p4/pruebas-operacion.md)):
+
+- **Registro local** en `logs/edge.log` (rota solo a 1 MB): arranque con el modelo y su
+  SHA-256, cada captura, cada envío y cada error de cámara, inferencia, historial o envío, con
+  hora. Cada minuto anota las capturas de la sesión y la memoria del proceso.
+- **Errores visibles sin cerrar el programa:** aparecen en la ventana (en rojo) y en la
+  terminal. Si la cámara se desconecta, la ventana se pone negra con el aviso y el programa
+  la reabre solo en cuanto vuelve. Un error al guardar una foto o uno no previsto se registra
+  y el programa sigue.
+- **Captura por intervalo** con la tecla `i`: la ventana muestra `Intervalo: cada 10 s`.
+- Una sola sesión de onnxruntime por ejecución y la cámara se libera siempre al salir. En
+  300 capturas seguidas la memoria pasó de 156.6 a 156.7 MB (`tests/test_operation.py`).
 
 Al arrancar imprime qué modelo cargó, para poder demostrarlo:
 
@@ -294,6 +312,8 @@ scp 'usuario@equipo-edge:ruta/al/repo/edge/captures/*.jpg' .
 | `upload.key_env`, `upload.key_file` | `EDGE_DEVICE_KEY`, `~/.config/edge/device.env` | De dónde se lee la clave; nunca va en este archivo |
 | `upload.timeout_s` | `10` | Tiempo de espera de cada envío |
 | `upload.auto_send` | `true` | `false`: no se envía al capturar; se envía con `retry.py --todos` |
+| `capture_interval_s` | `10` | Segundos entre capturas con la tecla `i`. Vacío: desactivado |
+| `log_file` | `logs/edge.log` | Archivo de registro local. Una ruta relativa se toma desde `edge/` |
 | `crop_fraction` | `0.8` | Lado del recorte que se clasifica, como fracción del lado corto del cuadro |
 | `model.path` | `models/dog-cat-resnet18-1.0.0-int8.onnx` | Archivo ONNX. Una ruta relativa se toma desde `edge/` |
 | `model.version` | `dog-cat-resnet18-1.0.0-int8` | Versión que se imprime y se registra con cada captura |
@@ -316,6 +336,7 @@ arranca con `python capture.py --config otra-config.yaml`.
 | `... no es el modelo esperado: SHA-256 ...` | El archivo no es la variante INT8 de MOD-3. Vuelve a bajarlo y comprueba su SHA-256 |
 | `Envio ... error: Falta la clave de dispositivo` | Falta el paso 8, o la clave quedó vacía (`largo de la clave: 0`) |
 | `HTTP 401: Clave de dispositivo ausente o incorrecta` | La clave no es la del servidor. Corrígela (paso 8) y reenvía con `retry.py --todos --incluir-rechazados` |
+| `Error de camara: no entrega imagen. Reintentando...` | La webcam se desconectó o falló. Vuelve a conectarla: el programa la reabre solo (`Camara reconectada.` en el registro) |
 | `Sin conexion con el servidor` o `Tiempo de espera agotado` | Sin red o servidor caído. La clasificación sigue; reenvía con `retry.py --todos` |
 | `Falta onnxruntime` | El entorno virtual no está activo o faltan dependencias: paso 5 |
 | `ModuleNotFoundError` o `Falta PyYAML` | El entorno virtual no está activo: `source .venv/bin/activate` |
