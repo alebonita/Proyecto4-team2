@@ -27,6 +27,13 @@ device_id: edge-<equipo>-01
 # Historial local de capturas (SQLite). Se conserva al cerrar el programa.
 events_db: events.db
 
+# Captura por intervalo (EDG-6): con la tecla i se activa o se detiene una captura cada
+# tantos segundos. Vacio: la tecla i no hace nada.
+capture_interval_s: 10
+
+# Archivo de registro local: arranque, capturas, envios y errores. Rota solo (1 MB x 4).
+log_file: logs/edge.log
+
 # Recorte fijo que se clasifica: cuadrado centrado con esta fraccion del lado corto
 # del cuadro. Se dibuja en la vista previa; el objeto se presenta dentro del recuadro.
 crop_fraction: 0.8
