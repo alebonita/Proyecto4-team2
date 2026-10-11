@@ -48,27 +48,73 @@ Son errores del modelo del Proyecto 3, no de la optimización: la variante no co
 
 El script también corre el **ONNX float32 de MOD-2** con onnxruntime de Python sobre los mismos 128 y obtiene **128/128 con la misma clase que el original**. Así se confirma que exportar a ONNX no cambia nada y que la única diferencia, mínima, viene de la cuantización.
 
+## Variante `int8-rr` y la laptop edge (Intel sin VNNI)
+
+En EDG-2, Stephy corrió la variante `int8` en la laptop edge (Intel Core i5-4260U, AVX2 sin VNNI) y obtuvo **124/128**, con 3 recortes que cambian de clase respecto a esta tabla. Por eso se generó en MOD-3 la variante **`int8-rr`** (`reduce_range=True`, pesos de 7 bits). Criterio acordado con la PM:
+
+> Nos quedamos con `int8-rr` si da lo mismo en las dos computadoras y al menos 124/128. Si sale peor que `int8`, se regresa a `int8` y se documenta.
+
+### Resultados por computadora
+
+Mismas 128 entradas en las dos computadoras: el `.npz` con su SHA-256, ver «Entradas».
+
+| Variante | Computadora | CPU (VNNI) | Accuracy | Misma clase que el original | Errores | Fuente |
+|---|---|---|---|---|---|---|
+| Original (PyTorch) | — | — | 125/128 (0.9766) | — | img131, img263, img633 | MOD-1 |
+| `int8` | MOD-4 | Xeon 2.10 GHz (**sí**) | 125/128 (0.9766) | 128/128 | img131, img263, img633 | `metrics.json` |
+| `int8` | laptop edge | i5-4260U (**no**) | 124/128 (0.9688) | 125/128 | img106, img263, img289, img633 | EDG-2 (`predicciones_validacion_edge.csv`) |
+| **`int8-rr`** | MOD-4 | Xeon 2.10 GHz (**sí**) | **126/128 (0.9844)** | **127/128** | img131, img263 | `metrics_int8-rr.json` |
+| **`int8-rr`** | laptop edge | i5-4260U (**no**) | *pendiente (Stephy)* | *pendiente* | *pendiente* | `metrics_int8-rr_intel.json` |
+
+En esta computadora, `int8-rr` **no pierde nada y corrige un error del original**: `img633-ann627` (gato) pasa de P(dog) 0.547 a 0.406 y queda bien clasificado. Por eso coincide con el original en 127/128 y no en 128/128: la única diferencia es ese acierto. Accuracy y F1 macro suben de 0.9766/0.9765 a **0.9844/0.9844** (caída de **−0.78 pp**, es decir, mejora). Los otros dos errores (`img131`, `img263`) siguen igual.
+
+| Clase (`int8-rr`, MOD-4) | Soporte | Precision | Recall | F1 |
+|---|---|---|---|---|
+| dog | 61 | 0.9683 | 1.0000 | 0.9839 |
+| cat | 67 | 1.0000 | 0.9701 | 0.9848 |
+
+El cambio máximo de probabilidad respecto al original es 0.214 (`img526-ann521`, un gato que sigue en P(dog) 0.34, bien clasificado). En la medición previa de Stephy en la laptop edge, con una variante `reduce_range` regenerada por ella, la desviación máxima respecto al fp32 bajó de 0.885 a 0.210. Falta confirmarlo con **este archivo** (`1d4a85fa…`).
+
+**Para cerrar la tabla en la laptop edge** (no hace falta PyTorch):
+
+```bash
+python compare_quality.py --variant int8 --tag intel      # int8 con este mismo script
+python compare_quality.py --variant int8-rr --tag intel   # int8-rr
+```
+
+Genera `predictions_validation[_int8-rr]_intel.csv` y `metrics[_int8-rr]_intel.json`, con el CPU y si tiene VNNI, sin pisar los archivos de esta computadora. La explicación de por qué el INT8 depende del CPU (VNNI) va en MOD-5.
+
+### Entradas
+
+`inputs/validation_resized_uint8.npz` (5 410 353 bytes, SHA-256 `29a6b2a2deb0e6accbf4cec3c9ad575ba9ef35c76950e4085a1228744795a3b3`) guarda los 128 recortes ya redimensionados a 128×128 con torchvision (uint8). El script solo los normaliza, en el mismo orden de operaciones que torchvision. `python compare_quality.py --build-inputs` (con PyTorch) regenera el archivo desde los PNG y **comprueba que el tensor sea idéntico byte a byte al `PREPROCESS` de MOD-1 en los 128**. Regenerarlo da el mismo SHA-256. Así, la comparación no depende de que la otra computadora tenga PyTorch ni de su versión de Pillow.
+
+Con este cambio, la corrida de `int8` reproduce **exactamente** el mismo `predictions_validation.csv` que antes (se comparó con `cmp`).
+
 ## Archivos
 
 - `predictions_validation.csv`: una fila por recorte (128). Columnas: `crop_id`, `true_class`, `pred_original`, `pred_optimized`, y las probabilidades de cada clase para los dos modelos.
 - `metrics.json`: accuracy, F1 macro, precision/recall/F1/soporte por clase, errores, caída en pp, coincidencias, hashes de los modelos y del manifiesto, y versiones.
 - `compare_output.txt`: la salida del comando.
+- `predictions_validation_int8-rr.csv`, `metrics_int8-rr.json` y `compare_output_int8-rr.txt`: lo mismo para la variante `int8-rr`.
+- `inputs/validation_resized_uint8.npz`: las 128 entradas (ver «Entradas»).
 
 Recalculé accuracy y F1 macro por separado, solo desde el CSV, y salen los mismos valores (0.976562 y 0.976550).
 
 ## Comando usado
 
-Desde esta carpeta. No hace falta `best.pt`, porque el original se toma de las predicciones de MOD-1. Sí hacen falta los dos `.onnx`, generados con su script o bajados del bucket (ver `../mod-02/README.md` y `../mod-03/README.md`):
+Desde esta carpeta. No hace falta `best.pt` ni PyTorch: el original se toma de las predicciones de MOD-1 y las entradas, del `.npz`. Sí hacen falta los `.onnx`, generados con su script o bajados del bucket (ver `../mod-02/README.md` y `../mod-03/README.md`):
 
 ```bash
-pip install -r ../mod-02/requirements.txt
-python compare_quality.py     # -> predictions_validation.csv, metrics.json
+pip install numpy onnxruntime==1.30.0
+python compare_quality.py                      # int8    -> predictions_validation.csv, metrics.json
+python compare_quality.py --variant int8-rr    # int8-rr -> predictions_validation_int8-rr.csv, metrics_int8-rr.json
 ```
 
-Salida:
+Salida de `int8`:
 
 ```
-validación: 128 recortes (dog=61, cat=67)
+variante: int8 (dog-cat-resnet18-1.0.0-int8.onnx, SHA-256 9c28368acaf0…)
+CPU: Intel(R) Xeon(R) Processor @ 2.10GHz  VNNI: ['avx512_vnni', 'avx_vnni']
 runtime: onnxruntime 1.30.0 (Python, CPUExecutionProvider)
 original   accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
 optimizada accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
@@ -77,4 +123,17 @@ misma clase que el original: 128/128   max |Δ prob|: 0.0573
 control ONNX fp32 (MOD-2): 128/128
 ```
 
-Entorno: Linux x86_64, Python 3.13 y CPU (ver `metrics.json`). El mismo comando se puede repetir en la laptop edge. Las clases deben coincidir; las probabilidades INT8 pueden variar en los últimos decimales según el CPU.
+Salida de `int8-rr`:
+
+```
+variante: int8-rr (dog-cat-resnet18-1.0.0-int8-rr.onnx, SHA-256 1d4a85fad5b2…)
+CPU: Intel(R) Xeon(R) Processor @ 2.10GHz  VNNI: ['avx512_vnni', 'avx_vnni']
+runtime: onnxruntime 1.30.0 (Python, CPUExecutionProvider)
+original   accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
+optimizada accuracy=0.9844 (126/128)  F1 macro=0.9844  dog: F1=0.9839  cat: F1=0.9848  errores: img131-ann149, img263-ann299
+caída de accuracy: -0.78 pp   caída de F1 macro: -0.78 pp
+misma clase que el original: 127/128   max |Δ prob|: 0.2142
+control ONNX fp32 (MOD-2): 128/128
+```
+
+Entorno: Linux x86_64, Python 3.13, CPU Xeon con VNNI (ver `metrics*.json`). **El INT8 sí depende del CPU:** el mismo archivo `int8` da 125/128 aquí y 124/128 en la laptop edge sin VNNI. Por eso la tabla de arriba lleva las dos computadoras.
