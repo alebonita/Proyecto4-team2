@@ -156,6 +156,12 @@ jobs:
       - name: Instalar dependencias del cliente
         working-directory: app
         run: uv sync --locked --no-build
+      # Las imágenes se bajan y construyen antes, con reintentos: el registro a veces
+      # responde "toomanyrequests" por la IP compartida del runner (.github/scripts/retry.sh).
+      - name: Bajar imágenes y construir MLflow (con reintentos)
+        run: |
+          bash .github/scripts/retry.sh docker compose pull --ignore-buildable mariadb minio
+          bash .github/scripts/retry.sh docker compose build mlflow
       - name: Levantar MariaDB, MinIO y MLflow
         run: docker compose up -d --build --wait mariadb minio mlflow
       - name: Otro contenedor alcanza http://mlflow:5000 (como el worker)
@@ -198,6 +204,8 @@ jobs:
       - name: Instalar dependencias
         working-directory: app
         run: uv sync --locked --no-build
+      - name: Bajar la imagen de MariaDB (con reintentos)
+        run: bash .github/scripts/retry.sh docker compose pull mariadb
       - name: Levantar MariaDB (la misma imagen del stack)
         run: docker compose up -d --wait mariadb
       - name: Cola de jobs sobre MariaDB, incluido FOR UPDATE SKIP LOCKED
@@ -382,6 +390,11 @@ jobs:
         if: steps.role.outputs.configured == 'true'
         run: .venv-dvc-e2e/bin/dvc repro crops manifest
 
+      - name: Bajar imágenes y construir el stack (con reintentos)
+        if: steps.role.outputs.configured == 'true'
+        run: |
+          bash .github/scripts/retry.sh docker compose pull --ignore-buildable
+          bash .github/scripts/retry.sh docker compose build
       - name: Levantar stack completo de Proyecto 3
         if: steps.role.outputs.configured == 'true'
         run: docker compose up -d --build
