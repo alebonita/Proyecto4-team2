@@ -1,4 +1,4 @@
-"""EDG-1 y EDG-2: captura y clasificacion local en el dispositivo edge.
+"""EDG-1, EDG-2 y EDG-3: captura, clasificacion local e historial en el dispositivo edge.
 
 Abre la webcam con OpenCV. Al presionar una tecla guarda el cuadro actual como JPEG y
 clasifica el recorte fijo marcado en la vista previa con el modelo ONNX local
@@ -9,6 +9,10 @@ clasifica el recorte fijo marcado en la vista previa con el modelo ONNX local
 
 Al arrancar imprime el archivo del modelo, su SHA-256, la version, la version de
 onnxruntime y el proveedor de ejecucion.
+
+Cada captura clasificada queda como evento en el historial SQLite (events.py): ID unico,
+fecha con zona horaria, dispositivo, version del modelo, clase, confianza, ms, recorte,
+foto y estado de envio. export_events.py y list_events.py lo consultan.
 
 Hay dos modos, y se elige solo:
 
@@ -30,7 +34,6 @@ import glob
 import os
 import select
 import sys
-from datetime import datetime
 from pathlib import Path
 
 EDGE_DIR = Path(__file__).resolve().parent
@@ -83,6 +86,8 @@ def load_config(path: Path) -> dict:
         "width": raw.get("width"),
         "height": raw.get("height"),
         "crop_fraction": raw.get("crop_fraction", 0.8),
+        "device_id": raw.get("device_id"),
+        "events_db": raw.get("events_db", "events.db"),
     }
     if not _is_int(config["camera_index"], 0):
         raise ConfigError("camera_index debe ser un entero mayor o igual a 0 (ej. 0).")
@@ -106,6 +111,14 @@ def load_config(path: Path) -> dict:
         or not 0 < fraction <= 1
     ):
         raise ConfigError("crop_fraction debe ser un numero mayor que 0 y hasta 1 (ej. 0.8).")
+    device_id = config["device_id"]
+    if not isinstance(device_id, str) or not device_id.strip() or len(device_id) > 128:
+        raise ConfigError("device_id debe ser un texto de 1 a 128 caracteres (ej. edge-mba-01).")
+    config["device_id"] = device_id.strip()
+    if not isinstance(config["events_db"], str) or not config["events_db"].strip():
+        raise ConfigError("events_db debe ser la ruta del historial (ej. events.db).")
+    events_db = Path(config["events_db"]).expanduser()
+    config["events_db"] = events_db if events_db.is_absolute() else path.parent / events_db
 
     try:
         from classifier import parse_model_config
@@ -204,9 +217,8 @@ class FrameSaver:
                 f"No se pudo crear la carpeta de capturas {output_dir}: {exc}"
             ) from exc
 
-    def save(self, frame) -> Path:
-        stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
-        path = self._dir / f"capture_{stamp}.jpg"
+    def save(self, frame, name: str) -> Path:
+        path = self._dir / name
         ok = self._cv2.imwrite(str(path), frame, [self._cv2.IMWRITE_JPEG_QUALITY, self._quality])
         if not ok or not path.is_file():
             raise CameraError(
@@ -216,12 +228,14 @@ class FrameSaver:
 
 
 class Capturer:
-    """Guarda la foto, clasifica el recorte en local y recuerda el ultimo resultado."""
+    """Guarda la foto, la clasifica en local, registra el evento y recuerda el resultado."""
 
-    def __init__(self, saver: FrameSaver, classifier, crop_fraction: float):
+    def __init__(self, saver: FrameSaver, classifier, crop_fraction: float, store, device_id):
         self._saver = saver
         self._classifier = classifier
         self._crop_fraction = crop_fraction
+        self._store = store
+        self._device_id = device_id
         self.last_text: str | None = None
         self.last_failed = False
 
@@ -232,10 +246,17 @@ class Capturer:
         return center_crop(width, height, self._crop_fraction)
 
     def capture(self, frame) -> None:
-        path = self._saver.save(frame)
+        from classifier import sha256_of
+        from events import Event, new_capture_id, now_iso
+
+        # El ID y la fecha se generan una sola vez por captura y nombran la foto.
+        capture_id, captured_at = new_capture_id(), now_iso()
+        stamp = captured_at[:23].translate(str.maketrans("T.", "__", "-:"))
+        path = self._saver.save(frame, f"capture_{stamp}_{capture_id}.jpg")
         print(f"Foto guardada: {path}")
+        crop = self.crop_for(frame)
         try:
-            pred = self._classifier.classify(frame, self.crop_for(frame))
+            pred = self._classifier.classify(frame, crop)
         except Exception as exc:  # la inferencia falla: se avisa y el programa sigue
             self.last_text, self.last_failed = f"Error de inferencia: {exc}", True
             print(f"  {self.last_text}", file=sys.stderr)
@@ -246,6 +267,33 @@ class Capturer:
         )
         self.last_text = f"{pred.label}  {pred.confidence:.2f}  {pred.latency_ms:.0f} ms"
         self.last_failed = False
+
+        event = Event(
+            capture_id=capture_id,
+            captured_at=captured_at,
+            device_id=self._device_id,
+            model_version=self._classifier.cfg.version,
+            predicted_class=pred.label,
+            confidence=pred.confidence,
+            latency_ms=pred.latency_ms,
+            crop=crop,
+            photo_path=_relative_to_edge(path),
+            photo_sha256=sha256_of(path),
+        )
+        try:
+            self._store.add(event)
+        except Exception as exc:  # el historial falla: se avisa y el programa sigue
+            self.last_text, self.last_failed = f"Error del historial: {exc}", True
+            print(f"  {self.last_text}", file=sys.stderr)
+            return
+        print(f"  Evento: {capture_id}  {captured_at}  estado: {event.status}")
+
+
+def _relative_to_edge(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(EDGE_DIR))
+    except ValueError:
+        return str(path.resolve())
 
 
 def draw_overlay(cv2, frame, crop, text: str | None, failed: bool):
@@ -386,6 +434,17 @@ def main(argv: list[str] | None = None) -> int:
     for label, value in classifier.describe():
         print(f"{label + ':':<13}{value}")
 
+    from events import EventStore
+
+    try:
+        store = EventStore(config["events_db"])
+    except Exception as exc:  # sqlite3.Error u OSError
+        print(f"No se pudo abrir el historial {config['events_db']}: {exc}", file=sys.stderr)
+        return 1
+    total = sum(store.count_by_status().values())
+    print(f"{'Historial:':<13}{config['events_db']} ({total} eventos)")
+    print(f"{'Dispositivo:':<13}{config['device_id']}")
+
     cap = None
     try:
         cap = open_camera(
@@ -395,7 +454,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"Camara {config['camera_index']} lista. Las fotos se guardan en {config['output_dir']}"
         )
-        capturer = Capturer(saver, classifier, config["crop_fraction"])
+        capturer = Capturer(saver, classifier, config["crop_fraction"], store, config["device_id"])
         if use_window:
             run_with_window(cv2, cap, capturer)
         else:
@@ -408,6 +467,7 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         if cap is not None:
             cap.release()
+        store.close()
     return 0
 
 

@@ -1,4 +1,4 @@
-# Dispositivo edge: captura y clasificación local (EDG-1, EDG-2)
+# Dispositivo edge: captura, clasificación local e historial (EDG-1, EDG-2, EDG-3)
 
 Programa que abre la webcam y, al presionar la barra espaciadora, guarda una foto JPEG
 y clasifica el objeto en la propia laptop con el modelo optimizado (ONNX INT8) y
@@ -15,7 +15,10 @@ Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
 |---|---|
 | `capture.py` | Vista previa, captura de fotos y clasificación |
 | `classifier.py` | Carga del modelo ONNX, preprocesamiento e inferencia local |
-| `tests/` | Prueba con imágenes de validación conocidas |
+| `events.py` | Historial local de capturas en SQLite |
+| `export_events.py` | Exporta el historial a JSON |
+| `list_events.py` | Lista en la terminal los últimos eventos |
+| `tests/` | Pruebas del clasificador (imágenes de validación conocidas) y del historial |
 | `run_display.sh` | Arranca `capture.py` con vista previa en la pantalla del equipo (consola física) |
 | `config.yaml` | Cámara, carpeta de salida, recorte, modelo y preprocesamiento |
 | `device_info.py` | Imprime marca y modelo, procesador, RAM, sistema operativo y cámaras |
@@ -99,7 +102,7 @@ con la del modelo original; mide la accuracy en las 128 de validación (no puede
 python -m unittest discover -s tests -v
 ```
 
-Deben pasar las 5 pruebas.
+Deben pasar las 11 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
 
 **8. Datos del equipo (para la ficha de entrega):**
 
@@ -173,6 +176,36 @@ entre 255 y normalización con la media y desviación de ImageNet. La redimensi�
 Pillow porque es el filtro que torchvision replica con `antialias=True`; el `resize` de
 OpenCV no aplica antialias y llega a cambiar la probabilidad hasta 0.5.
 
+### Historial de capturas
+
+Cada captura clasificada queda como **evento** en un historial SQLite (`events.db`, junto a
+`config.yaml`), que se conserva al cerrar el programa:
+
+| Campo | Contenido |
+|---|---|
+| `capture_id` | UUID generado una sola vez por captura; también va en el nombre de la foto |
+| `captured_at` | Fecha y hora de la captura, ISO 8601 con zona horaria (`2026-10-10T20:11:19.515+00:00`) |
+| `device_id`, `model_version` | De `config.yaml` |
+| `predicted_class`, `confidence`, `latency_ms` | Resultado local: clase, confianza (0 a 1) y ms de preprocesamiento + inferencia |
+| `crop` | Recorte clasificado, en píxeles de la foto: `{x, y, width, height}` |
+| `photo_path`, `photo_sha256` | Foto guardada en `captures/` y su SHA-256 |
+| `status` | Estado de envío a AWS: `pendiente`, `enviado` o `error` |
+| `received_at`, `image_key`, `send_error`, `send_ms` | Los llena el envío a AWS (EDG-4) |
+
+En la terminal, cada captura imprime su evento:
+
+```
+  Evento: d5b5e774-14cf-47bf-9454-4142f3070479  2026-10-10T20:11:19.515+00:00  estado: pendiente
+```
+
+Para consultarlo (con el entorno virtual activo):
+
+```bash
+python list_events.py            # últimos 10: ID, hora, clase, confianza y estado
+python list_events.py -n 25
+python export_events.py -o eventos.json   # todos los eventos en JSON (sin -o, a la terminal)
+```
+
 El programa elige el modo según el equipo:
 
 - **Con pantalla** (`run_display.sh` en la consola física, o un equipo con escritorio):
@@ -199,6 +232,8 @@ scp 'usuario@equipo-edge:ruta/al/repo/edge/captures/*.jpg' .
 | `preview` | `auto` | `auto`, `true` o `false` |
 | `warmup_frames` | `5` | Cuadros descartados al abrir (ajuste de exposición) |
 | `width`, `height` | vacío | Resolución opcional; se definen las dos o ninguna |
+| `device_id` | `edge-macbookair-01` | Identidad del dispositivo en cada evento (1 a 128 caracteres) |
+| `events_db` | `events.db` | Archivo SQLite del historial. Una ruta relativa se toma desde `edge/` |
 | `crop_fraction` | `0.8` | Lado del recorte que se clasifica, como fracción del lado corto del cuadro |
 | `model.path` | `models/dog-cat-resnet18-1.0.0-int8.onnx` | Archivo ONNX. Una ruta relativa se toma desde `edge/` |
 | `model.version` | `dog-cat-resnet18-1.0.0-int8` | Versión que se imprime y se registra con cada captura |
