@@ -82,19 +82,22 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**6. Modelo.** El `.onnx` no está en git (pesa 10.8 MB). Es la variante INT8 de MOD-3,
-`dog-cat-resnet18-1.0.0-int8.onnx`, que está en el bucket del equipo. En una computadora
-con acceso a ese bucket:
+**6. Modelo.** El `.onnx` no está en git (pesa 10.8 MB). Es la variante INT8 `reduce_range` de
+MOD-3, `dog-cat-resnet18-1.0.0-int8-rr.onnx`, que está en el bucket del equipo. Se usa esta y no
+la primera INT8 porque este CPU (sin VNNI) satura los productos INT8 de 8 bits; con
+`reduce_range` la laptop da 126/128 en validación, igual o mejor que el original (ver
+`evidencias/mod-04/README.md` y `evidencias/edg-2/README.md`). En una computadora con acceso a
+ese bucket:
 
 ```bash
-aws s3 cp s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/onnx/dog-cat-resnet18-1.0.0-int8.onnx . \
+aws s3 cp s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/onnx/dog-cat-resnet18-1.0.0-int8-rr.onnx . \
   --region us-east-2 --profile <tu-perfil>
-shasum -a 256 dog-cat-resnet18-1.0.0-int8.onnx
-# 9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
+shasum -a 256 dog-cat-resnet18-1.0.0-int8-rr.onnx
+# 1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
 ```
 
 Cópialo a `edge/models/` en la laptop edge (por ejemplo con
-`scp dog-cat-resnet18-1.0.0-int8.onnx usuario@equipo-edge:ruta/al/repo/edge/models/`).
+`scp dog-cat-resnet18-1.0.0-int8-rr.onnx usuario@equipo-edge:ruta/al/repo/edge/models/`).
 `config.yaml` trae ese SHA-256: si el archivo es otro, el programa no arranca. También se
 puede regenerar idéntico con el script de MOD-3 (`evidencias/mod-03/README.md`).
 
@@ -180,9 +183,9 @@ Para la demo, el programa está pensado para correr sin caerse
 Al arrancar imprime qué modelo cargó, para poder demostrarlo:
 
 ```
-Modelo:      dog-cat-resnet18-1.0.0-int8.onnx
-SHA-256:     9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
-Version:     dog-cat-resnet18-1.0.0-int8
+Modelo:      dog-cat-resnet18-1.0.0-int8-rr.onnx
+SHA-256:     1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+Version:     dog-cat-resnet18-1.0.0-int8-rr
 onnxruntime: 1.30.0
 Proveedor:   CPUExecutionProvider
 ```
@@ -315,9 +318,9 @@ scp 'usuario@equipo-edge:ruta/al/repo/edge/captures/*.jpg' .
 | `capture_interval_s` | `10` | Segundos entre capturas con la tecla `i`. Vacío: desactivado |
 | `log_file` | `logs/edge.log` | Archivo de registro local. Una ruta relativa se toma desde `edge/` |
 | `crop_fraction` | `0.8` | Lado del recorte que se clasifica, como fracción del lado corto del cuadro |
-| `model.path` | `models/dog-cat-resnet18-1.0.0-int8.onnx` | Archivo ONNX. Una ruta relativa se toma desde `edge/` |
-| `model.version` | `dog-cat-resnet18-1.0.0-int8` | Versión que se imprime y se registra con cada captura |
-| `model.sha256` | el de la variante INT8 | Si no coincide, el programa no arranca. Vacío: no se comprueba |
+| `model.path` | `models/dog-cat-resnet18-1.0.0-int8-rr.onnx` | Archivo ONNX. Una ruta relativa se toma desde `edge/` |
+| `model.version` | `dog-cat-resnet18-1.0.0-int8-rr` | Versión que se imprime y se registra con cada captura |
+| `model.sha256` | el de la variante `int8-rr` | Si no coincide, el programa no arranca. Vacío: no se comprueba |
 | `model.classes` | `[dog, cat]` | Clases en el orden de salida del modelo |
 | `preprocess.*` | 128, RGB, ImageNet | Tamaño de entrada, orden de canales, media y desviación |
 

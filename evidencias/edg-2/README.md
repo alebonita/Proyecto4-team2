@@ -7,6 +7,13 @@ Código: [`edge/classifier.py`](../../edge/classifier.py), [`edge/capture.py`](.
 y la prueba [`edge/tests/test_classifier.py`](../../edge/tests/test_classifier.py). Instalación y
 uso: [`edge/README.md`](../../edge/README.md).
 
+> **Actualización 2026-10-12 — modelo desplegado: `int8-rr`.** Por el hallazgo de la sección
+> "Calidad en la laptop edge", MOD-3 generó la variante INT8 con `reduce_range`
+> (`dog-cat-resnet18-1.0.0-int8-rr.onnx`, SHA-256 `1d4a85fa…cb5ea0`) y es la que ahora carga
+> `edge/config.yaml`. En la laptop edge da **126/128** (−0.78 pp, mejora), 127/128 con la misma
+> clase que el original (`evidencias/mod-04/metrics_int8-rr_intel.json`). Esta página conserva
+> las mediciones con la primera variante `int8` porque son las que justificaron el cambio.
+
 ## Estado
 
 | Comprobación | Estado |
