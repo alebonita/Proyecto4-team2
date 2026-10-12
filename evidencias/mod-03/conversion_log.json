@@ -18,6 +18,7 @@
     "activation_type": "QUInt8",
     "per_channel": true,
     "calibrate_method": "MinMax",
+    "reduce_range": false,
     "preprocess": "quant_pre_process (inferencia de formas), skip_symbolic_shape=True"
   },
   "calibration": {
@@ -47,5 +48,5 @@
     "numpy": "2.5.3",
     "torch (solo preprocesamiento)": "2.14.0+cu130"
   },
-  "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39"
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39"
 }

@@ -1,0 +1,9 @@
+variante: int8-rr (dog-cat-resnet18-1.0.0-int8-rr.onnx, SHA-256 1d4a85fad5b2…)
+CPU: Intel(R) Xeon(R) Processor @ 2.10GHz  VNNI: ['avx512_vnni', 'avx_vnni']
+runtime: onnxruntime 1.30.0 (Python, CPUExecutionProvider)
+original   accuracy=0.9766 (125/128)  F1 macro=0.9765  dog: F1=0.9760  cat: F1=0.9771  errores: img131-ann149, img263-ann299, img633-ann627
+optimizada accuracy=0.9844 (126/128)  F1 macro=0.9844  dog: F1=0.9839  cat: F1=0.9848  errores: img131-ann149, img263-ann299
+caída de accuracy: -0.78 pp   caída de F1 macro: -0.78 pp
+misma clase que el original: 127/128   max |Δ prob|: 0.2142
+control ONNX fp32 (MOD-2): 128/128
+-> predictions_validation_int8-rr.csv, metrics_int8-rr.json

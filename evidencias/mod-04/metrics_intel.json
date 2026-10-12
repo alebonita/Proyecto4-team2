@@ -1,0 +1,135 @@
+{
+  "validation": {
+    "manifest": "../mod-01/validation_manifest.csv",
+    "manifest_sha256": "b00cd3a177088fa12cfd7000b8a664dc4d71a01d43a2e667c4810e814d4cab78",
+    "inputs": "inputs/validation_resized_uint8.npz",
+    "inputs_sha256": "29a6b2a2deb0e6accbf4cec3c9ad575ba9ef35c76950e4085a1228744795a3b3",
+    "samples": 128,
+    "support": {
+      "dog": 61,
+      "cat": 67
+    },
+    "classes": [
+      "dog",
+      "cat"
+    ]
+  },
+  "original": {
+    "model": "best.pt del Proyecto 3 (PyTorch), SHA-256 84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+    "predictions": "../mod-01/predictions_original_validation.csv",
+    "correct": 125,
+    "total": 128,
+    "accuracy": 0.9765625,
+    "f1_macro": 0.9765496183206106,
+    "per_class": {
+      "dog": {
+        "precision": 0.953125,
+        "recall": 1.0,
+        "f1": 0.976,
+        "support": 61,
+        "correct": 61
+      },
+      "cat": {
+        "precision": 1.0,
+        "recall": 0.9552238805970149,
+        "f1": 0.9770992366412213,
+        "support": 67,
+        "correct": 64
+      }
+    },
+    "errors": [
+      {
+        "crop_id": "img131-ann149",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img263-ann299",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img633-ann627",
+        "true": "cat",
+        "predicted": "dog"
+      }
+    ]
+  },
+  "optimized": {
+    "variant": "int8",
+    "model": "../mod-03/model/dog-cat-resnet18-1.0.0-int8.onnx",
+    "sha256": "9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd",
+    "runtime": "onnxruntime 1.30.0 (Python, CPUExecutionProvider)",
+    "correct": 124,
+    "total": 128,
+    "accuracy": 0.96875,
+    "f1_macro": 0.9686811842427208,
+    "per_class": {
+      "dog": {
+        "precision": 0.9672131147540983,
+        "recall": 0.9672131147540983,
+        "f1": 0.9672131147540983,
+        "support": 61,
+        "correct": 59
+      },
+      "cat": {
+        "precision": 0.9701492537313433,
+        "recall": 0.9701492537313433,
+        "f1": 0.9701492537313433,
+        "support": 67,
+        "correct": 65
+      }
+    },
+    "errors": [
+      {
+        "crop_id": "img106-ann134",
+        "true": "dog",
+        "predicted": "cat"
+      },
+      {
+        "crop_id": "img263-ann299",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img289-ann331",
+        "true": "dog",
+        "predicted": "cat"
+      },
+      {
+        "crop_id": "img633-ann627",
+        "true": "cat",
+        "predicted": "dog"
+      }
+    ]
+  },
+  "accuracy_drop_pp": 0.78125,
+  "f1_macro_drop_pp": 0.7868434077889841,
+  "same_class_as_original": "125/128",
+  "disagreements": [
+    "img106-ann134",
+    "img131-ann149",
+    "img289-ann331"
+  ],
+  "max_abs_diff_prob": 0.815275,
+  "control_onnx_fp32": {
+    "model": "../mod-02/model/dog-cat-resnet18-1.0.0-fp32.onnx",
+    "sha256": "6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f",
+    "same_class_as_original": "128/128"
+  },
+  "machine": {
+    "tag": "intel",
+    "cpu": {
+      "model": "Intel(R) Core(TM) i5-4260U CPU @ 1.40GHz",
+      "machine": "x86_64",
+      "vnni": "no",
+      "avx2": true
+    }
+  },
+  "versions": {
+    "python": "3.14.4",
+    "onnxruntime": "1.30.0",
+    "numpy": "2.3.5"
+  },
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43"
+}

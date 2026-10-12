@@ -1,0 +1,4 @@
+origen:   dog-cat-resnet18-1.0.0-fp32.onnx  44961942 bytes  SHA-256 6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f
+calibración: 150 imágenes de train verificadas
+variante: dog-cat-resnet18-1.0.0-int8-rr.onnx  11367590 bytes  SHA-256 1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+reducción de tamaño: 74.72 %

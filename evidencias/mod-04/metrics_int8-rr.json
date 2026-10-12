@@ -1,0 +1,126 @@
+{
+  "validation": {
+    "manifest": "../mod-01/validation_manifest.csv",
+    "manifest_sha256": "b00cd3a177088fa12cfd7000b8a664dc4d71a01d43a2e667c4810e814d4cab78",
+    "inputs": "inputs/validation_resized_uint8.npz",
+    "inputs_sha256": "29a6b2a2deb0e6accbf4cec3c9ad575ba9ef35c76950e4085a1228744795a3b3",
+    "samples": 128,
+    "support": {
+      "dog": 61,
+      "cat": 67
+    },
+    "classes": [
+      "dog",
+      "cat"
+    ]
+  },
+  "original": {
+    "model": "best.pt del Proyecto 3 (PyTorch), SHA-256 84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+    "predictions": "../mod-01/predictions_original_validation.csv",
+    "correct": 125,
+    "total": 128,
+    "accuracy": 0.9765625,
+    "f1_macro": 0.9765496183206106,
+    "per_class": {
+      "dog": {
+        "precision": 0.953125,
+        "recall": 1.0,
+        "f1": 0.976,
+        "support": 61,
+        "correct": 61
+      },
+      "cat": {
+        "precision": 1.0,
+        "recall": 0.9552238805970149,
+        "f1": 0.9770992366412213,
+        "support": 67,
+        "correct": 64
+      }
+    },
+    "errors": [
+      {
+        "crop_id": "img131-ann149",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img263-ann299",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img633-ann627",
+        "true": "cat",
+        "predicted": "dog"
+      }
+    ]
+  },
+  "optimized": {
+    "variant": "int8-rr",
+    "model": "../mod-03/model/dog-cat-resnet18-1.0.0-int8-rr.onnx",
+    "sha256": "1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0",
+    "runtime": "onnxruntime 1.30.0 (Python, CPUExecutionProvider)",
+    "correct": 126,
+    "total": 128,
+    "accuracy": 0.984375,
+    "f1_macro": 0.9843597262952102,
+    "per_class": {
+      "dog": {
+        "precision": 0.9682539682539683,
+        "recall": 1.0,
+        "f1": 0.9838709677419354,
+        "support": 61,
+        "correct": 61
+      },
+      "cat": {
+        "precision": 1.0,
+        "recall": 0.9701492537313433,
+        "f1": 0.9848484848484849,
+        "support": 67,
+        "correct": 65
+      }
+    },
+    "errors": [
+      {
+        "crop_id": "img131-ann149",
+        "true": "cat",
+        "predicted": "dog"
+      },
+      {
+        "crop_id": "img263-ann299",
+        "true": "cat",
+        "predicted": "dog"
+      }
+    ]
+  },
+  "accuracy_drop_pp": -0.78125,
+  "f1_macro_drop_pp": -0.7810107974599578,
+  "same_class_as_original": "127/128",
+  "disagreements": [
+    "img633-ann627"
+  ],
+  "max_abs_diff_prob": 0.21415,
+  "control_onnx_fp32": {
+    "model": "../mod-02/model/dog-cat-resnet18-1.0.0-fp32.onnx",
+    "sha256": "6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f",
+    "same_class_as_original": "128/128"
+  },
+  "machine": {
+    "tag": "mod-04",
+    "cpu": {
+      "model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+      "machine": "x86_64",
+      "vnni": [
+        "avx512_vnni",
+        "avx_vnni"
+      ],
+      "avx2": true
+    }
+  },
+  "versions": {
+    "python": "3.13.16",
+    "onnxruntime": "1.30.0",
+    "numpy": "2.5.3"
+  },
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39"
+}

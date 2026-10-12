@@ -2,7 +2,8 @@
 // y comprueba que da la misma clase que el modelo original en las 5 imágenes de MOD-2.
 //
 //   npm install            (instala onnxruntime-web con la versión de package.json)
-//   node verify_web.mjs
+//   node verify_web.mjs                                        # variante int8
+//   node verify_web.mjs dog-cat-resnet18-1.0.0-int8-rr.onnx    # variante int8-rr
 //
 // Usa las entradas que preparó ../mod-02/export_onnx.py (../mod-02/inputs/*.bin: el mismo tensor que recibe
 // el original, ya preprocesado), así que compara el MODELO convertido, no el resize.
@@ -15,12 +16,17 @@ import { fileURLToPath } from "node:url";
 import * as ort from "onnxruntime-web";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const MODEL = join(HERE, "model", "dog-cat-resnet18-1.0.0-int8.onnx");
+const MODEL_NAME = process.argv[2] ?? "dog-cat-resnet18-1.0.0-int8.onnx";
+const MODEL = join(HERE, "model", MODEL_NAME);
+const RESULTS =
+  MODEL_NAME === "dog-cat-resnet18-1.0.0-int8.onnx"
+    ? "resultados_web.json"
+    : `resultados_web_${MODEL_NAME.replace(/\.onnx$/, "")}.json`;
 const MODEL_S3 =
-  "s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/onnx/dog-cat-resnet18-1.0.0-int8.onnx";
+  `s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/onnx/${MODEL_NAME}`;
 if (!existsSync(MODEL)) {
   console.error(
-    "No está model/dog-cat-resnet18-1.0.0-int8.onnx (no se guarda en git).\n" +
+    `No está model/${MODEL_NAME} (no se guarda en git).\n` +
       "Genéralo con `python quantize_int8.py` o bájalo del bucket del equipo:\n\n" +
       `  aws s3 cp ${MODEL_S3} model/ --region us-east-2 --profile <tu-perfil>\n`,
   );
@@ -44,7 +50,7 @@ const modelBytes = readFileSync(MODEL);
 const session = await ort.InferenceSession.create(modelBytes, { executionProviders: ["wasm"] });
 
 console.log(`onnxruntime-web ${ortVersion} (backend wasm), Node ${process.version}`);
-console.log(`modelo: model/dog-cat-resnet18-1.0.0-int8.onnx  SHA-256 ${sha256(modelBytes)}`);
+console.log(`modelo: model/${MODEL_NAME}  SHA-256 ${sha256(modelBytes)}`);
 console.log(`entrada: ${session.inputNames.join(",")}  salida: ${session.outputNames.join(",")}\n`);
 
 const results = [];
@@ -78,12 +84,12 @@ for (const sample of expected.samples) {
 
 const ok = results.every((r) => r.coincide);
 writeFileSync(
-  join(HERE, "resultados_web.json"),
+  join(HERE, RESULTS),
   `${JSON.stringify(
     {
       runtime: `onnxruntime-web ${ortVersion} (wasm)`,
       node: process.version,
-      modelo: "model/dog-cat-resnet18-1.0.0-int8.onnx",
+      modelo: `model/${MODEL_NAME}`,
       modelo_sha256: sha256(modelBytes),
       coinciden: `${results.filter((r) => r.coincide).length}/${results.length}`,
       resultados: results,
@@ -92,5 +98,5 @@ writeFileSync(
     2,
   )}\n`,
 );
-console.log(`\n${ok ? "OK" : "FALLA"}: ${results.filter((r) => r.coincide).length}/${results.length} con la misma clase que el original -> resultados_web.json`);
+console.log(`\n${ok ? "OK" : "FALLA"}: ${results.filter((r) => r.coincide).length}/${results.length} con la misma clase que el original -> ${RESULTS}`);
 process.exit(ok ? 0 : 1);
