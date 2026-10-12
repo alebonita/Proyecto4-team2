@@ -63,6 +63,8 @@ Se generó una **segunda variante con la misma configuración, cambiando solo `r
 
 Pesa lo mismo porque el archivo sigue guardando un byte por peso; lo que cambia es el rango de valores. Dos corridas de `--reduce-range` dieron el mismo SHA-256. Bucket: `s3://mlops-p4-equipo-452857281704/models/dog-cat-resnet18/1.0.0/onnx/dog-cat-resnet18-1.0.0-int8-rr.onnx`. La calidad de las dos variantes en las 128 de validación, en las dos computadoras, está en MOD-4.
 
+**Variante adoptada: `int8-rr`.** En la laptop edge da 126/128 (contra 124/128 de `int8`) y las mismas 128 predicciones que en la computadora con VNNI, así que cumple los dos criterios de la PM (ver «Decisión» en `../mod-04/README.md`). La variante `int8` se conserva como registro.
+
 **Reproducción byte a byte.** Los SHA-256 de esta carpeta se obtuvieron en Linux x86_64 (onnxruntime 1.30.0). En otra plataforma, el script puede producir un archivo con otro hash, porque los rangos de calibración se calculan con aritmética de punto flotante que varía en los últimos decimales. Esa variación no cambia las clases. El archivo que se usa y se evalúa es el del bucket, identificado por su hash.
 
 ## Comandos usados

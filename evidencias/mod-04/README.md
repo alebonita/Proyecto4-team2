@@ -62,9 +62,9 @@ Mismas 128 entradas en las dos computadoras: el `.npz` con su SHA-256, ver «Ent
 |---|---|---|---|---|---|---|
 | Original (PyTorch) | — | — | 125/128 (0.9766) | — | img131, img263, img633 | MOD-1 |
 | `int8` | MOD-4 | Xeon 2.10 GHz (**sí**) | 125/128 (0.9766) | 128/128 | img131, img263, img633 | `metrics.json` |
-| `int8` | laptop edge | i5-4260U (**no**) | 124/128 (0.9688) | 125/128 | img106, img263, img289, img633 | EDG-2 (`predicciones_validacion_edge.csv`) |
+| `int8` | laptop edge | i5-4260U (**no**) | 124/128 (0.9688) | 125/128 | img106, img263, img289, img633 | `metrics_intel.json` (Stephy) |
 | **`int8-rr`** | MOD-4 | Xeon 2.10 GHz (**sí**) | **126/128 (0.9844)** | **127/128** | img131, img263 | `metrics_int8-rr.json` |
-| **`int8-rr`** | laptop edge | i5-4260U (**no**) | *pendiente (Stephy)* | *pendiente* | *pendiente* | `metrics_int8-rr_intel.json` |
+| **`int8-rr`** | laptop edge | i5-4260U (**no**) | **126/128 (0.9844)** | **127/128** | img131, img263 | `metrics_int8-rr_intel.json` (Stephy) |
 
 En esta computadora, `int8-rr` **no pierde nada y corrige un error del original**: `img633-ann627` (gato) pasa de P(dog) 0.547 a 0.406 y queda bien clasificado. Por eso coincide con el original en 127/128 y no en 128/128: la única diferencia es ese acierto. Accuracy y F1 macro suben de 0.9766/0.9765 a **0.9844/0.9844** (caída de **−0.78 pp**, es decir, mejora). Los otros dos errores (`img131`, `img263`) siguen igual.
 
@@ -73,16 +73,36 @@ En esta computadora, `int8-rr` **no pierde nada y corrige un error del original*
 | dog | 61 | 0.9683 | 1.0000 | 0.9839 |
 | cat | 67 | 1.0000 | 0.9701 | 0.9848 |
 
-El cambio máximo de probabilidad respecto al original es 0.214 (`img526-ann521`, un gato que sigue en P(dog) 0.34, bien clasificado). En la medición previa de Stephy en la laptop edge, con una variante `reduce_range` regenerada por ella, la desviación máxima respecto al fp32 bajó de 0.885 a 0.210. Falta confirmarlo con **este archivo** (`1d4a85fa…`).
+El cambio máximo de probabilidad respecto al original es 0.214 (`img526-ann521`, un gato que sigue en P(dog) 0.34, bien clasificado).
 
-**Para cerrar la tabla en la laptop edge** (no hace falta PyTorch):
+### Las dos computadoras, recorte por recorte
+
+Stephy corrió el mismo script, con las mismas 128 entradas (`.npz` `29a6b2a2…`) y los mismos archivos (`9c28368a…` y `1d4a85fa…`), en la laptop edge: Intel Core i5-4260U, `vnni: "no"`, onnxruntime 1.30.0. Comparando sus CSV con los de esta computadora:
+
+| Variante | Recortes con distinta clase entre las dos compus | Máx. \|Δ P(dog)\| entre las dos compus |
+|---|---|---|
+| `int8` | **3** (`img106-ann134`, `img131-ann149`, `img289-ann331`) | 0.813 |
+| **`int8-rr`** | **0** | **0.000000** |
+
+Con `int8`, el mismo archivo da resultados distintos según el CPU. Con **`int8-rr`, las 128 predicciones son idénticas en las dos computadoras**, hasta el sexto decimal de la probabilidad. Esto confirma que la diferencia venía de la saturación en CPUs sin VNNI, y que con pesos de 7 bits desaparece. La explicación detallada va en MOD-5.
+
+### Decisión
+
+Se cumplen las dos condiciones de la PM:
+
+1. **Lo mismo en las dos computadoras:** 128/128 recortes con la misma clase y la misma probabilidad.
+2. **Al menos 124/128 en la laptop edge:** da **126/128** (accuracy 0.9844, F1 macro 0.9844), 2 aciertos más que `int8` en esa laptop y 1 más que el original.
+
+**Se adopta `int8-rr` (`dog-cat-resnet18-1.0.0-int8-rr.onnx`, SHA-256 `1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0`) como variante optimizada del proyecto.** La variante `int8` se conserva en el repo y en el bucket como registro de la comparación.
+
+Para repetir la medición en otra computadora (no hace falta PyTorch):
 
 ```bash
-python compare_quality.py --variant int8 --tag intel      # int8 con este mismo script
+python compare_quality.py --variant int8 --tag intel      # int8
 python compare_quality.py --variant int8-rr --tag intel   # int8-rr
 ```
 
-Genera `predictions_validation[_int8-rr]_intel.csv` y `metrics[_int8-rr]_intel.json`, con el CPU y si tiene VNNI, sin pisar los archivos de esta computadora. La explicación de por qué el INT8 depende del CPU (VNNI) va en MOD-5.
+Genera `predictions_validation[_int8-rr]_<tag>.csv` y `metrics[_int8-rr]_<tag>.json`, con el CPU y si tiene VNNI, sin pisar los archivos de esta computadora.
 
 ### Entradas
 
@@ -96,6 +116,7 @@ Con este cambio, la corrida de `int8` reproduce **exactamente** el mismo `predic
 - `metrics.json`: accuracy, F1 macro, precision/recall/F1/soporte por clase, errores, caída en pp, coincidencias, hashes de los modelos y del manifiesto, y versiones.
 - `compare_output.txt`: la salida del comando.
 - `predictions_validation_int8-rr.csv`, `metrics_int8-rr.json` y `compare_output_int8-rr.txt`: lo mismo para la variante `int8-rr`.
+- `predictions_validation_intel.csv`, `metrics_intel.json`, `predictions_validation_int8-rr_intel.csv` y `metrics_int8-rr_intel.json`: las dos variantes en la laptop edge (Stephy).
 - `inputs/validation_resized_uint8.npz`: las 128 entradas (ver «Entradas»).
 
 Recalculé accuracy y F1 macro por separado, solo desde el CSV, y salen los mismos valores (0.976562 y 0.976550).
