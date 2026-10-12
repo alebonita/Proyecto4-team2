@@ -1,10 +1,10 @@
 /**
- * POR-1 — Forma de una captura de "Capturas Edge" tal como la devuelve
+ * POR-1/POR-2 — Forma de una captura de "Capturas Edge" tal como la devuelve
  * GET /edge-captures (AWS-2): los mismos campos que envía el dispositivo edge,
  * más `received_at`, `image_key` y una URL temporal `image_url` para ver la foto.
  *
- * Mantener los nombres iguales al backend permite cambiar los datos de prueba
- * por la API real sin tocar las tarjetas.
+ * Los nombres son los mismos del backend; `api.ts` valida la respuesta con zod
+ * antes de mostrarla.
  */
 export interface EdgeCaptureCrop {
   x: number;

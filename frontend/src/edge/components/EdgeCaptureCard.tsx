@@ -63,6 +63,9 @@ function CropOverlay({
 
 export function EdgeCaptureCard({ capture }: Readonly<{ capture: EdgeCapture }>) {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  // Se guarda la URL que falló: al renovar la lista llega otra URL y la foto se reintenta sola.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const failed = failedUrl === capture.image_url;
   const capturedLabel = formatCaptureDate(capture.captured_at);
 
   return (
@@ -70,20 +73,34 @@ export function EdgeCaptureCard({ capture }: Readonly<{ capture: EdgeCapture }>)
       aria-label={`Captura ${capture.capture_id}`}
       className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card"
     >
-      <div className="relative aspect-[4/3] bg-sidebar">
-        <img
-          src={capture.image_url}
-          alt={`Foto de la captura ${capture.capture_id}, clasificada como ${capture.predicted_class}`}
-          className="h-full w-full object-cover"
-          loading="lazy"
-          onLoad={(event) => {
-            const img = event.currentTarget;
-            if (img.naturalWidth && img.naturalHeight) {
-              setSize({ w: img.naturalWidth, h: img.naturalHeight });
-            }
-          }}
-        />
-        {capture.crop && size && <CropOverlay crop={capture.crop} size={size} />}
+      <div className="relative aspect-[4/3] overflow-hidden bg-sidebar">
+        {failed ? (
+          <div
+            role="img"
+            aria-label={`La foto de la captura ${capture.capture_id} no se pudo cargar`}
+            className="flex h-full w-full flex-col items-center justify-center gap-1 px-6 text-center"
+          >
+            <span className="text-sm font-medium text-ink">No se pudo cargar la foto</span>
+            <span className="text-xs text-ink-muted">
+              El enlace caduca a los 15 minutos. Usa «Actualizar» para pedirlo de nuevo.
+            </span>
+          </div>
+        ) : (
+          <img
+            src={capture.image_url}
+            alt={`Foto de la captura ${capture.capture_id}, clasificada como ${capture.predicted_class}`}
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            onLoad={(event) => {
+              const img = event.currentTarget;
+              if (img.naturalWidth && img.naturalHeight) {
+                setSize({ w: img.naturalWidth, h: img.naturalHeight });
+              }
+            }}
+            onError={() => setFailedUrl(capture.image_url)}
+          />
+        )}
+        {!failed && capture.crop && size && <CropOverlay crop={capture.crop} size={size} />}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">

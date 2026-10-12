@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { PageHeader } from "@/pipeline/components/PageHeader";
+import { EDGE_CAPTURE_URL_TTL_MS, fetchEdgeCaptures, type LoadEdgeCaptures } from "../api";
 import { EdgeCaptureCard } from "../components/EdgeCaptureCard";
-import { MOCK_EDGE_CAPTURES } from "../mockCaptures";
 import type { EdgeCapture } from "../types";
 
-export type LoadEdgeCaptures = () => Promise<readonly EdgeCapture[]>;
-
-/** POR-1: por ahora la sección muestra datos de prueba, sin llamar a la API. */
-export const loadMockEdgeCaptures: LoadEdgeCaptures = () => Promise.resolve(MOCK_EDGE_CAPTURES);
+/**
+ * Las URL de las fotos caducan a los 15 min; la página vuelve a pedir la lista un
+ * minuto antes para que nunca se queden rotas en pantalla.
+ */
+export const AUTO_RENEW_MS = EDGE_CAPTURE_URL_TTL_MS - 60 * 1000;
 
 /** Más reciente primero, por `captured_at`. No modifica el arreglo recibido. */
 export function sortNewestFirst(captures: readonly EdgeCapture[]): EdgeCapture[] {
@@ -23,7 +24,7 @@ export function sortNewestFirst(captures: readonly EdgeCapture[]): EdgeCapture[]
 type State =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; captures: EdgeCapture[] };
+  | { status: "ready"; captures: EdgeCapture[]; total: number };
 
 function LoadingGrid() {
   return (
@@ -51,53 +52,82 @@ function EmptyCaptures() {
     <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border-strong bg-surface px-6 py-16 text-center">
       <p className="text-sm font-medium text-ink">Todavía no hay capturas</p>
       <p className="max-w-sm text-sm text-ink-muted">
-        Cuando el dispositivo edge envíe su primera foto clasificada, aparecerá aquí. Usa
+        Cuando el dispositivo edge envíe su primera foto clasificada a AWS, aparecerá aquí. Usa
         «Actualizar» para volver a consultar.
       </p>
     </div>
   );
 }
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error && error.message
+    ? error.message
+    : "Revisa tu conexión e inténtalo de nuevo.";
+}
+
 /**
- * POR-1 — Sección «Capturas Edge» del portal (Proyecto 4).
+ * POR-1/POR-2 — Sección «Capturas Edge» del portal (Proyecto 4).
  *
- * Galería de las fotos que clasifica el dispositivo edge: foto, clase,
- * confianza, fecha, ID de captura, dispositivo y versión del modelo, de la más
- * reciente a la más antigua. Hoy usa datos de prueba (`mockCaptures.ts`);
- * `load` permite cambiarlos por GET /edge-captures sin tocar la página.
+ * Galería de las capturas que el dispositivo edge clasificó y envió a AWS
+ * (GET /edge-captures): foto, clase, confianza, fecha, ID de captura, dispositivo y
+ * versión del modelo, de la más reciente a la más antigua.
+ *
+ * Cada foto es una URL firmada de S3 que caduca a los 15 minutos. «Actualizar» vuelve
+ * a pedir la lista (y con ella URLs nuevas); además la página la renueva sola antes de
+ * que caduquen, sin quitar las tarjetas de la pantalla mientras tanto.
  */
 export function EdgeCapturesPage({
-  load = loadMockEdgeCaptures,
-  isMock = load === loadMockEdgeCaptures,
-}: Readonly<{ load?: LoadEdgeCaptures; isMock?: boolean }>) {
+  load = fetchEdgeCaptures,
+  autoRenewMs = AUTO_RENEW_MS,
+}: Readonly<{ load?: LoadEdgeCaptures; autoRenewMs?: number }>) {
   const [state, setState] = useState<State>({ status: "loading" });
   const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
+  const [renewing, setRenewing] = useState(false);
+  const [renewError, setRenewError] = useState<string | null>(null);
   const requestId = useRef(0);
+  const controller = useRef<AbortController | null>(null);
 
-  const refresh = useCallback(async () => {
-    const current = ++requestId.current;
-    setState({ status: "loading" });
-    try {
-      const captures = sortNewestFirst(await load());
-      if (current !== requestId.current) return;
-      setState({ status: "ready", captures });
-      setRefreshedAt(new Date());
-    } catch (error) {
-      if (current !== requestId.current) return;
-      setState({
-        status: "error",
-        message:
-          error instanceof Error && error.message
-            ? error.message
-            : "Revisa tu conexión e inténtalo de nuevo.",
-      });
-    }
-  }, [load]);
+  /**
+   * `background`: renovar las URLs dejando las tarjetas visibles (renovación automática).
+   * Sin `background` (botón, reintento y primera carga) se muestra el estado de carga.
+   */
+  const refresh = useCallback(
+    async (background = false) => {
+      const current = ++requestId.current;
+      controller.current?.abort();
+      controller.current = new AbortController();
+      if (background) setRenewing(true);
+      else setState({ status: "loading" });
+      try {
+        const { captures, total } = await load(controller.current.signal);
+        if (current !== requestId.current) return;
+        setState({ status: "ready", captures: sortNewestFirst(captures), total });
+        setRefreshedAt(new Date());
+        setRenewError(null);
+      } catch (error) {
+        if (current !== requestId.current) return;
+        if (background) setRenewError(errorMessage(error));
+        else setState({ status: "error", message: errorMessage(error) });
+      } finally {
+        if (current === requestId.current) setRenewing(false);
+      }
+    },
+    [load]
+  );
 
   useEffect(() => {
     void refresh();
+    return () => controller.current?.abort();
   }, [refresh]);
 
+  // Renueva las URL firmadas antes de que caduquen. Se reprograma en cada carga.
+  useEffect(() => {
+    if (state.status !== "ready" || state.captures.length === 0 || !refreshedAt) return;
+    const timer = setTimeout(() => void refresh(true), autoRenewMs);
+    return () => clearTimeout(timer);
+  }, [state, refreshedAt, autoRenewMs, refresh]);
+
+  const loading = state.status === "loading";
   const count = state.status === "ready" ? state.captures.length : null;
 
   return (
@@ -108,31 +138,33 @@ export function EdgeCapturesPage({
       >
         {refreshedAt && (
           <span className="text-xs text-ink-muted">
-            Actualizado {refreshedAt.toLocaleTimeString("es-MX")}
+            {renewing
+              ? "Renovando fotos…"
+              : `Actualizado ${refreshedAt.toLocaleTimeString("es-MX")}`}
           </span>
         )}
         <Button
           variant="secondary"
           size="sm"
           onClick={() => void refresh()}
-          isLoading={state.status === "loading"}
+          isLoading={loading || renewing}
         >
-          {state.status !== "loading" && <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+          {!(loading || renewing) && <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
           Actualizar
         </Button>
       </PageHeader>
 
-      {isMock && (
+      {renewError && state.status === "ready" && (
         <p
-          role="note"
+          role="alert"
           className="rounded-xl border border-status-pending/30 bg-status-pending-soft px-4 py-3 text-sm text-status-pending"
         >
-          <strong className="font-semibold">Datos de prueba.</strong> Estas tarjetas no vienen del
-          dispositivo ni de AWS; la sección se conectará a las capturas reales en el siguiente paso.
+          No se pudieron renovar las fotos ({renewError}). Las fotos caducan a los 15 minutos; usa
+          «Actualizar» para volver a pedirlas.
         </p>
       )}
 
-      {state.status === "loading" && <LoadingGrid />}
+      {loading && <LoadingGrid />}
 
       {state.status === "error" && (
         <ErrorState
@@ -147,7 +179,9 @@ export function EdgeCapturesPage({
       {state.status === "ready" && count !== null && count > 0 && (
         <section aria-label="Capturas" className="space-y-3">
           <p className="text-sm text-ink-muted">
-            {count} {count === 1 ? "captura" : "capturas"}
+            {state.total > count
+              ? `Las ${count} más recientes de ${state.total} capturas`
+              : `${count} ${count === 1 ? "captura" : "capturas"}`}
           </p>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {state.captures.map((capture) => (
