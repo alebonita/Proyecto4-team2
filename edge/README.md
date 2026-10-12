@@ -20,6 +20,7 @@ Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
 | `list_events.py` | Lista en la terminal los últimos eventos |
 | `sender.py` | Envío de cada evento y su foto al endpoint de Capturas Edge |
 | `retry.py` | Reenvía eventos con su mismo `capture_id` |
+| `benchmark.py` | Mide p50/p95 del original y del optimizado en esta laptop (EDG-5) |
 | `config.example.yaml` | Plantilla de configuración sin secretos |
 | `tests/` | Pruebas del clasificador, del historial y del envío (con un servidor local de prueba) |
 | `run_display.sh` | Arranca `capture.py` con vista previa en la pantalla del equipo (consola física) |
@@ -222,6 +223,18 @@ python list_events.py            # últimos 10: ID, hora, clase, confianza y est
 python list_events.py -n 25
 python export_events.py -o eventos.json   # todos los eventos en JSON (sin -o, a la terminal)
 ```
+
+### Benchmark (EDG-5)
+
+```bash
+python benchmark.py --optimizado models/dog-cat-resnet18-1.0.0-int8-rr.onnx
+```
+
+Mide el original exportado (fp32 de MOD-2) y el optimizado con la misma imagen fija, el mismo
+número de hilos, 10 repeticiones de calentamiento y 100 medidas de preprocesamiento +
+inferencia. Escribe `artifacts/p4/benchmark.csv` y `artifacts/p4/benchmark-condiciones.json` e
+imprime p50 y p95. Conviene correrlo conectado a la corriente y sin otros programas abiertos.
+Resultados en [`evidencias/edg-5/`](../evidencias/edg-5/README.md).
 
 ### Envío a AWS
 

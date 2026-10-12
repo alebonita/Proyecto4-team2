@@ -1,0 +1,81 @@
+{
+  "fecha": "2026-10-12T18:51:36+00:00",
+  "equipo": {
+    "Marca y modelo": "Apple Inc. MacBookAir6,1 1.0",
+    "Procesador": "Intel(R) Core(TM) i5-4260U CPU @ 1.40GHz",
+    "Nucleos": "2 fisicos, 4 logicos",
+    "Memoria RAM": "3.3 GiB (memoria que ve el sistema)",
+    "Sistema operativo": "Ubuntu 26.04.1 LTS (kernel 7.0.0-38-generic, x86_64)",
+    "Camaras": "/dev/video0: Integrated Camera: Integrated C; /dev/video1: Integrated Camera: Integrated C",
+    "Version de Python": "3.14.4"
+  },
+  "alimentacion": "conectada a la corriente",
+  "carga_del_sistema": {
+    "antes": {
+      "loadavg_1_5_15": [
+        0.28,
+        0.32,
+        0.38
+      ],
+      "k3s_activo": true
+    },
+    "despues": {
+      "loadavg_1_5_15": [
+        0.42,
+        0.35,
+        0.39
+      ],
+      "k3s_activo": true
+    }
+  },
+  "python": "3.14.4",
+  "onnxruntime": "1.30.0",
+  "proveedor": "CPUExecutionProvider",
+  "hilos": {
+    "intra_op": 2,
+    "inter_op": 1
+  },
+  "entrada": {
+    "tensor": [
+      1,
+      3,
+      128,
+      128
+    ],
+    "imagen": "evidencias/mod-01/validation/dog/img102-ann118.png",
+    "imagen_sha256": "e43865d6d47d606382320492baf4d2a7f53885769561b721f3b910e306908df2",
+    "imagen_pixeles": [
+      320,
+      304
+    ]
+  },
+  "medicion": {
+    "calentamiento": 10,
+    "medidas": 100,
+    "reloj": "time.perf_counter",
+    "incluye": "preprocesamiento (recorte, BGR->RGB, resize 128x128 Pillow, normalizacion) + inferencia + softmax; sin lectura de archivo ni envio",
+    "percentiles": "numpy.percentile, method='linear', sobre las 100 medidas"
+  },
+  "modelos": {
+    "original": {
+      "archivo": "dog-cat-resnet18-1.0.0-fp32.onnx",
+      "sha256": "6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f",
+      "bytes": 44961942
+    },
+    "optimizado": {
+      "archivo": "dog-cat-resnet18-1.0.0-int8-rr.onnx",
+      "sha256": "1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0",
+      "bytes": 11367590
+    }
+  },
+  "resultados": {
+    "original": {
+      "p50_ms": 13.3807,
+      "p95_ms": 15.2264
+    },
+    "optimizado": {
+      "p50_ms": 11.2772,
+      "p95_ms": 11.9371
+    }
+  }
+}
