@@ -1,0 +1,104 @@
+{
+  "exported_at": "2026-10-10T20:50:12.969+00:00",
+  "device_id": "edge-macbookair-01",
+  "total": 4,
+  "by_status": {
+    "pendiente": 0,
+    "enviado": 4,
+    "error": 0
+  },
+  "events": [
+    {
+      "capture_id": "3f133f76-a066-4886-810f-e98e8c0cd0d1",
+      "captured_at": "2026-10-10T20:40:09.019+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "dog",
+      "confidence": 0.940234605303465,
+      "latency_ms": 26.092177984537557,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_204009_019_3f133f76-a066-4886-810f-e98e8c0cd0d1.jpg",
+      "photo_sha256": "fa1122182c6221f545e6eea29614a306a0b1e6abfd71b3b518a0b6c604bd6314",
+      "status": "enviado",
+      "received_at": "2026-10-10T20:40:09.000Z",
+      "image_key": "edge-captures/3f133f76-a066-4886-810f-e98e8c0cd0d1.jpg",
+      "send_error": null,
+      "send_ms": 417.188896011794,
+      "send_http_status": 201
+    },
+    {
+      "capture_id": "ce5f9611-94b8-43e5-b6ae-a9a92396f99b",
+      "captured_at": "2026-10-10T20:43:40.886+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "dog",
+      "confidence": 0.9999999789108303,
+      "latency_ms": 19.61372297955677,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_204340_886_ce5f9611-94b8-43e5-b6ae-a9a92396f99b.jpg",
+      "photo_sha256": "6eacda7f3cb9a786acb2ac43260b9ec1ae9110013e547aacba86b793f6fc8e0e",
+      "status": "enviado",
+      "received_at": "2026-10-10T20:43:41.000Z",
+      "image_key": "edge-captures/ce5f9611-94b8-43e5-b6ae-a9a92396f99b.jpg",
+      "send_error": null,
+      "send_ms": 375.6043509929441,
+      "send_http_status": 201
+    },
+    {
+      "capture_id": "35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0",
+      "captured_at": "2026-10-10T20:45:15.429+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "cat",
+      "confidence": 0.9998403279716986,
+      "latency_ms": 18.206928012659773,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_204515_429_35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0.jpg",
+      "photo_sha256": "eb27a30bf918a8e460c73b3db686cf11a9a27e3a67c3c9bc9adb8eddd74179d5",
+      "status": "enviado",
+      "received_at": "2026-10-10T20:49:55.000Z",
+      "image_key": "edge-captures/35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0.jpg",
+      "send_error": null,
+      "send_ms": 332.5589580053929,
+      "send_http_status": 200
+    },
+    {
+      "capture_id": "cb0c3f00-5db9-458d-b5df-f3329ea3df5e",
+      "captured_at": "2026-10-10T20:46:53.318+00:00",
+      "device_id": "edge-macbookair-01",
+      "model_version": "dog-cat-resnet18-1.0.0-int8",
+      "predicted_class": "dog",
+      "confidence": 0.9999999868865537,
+      "latency_ms": 26.09029901213944,
+      "crop": {
+        "x": 128,
+        "y": 48,
+        "width": 384,
+        "height": 384
+      },
+      "photo_path": "captures/capture_20261010_204653_318_cb0c3f00-5db9-458d-b5df-f3329ea3df5e.jpg",
+      "photo_sha256": "a0d9addc2c3779c79fe55e60e822ad66be9e220791507c57b7d8e17aed860f27",
+      "status": "enviado",
+      "received_at": "2026-10-10T20:46:53.000Z",
+      "image_key": "edge-captures/cb0c3f00-5db9-458d-b5df-f3329ea3df5e.jpg",
+      "send_error": null,
+      "send_ms": 454.03292000992224,
+      "send_http_status": 201
+    }
+  ]
+}

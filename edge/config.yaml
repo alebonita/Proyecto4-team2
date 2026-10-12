@@ -45,3 +45,15 @@ preprocess:
   channel_order: RGB         # OpenCV entrega BGR y se convierte a RGB
   mean: [0.485, 0.456, 0.406]
   std: [0.229, 0.224, 0.225]
+
+# Envio a AWS (EDG-4): endpoint de Capturas Edge del portal (AWS-1/AWS-2).
+# La clave del dispositivo NO va aqui: sale de la variable de entorno key_env o del
+# archivo key_file, con una linea EDGE_DEVICE_KEY=<clave> (ver README).
+# EDGE_API_URL y EDGE_KEY_HEADER, si estan definidas, pisan api_url y key_header.
+upload:
+  api_url: http://18.216.36.30/api/edge-captures
+  key_header: X-Device-Key
+  key_env: EDGE_DEVICE_KEY
+  key_file: ~/.config/edge/device.env
+  timeout_s: 10
+  auto_send: true                # false: no se envia al capturar; se envia con retry.py

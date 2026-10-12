@@ -3,3 +3,4 @@ numpy==2.3.5
 PyYAML==6.0.3
 onnxruntime==1.30.0
 pillow==12.3.0
+requests==2.34.2

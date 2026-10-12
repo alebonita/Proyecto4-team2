@@ -6,7 +6,8 @@ latency_ms y crop. Se guarda junto con la ruta y el SHA-256 de su foto y un esta
 envio (pendiente, enviado o error). El historial vive en un archivo SQLite, asi que se
 conserva al cerrar y volver a abrir el programa; export_events.py lo exporta a JSON.
 
-received_at, image_key, send_error y send_ms los llena el envio a AWS (EDG-4).
+El envio a AWS (EDG-4) llena received_at, image_key, send_error, send_http_status y
+send_ms; send_ms se mide aparte y nunca se suma a latency_ms.
 """
 
 from __future__ import annotations
@@ -39,10 +40,13 @@ CREATE TABLE IF NOT EXISTS events (
     received_at     TEXT,
     image_key       TEXT,
     send_error      TEXT,
-    send_ms         REAL
+    send_ms         REAL,
+    send_http_status INTEGER
 );
 CREATE INDEX IF NOT EXISTS events_captured_at ON events (captured_at);
 """
+# Columnas agregadas despues de EDG-3: se crean en historiales que ya existian.
+ADDED_COLUMNS = {"send_http_status": "INTEGER"}
 
 
 def new_capture_id() -> str:
@@ -72,6 +76,7 @@ class Event:
     image_key: str | None = None
     send_error: str | None = None
     send_ms: float | None = None
+    send_http_status: int | None = None
 
     def to_dict(self) -> dict:
         x, y, width, height = self.crop
@@ -91,6 +96,7 @@ class Event:
             "image_key": self.image_key,
             "send_error": self.send_error,
             "send_ms": self.send_ms,
+            "send_http_status": self.send_http_status,
         }
 
 
@@ -100,9 +106,15 @@ class EventStore:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
         self.path = path
-        self._db = sqlite3.connect(path)
+        # timeout: el envio en segundo plano usa su propia conexion al mismo archivo.
+        self._db = sqlite3.connect(path, timeout=10)
         self._db.row_factory = sqlite3.Row
         self._db.executescript(SCHEMA)
+        existing = {row["name"] for row in self._db.execute("PRAGMA table_info(events)")}
+        with self._db:
+            for name, kind in ADDED_COLUMNS.items():
+                if name not in existing:
+                    self._db.execute(f"ALTER TABLE events ADD COLUMN {name} {kind}")
 
     def close(self) -> None:
         self._db.close()
@@ -140,6 +152,32 @@ class EventStore:
                     event.status,
                 ),
             )
+
+    def mark_sent(
+        self, capture_id: str, received_at: str | None, image_key: str | None, http_status, ms
+    ) -> None:
+        with self._db:
+            self._db.execute(
+                "UPDATE events SET status = 'enviado', received_at = ?, image_key = ?, "
+                "send_error = NULL, send_http_status = ?, send_ms = ? WHERE capture_id = ?",
+                (received_at, image_key, http_status, ms, capture_id),
+            )
+
+    def mark_error(self, capture_id: str, error: str, http_status, ms) -> None:
+        with self._db:
+            self._db.execute(
+                "UPDATE events SET status = 'error', send_error = ?, send_http_status = ?, "
+                "send_ms = ? WHERE capture_id = ?",
+                (error, http_status, ms, capture_id),
+            )
+
+    def with_status(self, *statuses: str) -> list[Event]:
+        marks = ", ".join("?" for _ in statuses)
+        rows = self._db.execute(
+            f"SELECT * FROM events WHERE status IN ({marks}) ORDER BY captured_at, rowid",
+            statuses,
+        )
+        return [_to_event(row) for row in rows]
 
     def get(self, capture_id: str) -> Event | None:
         row = self._db.execute(
@@ -183,4 +221,5 @@ def _to_event(row: sqlite3.Row) -> Event:
         image_key=row["image_key"],
         send_error=row["send_error"],
         send_ms=row["send_ms"],
+        send_http_status=row["send_http_status"],
     )

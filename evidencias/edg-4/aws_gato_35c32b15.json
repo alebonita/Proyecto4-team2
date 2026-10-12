@@ -1,0 +1,17 @@
+{
+  "capture_id": "35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0",
+  "captured_at": "2026-10-10T20:45:15.429Z",
+  "received_at": "2026-10-10T20:49:55.000Z",
+  "device_id": "edge-macbookair-01",
+  "model_version": "dog-cat-resnet18-1.0.0-int8",
+  "predicted_class": "cat",
+  "confidence": 0.9998403279716986,
+  "latency_ms": 18.206928012659773,
+  "crop": {
+    "x": 128,
+    "y": 48,
+    "width": 384,
+    "height": 384
+  },
+  "image_key": "edge-captures/35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0.jpg"
+}
