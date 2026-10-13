@@ -13,6 +13,13 @@ uso: [`edge/README.md`](../../edge/README.md).
 > `edge/config.yaml`. En la laptop edge da **126/128** (−0.78 pp, mejora), 127/128 con la misma
 > clase que el original (`evidencias/mod-04/metrics_int8-rr_intel.json`). Esta página conserva
 > las mediciones con la primera variante `int8` porque son las que justificaron el cambio.
+>
+> **Con el modelo desplegado**, `classify_image.py --todas` en la laptop edge (mismo código y
+> preprocesamiento con Pillow que el programa de captura) da **126/128** y **128/128 con la misma
+> clase** que MOD-4 en esa laptop, que usa entradas idénticas byte a byte al preprocesamiento de
+> torchvision; diferencia de P(dog) media 0.003, máxima 0.067. Errores: `img131-ann149` y
+> `img263-ann299`, los mismos de MOD-4. Detalle:
+> [`predicciones_validacion_edge_int8-rr.csv`](predicciones_validacion_edge_int8-rr.csv).
 
 ## Estado
 
@@ -130,7 +137,7 @@ OK
 ## Calidad en la laptop edge: el INT8 depende del CPU
 
 Las 128 predicciones del INT8 en la laptop edge están en
-[`predicciones_validacion_edge.csv`](predicciones_validacion_edge.csv), junto a las del original
+[`predicciones_validacion_edge_int8.csv`](predicciones_validacion_edge_int8.csv), junto a las del original
 y las de MOD-4 (mismo archivo INT8, otra computadora):
 
 | | Accuracy | Caída vs original | Errores |
