@@ -1,0 +1,101 @@
+{
+  "original": {
+    "modelo": "best.pt del Proyecto 3 (calidad) / su ONNX fp32 de MOD-2 (latencia)",
+    "best_pt_sha256": "84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52",
+    "best_pt_bytes": 45043841,
+    "onnx_fp32_sha256": "6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f",
+    "onnx_fp32_bytes": 44961942,
+    "correctas": 125,
+    "accuracy": 0.9765625,
+    "f1_macro": 0.9765496183206106,
+    "latencia_laptop_edge": {
+      "calentamiento": 10,
+      "medidas": 100,
+      "p50_ms": 13.3807,
+      "p95_ms": 15.2263,
+      "min_ms": 13.161,
+      "max_ms": 19.7397,
+      "media_ms": 13.6441
+    }
+  },
+  "optimizado": {
+    "modelo": "INT8 estático, reduce_range=True (int8-rr, MOD-3b)",
+    "sha256": "1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0",
+    "bytes": 11367590,
+    "correctas": 126,
+    "accuracy": 0.984375,
+    "f1_macro": 0.9843597262952102,
+    "misma_clase_que_original": "127/128",
+    "max_abs_diff_prob_vs_original": 0.21415,
+    "latencia_laptop_edge": {
+      "calentamiento": 10,
+      "medidas": 100,
+      "p50_ms": 11.2771,
+      "p95_ms": 11.9371,
+      "min_ms": 11.1303,
+      "max_ms": 14.1099,
+      "media_ms": 11.3907
+    }
+  },
+  "cambio": {
+    "tamano_pct_vs_onnx_fp32": -74.72,
+    "tamano_pct_vs_best_pt": -74.76,
+    "conversion_log_pct": 74.72,
+    "accuracy_pp": 0.7812,
+    "f1_macro_pp": 0.781,
+    "p50_pct": -15.72,
+    "p95_pct": -21.6,
+    "p95_opt_menor_que_min_original": true
+  },
+  "vnni": {
+    "cpu_con_vnni": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpu_laptop_edge": "Intel(R) Core(TM) i5-4260U CPU @ 1.40GHz",
+    "int8": {
+      "correctas_con_vnni": 125,
+      "correctas_laptop_edge": 124,
+      "entre_computadoras": {
+        "clase_distinta": 3,
+        "recortes": [
+          "img106-ann134",
+          "img131-ann149",
+          "img289-ann331"
+        ],
+        "max_abs_diff_p_dog": 0.812799
+      }
+    },
+    "int8_rr": {
+      "correctas_con_vnni": 126,
+      "correctas_laptop_edge": 126,
+      "entre_computadoras": {
+        "clase_distinta": 0,
+        "recortes": [],
+        "max_abs_diff_p_dog": 0.0
+      }
+    }
+  },
+  "condiciones_latencia": {
+    "fecha": "2026-10-12T18:51:36+00:00",
+    "equipo": {
+      "Marca y modelo": "Apple Inc. MacBookAir6,1 1.0",
+      "Procesador": "Intel(R) Core(TM) i5-4260U CPU @ 1.40GHz",
+      "Nucleos": "2 fisicos, 4 logicos",
+      "Memoria RAM": "3.3 GiB (memoria que ve el sistema)",
+      "Sistema operativo": "Ubuntu 26.04.1 LTS (kernel 7.0.0-38-generic, x86_64)",
+      "Camaras": "/dev/video0: Integrated Camera: Integrated C; /dev/video1: Integrated Camera: Integrated C",
+      "Version de Python": "3.14.4"
+    },
+    "onnxruntime": "1.30.0",
+    "proveedor": "CPUExecutionProvider",
+    "hilos": {
+      "intra_op": 2,
+      "inter_op": 1
+    },
+    "medicion": {
+      "calentamiento": 10,
+      "medidas": 100,
+      "reloj": "time.perf_counter",
+      "incluye": "preprocesamiento (recorte, BGR->RGB, resize 128x128 Pillow, normalizacion) + inferencia + softmax; sin lectura de archivo ni envio",
+      "percentiles": "numpy.percentile, method='linear', sobre las 100 medidas"
+    }
+  }
+}
