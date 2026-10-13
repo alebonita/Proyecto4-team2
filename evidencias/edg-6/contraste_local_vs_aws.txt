@@ -1,0 +1,50 @@
+Contraste historial local (export_events.py) contra GET /api/edge-captures, 2026-10-13
+Eventos locales: 45   Capturas en AWS: 45
+3f133f76-a066-4886-810f-e98e8c0cd0d1  2026-10-10T20:40:09  dog  .0-int8  registros_AWS=1  metadatos_iguales=True
+ce5f9611-94b8-43e5-b6ae-a9a92396f99b  2026-10-10T20:43:40  dog  .0-int8  registros_AWS=1  metadatos_iguales=True
+35c32b15-a6a1-4bda-a8d7-6f76bbefd0e0  2026-10-10T20:45:15  cat  .0-int8  registros_AWS=1  metadatos_iguales=True
+cb0c3f00-5db9-458d-b5df-f3329ea3df5e  2026-10-10T20:46:53  dog  .0-int8  registros_AWS=1  metadatos_iguales=True
+abc394df-b603-490a-ad9b-c445e013261c  2026-10-13T22:34:04  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+7cf7bf3c-e116-4081-ac0d-0432de8bcd17  2026-10-13T22:34:14  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+f93e94a6-5e39-4bb4-ba27-5d8477050eb1  2026-10-13T22:34:24  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+d9cbb366-3f5f-428b-96c4-d5c758367462  2026-10-13T22:34:34  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+348b3bc1-1367-4ae9-b903-eb8e98a3c0b3  2026-10-13T22:34:44  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+dba248f9-5f3e-4e0f-b294-177400b06766  2026-10-13T22:34:54  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+be9a2499-8f33-43bc-8e40-6027afcfafec  2026-10-13T22:35:04  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+f66da9da-7d67-45b4-a3b3-014a754d51af  2026-10-13T22:35:14  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+c9d1bda5-f2ef-4baf-97b6-86559c061cb5  2026-10-13T22:35:24  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+a30d6984-e342-42bb-a08a-8262d12c3d7a  2026-10-13T22:35:34  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+99f00ee3-db7a-450f-932a-0863812d02ff  2026-10-13T22:35:44  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+b2f7b1e7-f805-4676-a6c1-e6a9b03364d9  2026-10-13T22:35:54  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+ec1af335-e7f0-4a25-8c9e-c434e13cc1da  2026-10-13T22:36:04  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+1efc19ca-5d8b-42c3-ba0c-49b31565c1d7  2026-10-13T22:36:14  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+6595bae0-69de-46f6-98de-abf9dbd0cd3c  2026-10-13T22:36:24  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+4f3174bc-7282-4fe7-9e3d-626ce85bb964  2026-10-13T22:36:34  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+4b13637e-e198-49b7-a021-c2eb970c2614  2026-10-13T22:36:44  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+8e622868-485a-4325-aa39-e0fc6f1be851  2026-10-13T22:36:54  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+15cb55d4-3983-4de7-97cb-8195bf2ee094  2026-10-13T22:37:04  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+d68715e6-39a9-49ad-a181-72b551547ff1  2026-10-13T22:37:14  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+3d8978f1-b5c5-4e47-85c5-b66782b6bbfc  2026-10-13T22:37:24  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+e71fe2a7-586a-41cc-b36a-16cc40008207  2026-10-13T22:37:34  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+51d6c187-78b2-4330-8121-5f4a6b6d4c4c  2026-10-13T22:37:44  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+abb1a184-1be6-4585-8b2e-392454041784  2026-10-13T22:37:54  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+b1f11df9-aa70-442a-9316-1359ed9cdbda  2026-10-13T22:38:04  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+a75fde7f-c7f9-44ed-bc62-1d1400883962  2026-10-13T22:38:14  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+1c342bab-5878-4aef-8335-95c19b915767  2026-10-13T22:38:24  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+79606667-08ee-4e8d-86af-a6b26e35d0e7  2026-10-13T22:38:34  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+485a0950-32c7-4aa9-8ff5-77a21fd5a6e2  2026-10-13T22:38:44  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+f6d4f3db-d699-44dd-a23d-42239328b0c9  2026-10-13T22:38:54  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+7549fb2c-320b-455e-8d06-80e7dff5ea1a  2026-10-13T22:39:04  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+905cc325-46b7-4a37-8c42-8511da7a8ad2  2026-10-13T22:39:14  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+489e2d7b-5475-4556-8890-65044304ddd3  2026-10-13T22:39:24  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+a12f295c-c144-4dc8-9350-9eaa8ae395d1  2026-10-13T22:39:34  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+03b342ba-1c90-44bb-99ea-343e22048c16  2026-10-13T22:39:44  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+6e2e10ab-f48c-4fe3-8b44-6306255b1cf7  2026-10-13T22:43:06  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+0099abd8-b6e9-456d-9f1b-a5e07bd99b49  2026-10-13T22:43:30  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+725652b9-fcc0-4e33-a109-4f72a2bb8523  2026-10-13T22:43:44  dog  int8-rr  registros_AWS=1  metadatos_iguales=True
+4f85b015-6590-467b-829f-cc5e89925ce6  2026-10-13T22:44:07  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+77884b45-ba0b-40c5-8b84-5f0388bbaa85  2026-10-13T22:44:44  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+393a496a-789f-4bfd-ad06-6e7f2dad99f4  2026-10-13T22:45:44  cat  int8-rr  registros_AWS=1  metadatos_iguales=True
+
+45/45 eventos con exactamente 1 registro en AWS y metadatos iguales
+capture_id duplicados en AWS: 0

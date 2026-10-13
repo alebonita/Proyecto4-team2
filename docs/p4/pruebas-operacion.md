@@ -110,6 +110,8 @@ sudo systemctl start backlight-off          # apagar la pantalla otra vez
 
 | Prueba | Inicio | Fin | Resultado | Notas (eventos, errores, memoria) |
 |---|---|---|---|---|
-| 1. Cinco minutos continuos | | | | |
-| 2. Red apagada | | | | |
-| 3. Reinicio del programa | | | | |
+| 1. Cinco minutos continuos | 2026-10-13 22:34:04 UTC | 22:39:46 | ✅ Pasa | 35 capturas (27 con animal: 25 correctas), 35/35 enviadas, 0 `ERROR`, memoria 153.7 → 154.0 MB |
+| 2. Red apagada | 22:43:18 (desconexión) | 22:45:04 (reconexión) | ✅ Pasa | 4 capturas clasificadas sin red (`Network is unreachable` visible); `retry.py --todos`: 4/4 con el mismo ID, 1 registro cada una |
+| 3. Reinicio del programa | 22:45:34 | 22:46:11 | ✅ Pasa | Al reabrir: 44 eventos (los de las sesiones anteriores); captura nueva `cat 1.00`, enviada (201) |
+
+Detalle, registro, fotos y contraste con AWS: [`evidencias/edg-6/`](../../evidencias/edg-6/README.md).
