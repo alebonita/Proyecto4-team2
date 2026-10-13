@@ -1,0 +1,216 @@
+2026-10-13T22:33:32+0000 INFO ---- Inicio de capture.py ----
+2026-10-13T22:33:32+0000 INFO Modelo:      dog-cat-resnet18-1.0.0-int8-rr.onnx
+2026-10-13T22:33:32+0000 INFO SHA-256:     1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+2026-10-13T22:33:32+0000 INFO Version:     dog-cat-resnet18-1.0.0-int8-rr
+2026-10-13T22:33:32+0000 INFO onnxruntime: 1.30.0
+2026-10-13T22:33:32+0000 INFO Proveedor:   CPUExecutionProvider
+2026-10-13T22:33:32+0000 INFO Historial:   /home/steph/Proyecto4-team2/edge/events.db (4 eventos)
+2026-10-13T22:33:32+0000 INFO Dispositivo: edge-macbookair-01
+2026-10-13T22:33:32+0000 INFO Registro:    /home/steph/Proyecto4-team2/edge/logs/edge.log
+2026-10-13T22:33:32+0000 INFO Envio:       http://18.216.36.30/api/edge-captures (clave: /home/steph/.config/edge/device.env)
+2026-10-13T22:33:34+0000 INFO Camara 0 lista. Las fotos se guardan en /home/steph/Proyecto4-team2/edge/captures
+2026-10-13T22:33:34+0000 INFO Vista previa abierta. Espacio: foto. i: captura por intervalo. q: salir.
+2026-10-13T22:34:04+0000 INFO Captura por intervalo ACTIVADA: cada 10 s (i para detener).
+2026-10-13T22:34:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223404_087_abc394df-b603-490a-ad9b-c445e013261c.jpg
+2026-10-13T22:34:04+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 20.7 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:04+0000 INFO Evento: abc394df-b603-490a-ad9b-c445e013261c  2026-10-13T22:34:04.087+00:00  estado: pendiente
+2026-10-13T22:34:04+0000 INFO Envio abc394df-b603-490a-ad9b-c445e013261c: enviado (HTTP 201, nuevo, 514 ms)
+2026-10-13T22:34:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223414_091_7cf7bf3c-e116-4081-ac0d-0432de8bcd17.jpg
+2026-10-13T22:34:14+0000 INFO Clase: cat  confianza: 0.9956  tiempo: 25.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:14+0000 INFO Evento: 7cf7bf3c-e116-4081-ac0d-0432de8bcd17  2026-10-13T22:34:14.091+00:00  estado: pendiente
+2026-10-13T22:34:14+0000 INFO Envio 7cf7bf3c-e116-4081-ac0d-0432de8bcd17: enviado (HTTP 201, nuevo, 329 ms)
+2026-10-13T22:34:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223424_115_f93e94a6-5e39-4bb4-ba27-5d8477050eb1.jpg
+2026-10-13T22:34:24+0000 INFO Clase: cat  confianza: 0.9737  tiempo: 27.0 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:24+0000 INFO Evento: f93e94a6-5e39-4bb4-ba27-5d8477050eb1  2026-10-13T22:34:24.115+00:00  estado: pendiente
+2026-10-13T22:34:24+0000 INFO Envio f93e94a6-5e39-4bb4-ba27-5d8477050eb1: enviado (HTTP 201, nuevo, 319 ms)
+2026-10-13T22:34:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223434_111_d9cbb366-3f5f-428b-96c4-d5c758367462.jpg
+2026-10-13T22:34:34+0000 INFO Clase: dog  confianza: 0.9999  tiempo: 17.8 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:34+0000 INFO Evento: d9cbb366-3f5f-428b-96c4-d5c758367462  2026-10-13T22:34:34.111+00:00  estado: pendiente
+2026-10-13T22:34:34+0000 INFO Estado: 4 capturas en esta sesion, memoria del proceso 153.7 MB
+2026-10-13T22:34:34+0000 INFO Envio d9cbb366-3f5f-428b-96c4-d5c758367462: enviado (HTTP 201, nuevo, 333 ms)
+2026-10-13T22:34:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223444_119_348b3bc1-1367-4ae9-b903-eb8e98a3c0b3.jpg
+2026-10-13T22:34:44+0000 INFO Clase: cat  confianza: 0.9996  tiempo: 27.9 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:44+0000 INFO Evento: 348b3bc1-1367-4ae9-b903-eb8e98a3c0b3  2026-10-13T22:34:44.119+00:00  estado: pendiente
+2026-10-13T22:34:44+0000 INFO Envio 348b3bc1-1367-4ae9-b903-eb8e98a3c0b3: enviado (HTTP 201, nuevo, 393 ms)
+2026-10-13T22:34:54+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223454_087_dba248f9-5f3e-4e0f-b294-177400b06766.jpg
+2026-10-13T22:34:54+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 18.4 ms (preprocesamiento + inferencia)
+2026-10-13T22:34:54+0000 INFO Evento: dba248f9-5f3e-4e0f-b294-177400b06766  2026-10-13T22:34:54.087+00:00  estado: pendiente
+2026-10-13T22:34:54+0000 INFO Envio dba248f9-5f3e-4e0f-b294-177400b06766: enviado (HTTP 201, nuevo, 326 ms)
+2026-10-13T22:35:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223504_102_be9a2499-8f33-43bc-8e40-6027afcfafec.jpg
+2026-10-13T22:35:04+0000 INFO Clase: cat  confianza: 0.9835  tiempo: 19.7 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:04+0000 INFO Evento: be9a2499-8f33-43bc-8e40-6027afcfafec  2026-10-13T22:35:04.102+00:00  estado: pendiente
+2026-10-13T22:35:04+0000 INFO Envio be9a2499-8f33-43bc-8e40-6027afcfafec: enviado (HTTP 201, nuevo, 317 ms)
+2026-10-13T22:35:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223514_087_f66da9da-7d67-45b4-a3b3-014a754d51af.jpg
+2026-10-13T22:35:14+0000 INFO Clase: cat  confianza: 0.6814  tiempo: 20.1 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:14+0000 INFO Evento: f66da9da-7d67-45b4-a3b3-014a754d51af  2026-10-13T22:35:14.087+00:00  estado: pendiente
+2026-10-13T22:35:14+0000 INFO Envio f66da9da-7d67-45b4-a3b3-014a754d51af: enviado (HTTP 201, nuevo, 316 ms)
+2026-10-13T22:35:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223524_143_c9d1bda5-f2ef-4baf-97b6-86559c061cb5.jpg
+2026-10-13T22:35:24+0000 INFO Clase: dog  confianza: 0.5000  tiempo: 20.1 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:24+0000 INFO Evento: c9d1bda5-f2ef-4baf-97b6-86559c061cb5  2026-10-13T22:35:24.143+00:00  estado: pendiente
+2026-10-13T22:35:24+0000 INFO Envio c9d1bda5-f2ef-4baf-97b6-86559c061cb5: enviado (HTTP 201, nuevo, 338 ms)
+2026-10-13T22:35:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223534_099_a30d6984-e342-42bb-a08a-8262d12c3d7a.jpg
+2026-10-13T22:35:34+0000 INFO Clase: cat  confianza: 0.9221  tiempo: 27.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:34+0000 INFO Evento: a30d6984-e342-42bb-a08a-8262d12c3d7a  2026-10-13T22:35:34.099+00:00  estado: pendiente
+2026-10-13T22:35:34+0000 INFO Estado: 10 capturas en esta sesion, memoria del proceso 153.8 MB
+2026-10-13T22:35:34+0000 INFO Envio a30d6984-e342-42bb-a08a-8262d12c3d7a: enviado (HTTP 201, nuevo, 265 ms)
+2026-10-13T22:35:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223544_119_99f00ee3-db7a-450f-932a-0863812d02ff.jpg
+2026-10-13T22:35:44+0000 INFO Clase: cat  confianza: 1.0000  tiempo: 17.8 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:44+0000 INFO Evento: 99f00ee3-db7a-450f-932a-0863812d02ff  2026-10-13T22:35:44.119+00:00  estado: pendiente
+2026-10-13T22:35:44+0000 INFO Envio 99f00ee3-db7a-450f-932a-0863812d02ff: enviado (HTTP 201, nuevo, 405 ms)
+2026-10-13T22:35:54+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223554_121_b2f7b1e7-f805-4676-a6c1-e6a9b03364d9.jpg
+2026-10-13T22:35:54+0000 INFO Clase: dog  confianza: 0.9935  tiempo: 18.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:35:54+0000 INFO Evento: b2f7b1e7-f805-4676-a6c1-e6a9b03364d9  2026-10-13T22:35:54.121+00:00  estado: pendiente
+2026-10-13T22:35:54+0000 INFO Envio b2f7b1e7-f805-4676-a6c1-e6a9b03364d9: enviado (HTTP 201, nuevo, 326 ms)
+2026-10-13T22:36:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223604_119_ec1af335-e7f0-4a25-8c9e-c434e13cc1da.jpg
+2026-10-13T22:36:04+0000 INFO Clase: dog  confianza: 0.6166  tiempo: 18.2 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:04+0000 INFO Evento: ec1af335-e7f0-4a25-8c9e-c434e13cc1da  2026-10-13T22:36:04.119+00:00  estado: pendiente
+2026-10-13T22:36:04+0000 INFO Envio ec1af335-e7f0-4a25-8c9e-c434e13cc1da: enviado (HTTP 201, nuevo, 315 ms)
+2026-10-13T22:36:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223614_113_1efc19ca-5d8b-42c3-ba0c-49b31565c1d7.jpg
+2026-10-13T22:36:14+0000 INFO Clase: cat  confianza: 0.9897  tiempo: 26.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:14+0000 INFO Evento: 1efc19ca-5d8b-42c3-ba0c-49b31565c1d7  2026-10-13T22:36:14.113+00:00  estado: pendiente
+2026-10-13T22:36:14+0000 INFO Envio 1efc19ca-5d8b-42c3-ba0c-49b31565c1d7: enviado (HTTP 201, nuevo, 317 ms)
+2026-10-13T22:36:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223624_107_6595bae0-69de-46f6-98de-abf9dbd0cd3c.jpg
+2026-10-13T22:36:24+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 17.4 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:24+0000 INFO Evento: 6595bae0-69de-46f6-98de-abf9dbd0cd3c  2026-10-13T22:36:24.107+00:00  estado: pendiente
+2026-10-13T22:36:24+0000 INFO Envio 6595bae0-69de-46f6-98de-abf9dbd0cd3c: enviado (HTTP 201, nuevo, 387 ms)
+2026-10-13T22:36:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223634_103_4f3174bc-7282-4fe7-9e3d-626ce85bb964.jpg
+2026-10-13T22:36:34+0000 INFO Clase: cat  confianza: 0.9149  tiempo: 21.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:34+0000 INFO Evento: 4f3174bc-7282-4fe7-9e3d-626ce85bb964  2026-10-13T22:36:34.103+00:00  estado: pendiente
+2026-10-13T22:36:34+0000 INFO Estado: 16 capturas en esta sesion, memoria del proceso 153.9 MB
+2026-10-13T22:36:34+0000 INFO Envio 4f3174bc-7282-4fe7-9e3d-626ce85bb964: enviado (HTTP 201, nuevo, 331 ms)
+2026-10-13T22:36:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223644_113_4b13637e-e198-49b7-a021-c2eb970c2614.jpg
+2026-10-13T22:36:44+0000 INFO Clase: dog  confianza: 0.9999  tiempo: 18.4 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:44+0000 INFO Evento: 4b13637e-e198-49b7-a021-c2eb970c2614  2026-10-13T22:36:44.113+00:00  estado: pendiente
+2026-10-13T22:36:44+0000 INFO Envio 4b13637e-e198-49b7-a021-c2eb970c2614: enviado (HTTP 201, nuevo, 335 ms)
+2026-10-13T22:36:54+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223654_101_8e622868-485a-4325-aa39-e0fc6f1be851.jpg
+2026-10-13T22:36:54+0000 INFO Clase: cat  confianza: 0.9347  tiempo: 25.2 ms (preprocesamiento + inferencia)
+2026-10-13T22:36:54+0000 INFO Evento: 8e622868-485a-4325-aa39-e0fc6f1be851  2026-10-13T22:36:54.101+00:00  estado: pendiente
+2026-10-13T22:36:54+0000 INFO Envio 8e622868-485a-4325-aa39-e0fc6f1be851: enviado (HTTP 201, nuevo, 377 ms)
+2026-10-13T22:37:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223704_091_15cb55d4-3983-4de7-97cb-8195bf2ee094.jpg
+2026-10-13T22:37:04+0000 INFO Clase: cat  confianza: 0.8469  tiempo: 19.0 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:04+0000 INFO Evento: 15cb55d4-3983-4de7-97cb-8195bf2ee094  2026-10-13T22:37:04.091+00:00  estado: pendiente
+2026-10-13T22:37:04+0000 INFO Envio 15cb55d4-3983-4de7-97cb-8195bf2ee094: enviado (HTTP 201, nuevo, 321 ms)
+2026-10-13T22:37:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223714_091_d68715e6-39a9-49ad-a181-72b551547ff1.jpg
+2026-10-13T22:37:14+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 27.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:14+0000 INFO Evento: d68715e6-39a9-49ad-a181-72b551547ff1  2026-10-13T22:37:14.091+00:00  estado: pendiente
+2026-10-13T22:37:14+0000 INFO Envio d68715e6-39a9-49ad-a181-72b551547ff1: enviado (HTTP 201, nuevo, 318 ms)
+2026-10-13T22:37:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223724_087_3d8978f1-b5c5-4e47-85c5-b66782b6bbfc.jpg
+2026-10-13T22:37:24+0000 INFO Clase: cat  confianza: 0.9402  tiempo: 27.6 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:24+0000 INFO Evento: 3d8978f1-b5c5-4e47-85c5-b66782b6bbfc  2026-10-13T22:37:24.087+00:00  estado: pendiente
+2026-10-13T22:37:24+0000 INFO Envio 3d8978f1-b5c5-4e47-85c5-b66782b6bbfc: enviado (HTTP 201, nuevo, 321 ms)
+2026-10-13T22:37:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223734_099_e71fe2a7-586a-41cc-b36a-16cc40008207.jpg
+2026-10-13T22:37:34+0000 INFO Clase: cat  confianza: 0.9544  tiempo: 17.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:34+0000 INFO Evento: e71fe2a7-586a-41cc-b36a-16cc40008207  2026-10-13T22:37:34.099+00:00  estado: pendiente
+2026-10-13T22:37:34+0000 INFO Estado: 22 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:37:34+0000 INFO Envio e71fe2a7-586a-41cc-b36a-16cc40008207: enviado (HTTP 201, nuevo, 317 ms)
+2026-10-13T22:37:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223744_095_51d6c187-78b2-4330-8121-5f4a6b6d4c4c.jpg
+2026-10-13T22:37:44+0000 INFO Clase: dog  confianza: 0.7577  tiempo: 28.2 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:44+0000 INFO Evento: 51d6c187-78b2-4330-8121-5f4a6b6d4c4c  2026-10-13T22:37:44.095+00:00  estado: pendiente
+2026-10-13T22:37:44+0000 INFO Envio 51d6c187-78b2-4330-8121-5f4a6b6d4c4c: enviado (HTTP 201, nuevo, 343 ms)
+2026-10-13T22:37:54+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223754_115_abb1a184-1be6-4585-8b2e-392454041784.jpg
+2026-10-13T22:37:54+0000 INFO Clase: cat  confianza: 0.9997  tiempo: 19.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:37:54+0000 INFO Evento: abb1a184-1be6-4585-8b2e-392454041784  2026-10-13T22:37:54.115+00:00  estado: pendiente
+2026-10-13T22:37:54+0000 INFO Envio abb1a184-1be6-4585-8b2e-392454041784: enviado (HTTP 201, nuevo, 317 ms)
+2026-10-13T22:38:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223804_119_b1f11df9-aa70-442a-9316-1359ed9cdbda.jpg
+2026-10-13T22:38:04+0000 INFO Clase: dog  confianza: 0.9875  tiempo: 21.2 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:04+0000 INFO Evento: b1f11df9-aa70-442a-9316-1359ed9cdbda  2026-10-13T22:38:04.119+00:00  estado: pendiente
+2026-10-13T22:38:04+0000 INFO Envio b1f11df9-aa70-442a-9316-1359ed9cdbda: enviado (HTTP 201, nuevo, 315 ms)
+2026-10-13T22:38:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223814_119_a75fde7f-c7f9-44ed-bc62-1d1400883962.jpg
+2026-10-13T22:38:14+0000 INFO Clase: cat  confianza: 1.0000  tiempo: 22.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:14+0000 INFO Evento: a75fde7f-c7f9-44ed-bc62-1d1400883962  2026-10-13T22:38:14.119+00:00  estado: pendiente
+2026-10-13T22:38:14+0000 INFO Envio a75fde7f-c7f9-44ed-bc62-1d1400883962: enviado (HTTP 201, nuevo, 335 ms)
+2026-10-13T22:38:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223824_126_1c342bab-5878-4aef-8335-95c19b915767.jpg
+2026-10-13T22:38:24+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 19.8 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:24+0000 INFO Evento: 1c342bab-5878-4aef-8335-95c19b915767  2026-10-13T22:38:24.126+00:00  estado: pendiente
+2026-10-13T22:38:24+0000 INFO Envio 1c342bab-5878-4aef-8335-95c19b915767: enviado (HTTP 201, nuevo, 377 ms)
+2026-10-13T22:38:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223834_099_79606667-08ee-4e8d-86af-a6b26e35d0e7.jpg
+2026-10-13T22:38:34+0000 INFO Clase: dog  confianza: 0.9684  tiempo: 18.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:34+0000 INFO Evento: 79606667-08ee-4e8d-86af-a6b26e35d0e7  2026-10-13T22:38:34.099+00:00  estado: pendiente
+2026-10-13T22:38:34+0000 INFO Estado: 28 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:38:34+0000 INFO Envio 79606667-08ee-4e8d-86af-a6b26e35d0e7: enviado (HTTP 201, nuevo, 308 ms)
+2026-10-13T22:38:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223844_109_485a0950-32c7-4aa9-8ff5-77a21fd5a6e2.jpg
+2026-10-13T22:38:44+0000 INFO Clase: cat  confianza: 0.9989  tiempo: 17.7 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:44+0000 INFO Evento: 485a0950-32c7-4aa9-8ff5-77a21fd5a6e2  2026-10-13T22:38:44.109+00:00  estado: pendiente
+2026-10-13T22:38:44+0000 INFO Envio 485a0950-32c7-4aa9-8ff5-77a21fd5a6e2: enviado (HTTP 201, nuevo, 403 ms)
+2026-10-13T22:38:54+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223854_135_f6d4f3db-d699-44dd-a23d-42239328b0c9.jpg
+2026-10-13T22:38:54+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 28.7 ms (preprocesamiento + inferencia)
+2026-10-13T22:38:54+0000 INFO Evento: f6d4f3db-d699-44dd-a23d-42239328b0c9  2026-10-13T22:38:54.135+00:00  estado: pendiente
+2026-10-13T22:38:54+0000 INFO Envio f6d4f3db-d699-44dd-a23d-42239328b0c9: enviado (HTTP 201, nuevo, 328 ms)
+2026-10-13T22:39:04+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223904_091_7549fb2c-320b-455e-8d06-80e7dff5ea1a.jpg
+2026-10-13T22:39:04+0000 INFO Clase: cat  confianza: 0.9951  tiempo: 16.9 ms (preprocesamiento + inferencia)
+2026-10-13T22:39:04+0000 INFO Evento: 7549fb2c-320b-455e-8d06-80e7dff5ea1a  2026-10-13T22:39:04.091+00:00  estado: pendiente
+2026-10-13T22:39:04+0000 INFO Envio 7549fb2c-320b-455e-8d06-80e7dff5ea1a: enviado (HTTP 201, nuevo, 333 ms)
+2026-10-13T22:39:14+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223914_131_905cc325-46b7-4a37-8c42-8511da7a8ad2.jpg
+2026-10-13T22:39:14+0000 INFO Clase: dog  confianza: 0.9990  tiempo: 27.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:39:14+0000 INFO Evento: 905cc325-46b7-4a37-8c42-8511da7a8ad2  2026-10-13T22:39:14.131+00:00  estado: pendiente
+2026-10-13T22:39:14+0000 INFO Envio 905cc325-46b7-4a37-8c42-8511da7a8ad2: enviado (HTTP 201, nuevo, 396 ms)
+2026-10-13T22:39:24+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223924_117_489e2d7b-5475-4556-8890-65044304ddd3.jpg
+2026-10-13T22:39:24+0000 INFO Clase: dog  confianza: 0.7399  tiempo: 28.0 ms (preprocesamiento + inferencia)
+2026-10-13T22:39:24+0000 INFO Evento: 489e2d7b-5475-4556-8890-65044304ddd3  2026-10-13T22:39:24.117+00:00  estado: pendiente
+2026-10-13T22:39:24+0000 INFO Envio 489e2d7b-5475-4556-8890-65044304ddd3: enviado (HTTP 201, nuevo, 320 ms)
+2026-10-13T22:39:34+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223934_096_a12f295c-c144-4dc8-9350-9eaa8ae395d1.jpg
+2026-10-13T22:39:34+0000 INFO Clase: cat  confianza: 0.6814  tiempo: 17.6 ms (preprocesamiento + inferencia)
+2026-10-13T22:39:34+0000 INFO Evento: a12f295c-c144-4dc8-9350-9eaa8ae395d1  2026-10-13T22:39:34.096+00:00  estado: pendiente
+2026-10-13T22:39:34+0000 INFO Estado: 34 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:39:34+0000 INFO Envio a12f295c-c144-4dc8-9350-9eaa8ae395d1: enviado (HTTP 201, nuevo, 327 ms)
+2026-10-13T22:39:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_223944_099_03b342ba-1c90-44bb-99ea-343e22048c16.jpg
+2026-10-13T22:39:44+0000 INFO Clase: dog  confianza: 0.9999  tiempo: 22.4 ms (preprocesamiento + inferencia)
+2026-10-13T22:39:44+0000 INFO Evento: 03b342ba-1c90-44bb-99ea-343e22048c16  2026-10-13T22:39:44.099+00:00  estado: pendiente
+2026-10-13T22:39:44+0000 INFO Envio 03b342ba-1c90-44bb-99ea-343e22048c16: enviado (HTTP 201, nuevo, 312 ms)
+2026-10-13T22:39:46+0000 INFO Captura por intervalo detenida.
+2026-10-13T22:40:34+0000 INFO Estado: 35 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:41:34+0000 INFO Estado: 35 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:42:34+0000 INFO Estado: 35 capturas en esta sesion, memoria del proceso 154.0 MB
+2026-10-13T22:42:36+0000 INFO ---- Fin de capture.py ----
+2026-10-13T22:42:42+0000 INFO ---- Inicio de capture.py ----
+2026-10-13T22:42:42+0000 INFO Modelo:      dog-cat-resnet18-1.0.0-int8-rr.onnx
+2026-10-13T22:42:42+0000 INFO SHA-256:     1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+2026-10-13T22:42:42+0000 INFO Version:     dog-cat-resnet18-1.0.0-int8-rr
+2026-10-13T22:42:42+0000 INFO onnxruntime: 1.30.0
+2026-10-13T22:42:42+0000 INFO Proveedor:   CPUExecutionProvider
+2026-10-13T22:42:42+0000 INFO Historial:   /home/steph/Proyecto4-team2/edge/events.db (39 eventos)
+2026-10-13T22:42:42+0000 INFO Dispositivo: edge-macbookair-01
+2026-10-13T22:42:42+0000 INFO Registro:    /home/steph/Proyecto4-team2/edge/logs/edge.log
+2026-10-13T22:42:42+0000 INFO Envio:       http://18.216.36.30/api/edge-captures (clave: /home/steph/.config/edge/device.env)
+2026-10-13T22:42:44+0000 INFO Camara 0 lista. Las fotos se guardan en /home/steph/Proyecto4-team2/edge/captures
+2026-10-13T22:42:44+0000 INFO Vista previa abierta. Espacio: foto. i: captura por intervalo. q: salir.
+2026-10-13T22:43:06+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224306_899_6e2e10ab-f48c-4fe3-8b44-6306255b1cf7.jpg
+2026-10-13T22:43:06+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 25.3 ms (preprocesamiento + inferencia)
+2026-10-13T22:43:07+0000 INFO Evento: 6e2e10ab-f48c-4fe3-8b44-6306255b1cf7  2026-10-13T22:43:06.899+00:00  estado: pendiente
+2026-10-13T22:43:07+0000 INFO Envio 6e2e10ab-f48c-4fe3-8b44-6306255b1cf7: enviado (HTTP 201, nuevo, 355 ms)
+2026-10-13T22:43:30+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224330_308_0099abd8-b6e9-456d-9f1b-a5e07bd99b49.jpg
+2026-10-13T22:43:30+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 23.4 ms (preprocesamiento + inferencia)
+2026-10-13T22:43:30+0000 INFO Evento: 0099abd8-b6e9-456d-9f1b-a5e07bd99b49  2026-10-13T22:43:30.308+00:00  estado: pendiente
+2026-10-13T22:43:30+0000 ERROR Envio 0099abd8-b6e9-456d-9f1b-a5e07bd99b49: error: Sin conexion con el servidor 18.216.36.30: Network is unreachable Reintenta con retry.py.
+2026-10-13T22:43:44+0000 INFO Estado: 2 capturas en esta sesion, memoria del proceso 153.4 MB
+2026-10-13T22:43:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224344_612_725652b9-fcc0-4e33-a109-4f72a2bb8523.jpg
+2026-10-13T22:43:44+0000 INFO Clase: dog  confianza: 1.0000  tiempo: 25.1 ms (preprocesamiento + inferencia)
+2026-10-13T22:43:44+0000 INFO Evento: 725652b9-fcc0-4e33-a109-4f72a2bb8523  2026-10-13T22:43:44.612+00:00  estado: pendiente
+2026-10-13T22:43:44+0000 ERROR Envio 725652b9-fcc0-4e33-a109-4f72a2bb8523: error: Sin conexion con el servidor 18.216.36.30: Network is unreachable Reintenta con retry.py.
+2026-10-13T22:44:07+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224407_374_4f85b015-6590-467b-829f-cc5e89925ce6.jpg
+2026-10-13T22:44:07+0000 INFO Clase: cat  confianza: 0.9929  tiempo: 20.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:44:07+0000 INFO Evento: 4f85b015-6590-467b-829f-cc5e89925ce6  2026-10-13T22:44:07.374+00:00  estado: pendiente
+2026-10-13T22:44:07+0000 ERROR Envio 4f85b015-6590-467b-829f-cc5e89925ce6: error: Sin conexion con el servidor 18.216.36.30: Network is unreachable Reintenta con retry.py.
+2026-10-13T22:44:44+0000 INFO Estado: 4 capturas en esta sesion, memoria del proceso 153.8 MB
+2026-10-13T22:44:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224444_426_77884b45-ba0b-40c5-8b84-5f0388bbaa85.jpg
+2026-10-13T22:44:44+0000 INFO Clase: cat  confianza: 0.9960  tiempo: 19.5 ms (preprocesamiento + inferencia)
+2026-10-13T22:44:44+0000 INFO Evento: 77884b45-ba0b-40c5-8b84-5f0388bbaa85  2026-10-13T22:44:44.426+00:00  estado: pendiente
+2026-10-13T22:44:44+0000 ERROR Envio 77884b45-ba0b-40c5-8b84-5f0388bbaa85: error: Sin conexion con el servidor 18.216.36.30: Network is unreachable Reintenta con retry.py.
+2026-10-13T22:45:29+0000 INFO ---- Fin de capture.py ----
+2026-10-13T22:45:34+0000 INFO ---- Inicio de capture.py ----
+2026-10-13T22:45:34+0000 INFO Modelo:      dog-cat-resnet18-1.0.0-int8-rr.onnx
+2026-10-13T22:45:34+0000 INFO SHA-256:     1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+2026-10-13T22:45:34+0000 INFO Version:     dog-cat-resnet18-1.0.0-int8-rr
+2026-10-13T22:45:34+0000 INFO onnxruntime: 1.30.0
+2026-10-13T22:45:34+0000 INFO Proveedor:   CPUExecutionProvider
+2026-10-13T22:45:34+0000 INFO Historial:   /home/steph/Proyecto4-team2/edge/events.db (44 eventos)
+2026-10-13T22:45:34+0000 INFO Dispositivo: edge-macbookair-01
+2026-10-13T22:45:34+0000 INFO Registro:    /home/steph/Proyecto4-team2/edge/logs/edge.log
+2026-10-13T22:45:34+0000 INFO Envio:       http://18.216.36.30/api/edge-captures (clave: /home/steph/.config/edge/device.env)
+2026-10-13T22:45:35+0000 INFO Camara 0 lista. Las fotos se guardan en /home/steph/Proyecto4-team2/edge/captures
+2026-10-13T22:45:35+0000 INFO Vista previa abierta. Espacio: foto. i: captura por intervalo. q: salir.
+2026-10-13T22:45:44+0000 INFO Foto guardada: /home/steph/Proyecto4-team2/edge/captures/capture_20261013_224544_394_393a496a-789f-4bfd-ad06-6e7f2dad99f4.jpg
+2026-10-13T22:45:44+0000 INFO Clase: cat  confianza: 1.0000  tiempo: 24.0 ms (preprocesamiento + inferencia)
+2026-10-13T22:45:44+0000 INFO Evento: 393a496a-789f-4bfd-ad06-6e7f2dad99f4  2026-10-13T22:45:44.394+00:00  estado: pendiente
+2026-10-13T22:45:45+0000 INFO Envio 393a496a-789f-4bfd-ad06-6e7f2dad99f4: enviado (HTTP 201, nuevo, 413 ms)
+2026-10-13T22:46:11+0000 INFO ---- Fin de capture.py ----

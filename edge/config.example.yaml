@@ -27,16 +27,23 @@ device_id: edge-<equipo>-01
 # Historial local de capturas (SQLite). Se conserva al cerrar el programa.
 events_db: events.db
 
+# Captura por intervalo (EDG-6): con la tecla i se activa o se detiene una captura cada
+# tantos segundos. Vacio: la tecla i no hace nada.
+capture_interval_s: 10
+
+# Archivo de registro local: arranque, capturas, envios y errores. Rota solo (1 MB x 4).
+log_file: logs/edge.log
+
 # Recorte fijo que se clasifica: cuadrado centrado con esta fraccion del lado corto
 # del cuadro. Se dibuja en la vista previa; el objeto se presenta dentro del recuadro.
 crop_fraction: 0.8
 
 # Modelo ONNX (EDG-2). El archivo no esta en git: ver "Modelo" en el README.
 model:
-  path: models/dog-cat-resnet18-1.0.0-int8.onnx
-  version: dog-cat-resnet18-1.0.0-int8
+  path: models/dog-cat-resnet18-1.0.0-int8-rr.onnx
+  version: dog-cat-resnet18-1.0.0-int8-rr
   # Si el archivo no tiene este SHA-256, el programa no arranca. Vacio: no se comprueba.
-  sha256: 9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
+  sha256: 1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
   # Orden de salida del modelo: dog es el indice 0 (evidencias/mod-01/README.md).
   classes: [dog, cat]
 
