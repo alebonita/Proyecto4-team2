@@ -2,12 +2,35 @@
 
 Programa que abre la webcam y, al presionar la barra espaciadora, guarda una foto JPEG
 y clasifica el objeto en la propia laptop con el modelo optimizado (ONNX INT8) y
-onnxruntime en CPU, sin llamar a ningún servidor. Es la parte "cámara y clasificación
-local" del recorrido del Proyecto 4. Depende de OpenCV, NumPy, PyYAML, onnxruntime y
-Pillow; no incluye PyTorch ni nada de entrenamiento.
+onnxruntime en CPU, sin llamar a ningún servidor. Después registra la captura y la envía a
+AWS para la sección Capturas Edge del portal. Es la parte "cámara y clasificación local" del
+recorrido del Proyecto 4. Depende de OpenCV, NumPy, PyYAML, onnxruntime, Pillow y requests;
+no incluye PyTorch ni nada de entrenamiento.
 
-Hardware de referencia: MacBook Air Intel con Ubuntu Server y una webcam USB
-Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
+## Ficha del dispositivo edge
+
+| | |
+|---|---|
+| Dispositivo | Apple MacBook Air (MacBookAir6,1), Intel Core i5-4260U @ 1.40GHz (2 núcleos físicos, 4 lógicos; AVX2, sin VNNI), 3.3 GiB de RAM visibles |
+| Cámara | Webcam USB Acteck HD (UVC, `13d3:784b`), 640 × 480, `/dev/video0` |
+| Sistema operativo | Ubuntu 26.04.1 LTS (kernel 7.0, x86_64), Python 3.14.4 |
+| Runtime | onnxruntime 1.30.0, `CPUExecutionProvider`, 2 hilos |
+| Modelo de origen | `dog-cat-resnet18` 1.0.0 del Proyecto 3 (`best.pt`, `84d6c88b…`), clases `[dog, cat]` ([MOD-1](../evidencias/mod-01/README.md)) |
+| Técnica | Cuantización estática INT8 post-entrenamiento con `reduce_range` (pesos de 7 bits por canal, activaciones uint8), calibrada con 150 imágenes de entrenamiento ([MOD-3](../evidencias/mod-03/README.md)) |
+| Variante desplegada | `dog-cat-resnet18-1.0.0-int8-rr.onnx`, SHA-256 `1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0`, 11 367 590 bytes |
+| Entrada | Recorte central (80 % del lado corto) → RGB 128 × 128 bilineal con antialias → normalización ImageNet |
+| Calidad en este equipo | 126/128 en la validación del P3 (original: 125/128) ([MOD-4](../evidencias/mod-04/README.md)) |
+| Latencia en este equipo | p50 11.28 ms / p95 11.94 ms (fp32: 13.38 / 15.23 ms), 74.7 % menos tamaño ([EDG-5](../evidencias/edg-5/README.md)) |
+| Destino AWS | `POST http://18.216.36.30/api/edge-captures` → bucket `mlops-p4-equipo-452857281704` (`edge-captures/`) |
+| Portal | `http://18.216.36.30`, sección **Capturas Edge** |
+| Identidad | `device_id: edge-macbookair-01` (`config.yaml`) |
+
+Evidencias: [EDG-1](../evidencias/edg-1/README.md) (instalación y cámara) ·
+[EDG-2](../evidencias/edg-2/README.md) (clasificación local, sin red) ·
+[EDG-3](../evidencias/edg-3/README.md) (historial) · [EDG-4](../evidencias/edg-4/README.md)
+(envío, fallo y reintento) · [EDG-5](../evidencias/edg-5/README.md) (benchmark) ·
+[EDG-6](../evidencias/edg-6/README.md) (operación continua, 41 capturas). Guion de la
+demostración: [`docs/p4/demo-edge.md`](../docs/p4/demo-edge.md).
 
 ## Contenido
 
@@ -21,6 +44,7 @@ Acteck HD (UVC). Los datos exactos del equipo salen de `python device_info.py`.
 | `sender.py` | Envío de cada evento y su foto al endpoint de Capturas Edge |
 | `retry.py` | Reenvía eventos con su mismo `capture_id` |
 | `operation.py` | Registro local, captura por intervalo y estado periódico (memoria) |
+| `classify_image.py` | Clasifica entradas conocidas (crop_id o imagen) para contrastarlas con los registros |
 | `benchmark.py` | Mide p50/p95 del original y del optimizado en esta laptop (EDG-5) |
 | `config.example.yaml` | Plantilla de configuración sin secretos |
 | `tests/` | Pruebas del clasificador, del historial, del envío (con un servidor local de prueba) y de la operación continua |
@@ -110,7 +134,7 @@ con la del modelo original; mide la accuracy en las 128 de validación (no puede
 python -m unittest discover -s tests -v
 ```
 
-Deben pasar las 25 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
+Deben pasar las 27 pruebas (con `-b` se ocultan los mensajes de las capturas de prueba).
 
 **8. Clave del dispositivo.** El endpoint pide una clave en el encabezado `X-Device-Key`
 (la entrega quien administra el servidor). Nunca va en git ni en `config.yaml`: se guarda en
@@ -245,10 +269,22 @@ python list_events.py -n 25
 python export_events.py -o eventos.json   # todos los eventos en JSON (sin -o, a la terminal)
 ```
 
+### Entradas conocidas
+
+Para contrastar el modelo de la laptop con los registros de calidad, con entradas que elija
+quien revisa (crop_id de `evidencias/mod-01/validation_manifest.csv` o cualquier imagen):
+
+```bash
+python classify_image.py img131-ann149 img560-ann562   # clase real, original, MOD-4 y la de ahora
+python classify_image.py --todas --csv salida.csv      # las 128 (126/128, 128/128 igual a MOD-4)
+```
+
+Usa el mismo modelo, lectura con OpenCV y preprocesamiento que el programa de captura.
+
 ### Benchmark (EDG-5)
 
 ```bash
-python benchmark.py --optimizado models/dog-cat-resnet18-1.0.0-int8-rr.onnx
+python benchmark.py               # fp32 de MOD-2 contra el modelo de config.yaml (int8-rr)
 ```
 
 Mide el original exportado (fp32 de MOD-2) y el optimizado con la misma imagen fija, el mismo
@@ -276,6 +312,13 @@ Envio:       http://18.216.36.30/api/edge-captures (clave: /home/steph/.config/e
 | **400** dato inválido / **401** clave ausente o incorrecta | Marca `error` con el motivo del servidor; no se reintenta solo |
 
 El tiempo de envío se guarda aparte (`send_ms`) y nunca se suma a `latency_ms`.
+
+Para comprobar que una captura está realmente en AWS (no solo en el portal), con una identidad
+de lectura del proyecto del equipo:
+
+```bash
+AWS_PROFILE=<perfil-equipo> PORTAL_URL=http://18.216.36.30 bash ../scripts/p4/consulta-aws.sh <capture_id>
+```
 
 **Reintento con el mismo ID** (el servidor guarda cada `capture_id` una sola vez, así que
 reenviar nunca duplica):
