@@ -1,0 +1,9 @@
+Release: https://github.com/alebonita/Proyecto4-team2/releases/tag/modelos-v1.0.0
+Fecha: 2026-10-14T03:06:06+00:00
+
+OK     best.pt  45,043,841 bytes  sha256=84d6c88b4bd84c3e6f0229dd23f7f188ff85622bbb39e5c3988a97598fa90d52
+OK     dog-cat-resnet18-1.0.0-fp32.onnx  44,961,942 bytes  sha256=6628f3cf24673a5045d51723b97dcfca85ebc1d511d49793bb6c0b0731c7035f
+OK     dog-cat-resnet18-1.0.0-int8-rr.onnx  11,367,590 bytes  sha256=1d4a85fad5b2dcab28692bd5f81b5089092cf3a551b7862a63c544c94dcb5ea0
+OK     dog-cat-resnet18-1.0.0-int8.onnx  11,367,590 bytes  sha256=9c28368acaf04e184e0712946c08e319d2b7ee2dc83d3f8ef0367d0b9c8935cd
+
+Todos coinciden.
