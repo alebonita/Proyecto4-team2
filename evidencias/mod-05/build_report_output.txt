@@ -1,0 +1,9 @@
+                       Original                   Optimizado (int8-rr)   Cambio
+Tamaño (bytes)         44,961,942 (ONNX fp32)     11,367,590             -74.72 %
+Accuracy (128 val.)    0.9766 (125/128)           0.9844 (126/128)       +0.78 pp
+F1 macro               0.9765                     0.9844                 +0.78 pp
+Latencia p50 (ms)      13.38                      11.28                  -15.7 %
+Latencia p95 (ms)      15.23                      11.94                  -21.6 %
+
+VNNI  int8: 125 vs 124/128, 3 clases distintas | int8-rr: 126 vs 126/128, 0 clases distintas
+-> reporte.json
